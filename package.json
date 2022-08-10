@@ -1,0 +1,27 @@
+{
+  "name": "website-builder",
+  "version": "0.0.0",
+  "scripts": {
+    "docker-build": "docker system prune -af;cp -vf ${HOME}/.npmrc server/.npmrc; cp -vf ${HOME}/.npmrc client/.npmrc; cp -vf ${HOME}/.npmrc export/.npmrc && docker-compose build --pull --parallel --force-rm ; rm -vf client/.npmrc && ./updateVersion.sh && ver=$(awk 'FNR <= 1' version) && docker tag ionrev/website-builder-server ionrev/website-builder-server:${ver} && docker tag ionrev/website-builder-client ionrev/website-builder-client:${ver} && docker tag ionrev/website-builder-lib ionrev/website-builder-lib:${ver} && docker push ionrev/website-builder-server && docker push ionrev/website-builder-client && docker push ionrev/website-builder-lib && git add . && git commit -m ${ver} && git push",
+    "docker:prune": "docker system prune -af",
+    "docker:build": "docker-compose build --pull --parallel --force-rm",
+    "docker:version": "./updateVersion.sh && ver=$(awk 'FNR <= 1' version)",
+    "docker:tag-server": "docker tag ionrev/website-builder-server ionrev/website-builder-server:${ver}",
+    "docker:tag-client": "docker tag ionrev/website-builder-client ionrev/website-builder-client:${ver}",
+    "docker:push-server": "docker push ionrev/website-builder-server",
+    "docker:push-client": "docker push ionrev/website-builder-client",
+    "docker:git": "git add . && git commit -m ${ver} && git push",
+    "docker:deploy": "npm run docker:prune && npm run docker:build && npm run docker:version && npm run docker:tag-server && npm run docker:tag-client && npm run docker:push-server && npm run docker:push-client && npm run docker:git",
+    "d-build": "docker system prune -af;docker-compose build --pull --parallel --force-rm",
+    "version:major": "npm version major && npm version major --prefix ./server && npm version major --prefix ./client",
+    "version:minor": "npm version minor && npm version minor --prefix ./server && npm version minor --prefix ./client",
+    "version:patch": "npm version patch && npm version patch --prefix ./server && npm version patch --prefix ./client",
+    "release:prerelease": "npm version prerelease && npm publish --tag pre",
+    "d-push": "docker tag ionrev/website-builder-server ionrev/website-builder-server:${ver} && docker tag ionrev/website-builder-client ionrev/website-builder-client:${ver} && docker push ionrev/website-builder-server && docker push ionrev/website-builder-client",
+    "g-push": "git commit -m ${ver} && git push",
+    "run-build": "node src/"
+  },
+  "dependencies": {
+    "remote-origin-url": "^2.0.0"
+  }
+}
