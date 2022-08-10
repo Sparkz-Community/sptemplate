@@ -53,7 +53,6 @@
         params: usersParams,
       });
       watch(isPending, (newVal) => {
-        console.log(newVal);
         if (newVal) {
           $q.loading.show();
         } else {
