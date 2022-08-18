@@ -30,8 +30,8 @@ module.exports = configure(function (ctx) {
       'axios',
       'feathersClient',
       'pinia',
-      // 'spCommonLib',
-      // 'spFormGenLib',
+      'spCommonLib',
+      'spFormGenLib',
     ],
 
     // https://v2.quasar.dev/quasar-cli-webpack/quasar-config-js#Property%3A-css
