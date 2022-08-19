@@ -38,9 +38,9 @@
                       :text-color="$q.dark.isActive || dark ? '' : 'dark'" unelevated no-caps>
         <template v-slot:label>
           <div class="row items-center no-wrap">
-            <random-avatar :user="$lget($store.getters, 'auth/activeAccount', {})" :menu="false" size="md"></random-avatar>
+            <random-avatar :user="$lget($store, 'auth/activeAccount', {})" :menu="false" size="md"></random-avatar>
             <div v-if="!smallScreen" class="text-center text-bold q-pa-sm">
-              {{ $lget($store.getters, 'auth/activeAccount.name', $lget($store.getters, 'auth/activeAccount.email', '')) }}
+              {{ $lget($store, 'auth/activeAccount.name', $lget($store, 'auth/activeAccount.email', '')) }}
             </div>
           </div>
         </template>
