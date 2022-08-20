@@ -4,7 +4,7 @@
       <q-toolbar :class="$q.dark.isActive ? 'bg-dark' : 'bg-white'"
                  :style="{ height: scrollY > 100 ? '50px' : '80px', transition: 'all .3s ease-out' }">
         <div class="full-width row items-center">
-          <q-btn v-if="!$lisEmpty($authUser)" color="primary" dense flat round icon="menu" @click="leftShown = !leftShown"/>
+          <q-btn v-if="!$lisEmpty($authUser.value)" color="primary" dense flat round icon="menu" @click="leftShown = !leftShown"/>
 
           <q-btn flat padding="0" color="primary" class="q-ml-sm-lg">
               <q-img @click="$router.push({name: 'home'})"
@@ -17,7 +17,7 @@
       </q-toolbar>
     </q-header>
 
-    <menu-drawer v-if="!$lisEmpty($authUser)" v-model="leftShown" v-model:mini="menuMini" :auto-expand="menuAutoExpand">
+    <menu-drawer v-if="!$lisEmpty($authUser.value)" v-model="leftShown" v-model:mini="menuMini" :auto-expand="menuAutoExpand">
       <template v-slot:menu>
         <menu-list :menu-items="menuItems"
                    v-on:expansionItemClick="menuMini = false"
@@ -29,7 +29,7 @@
       <router-view :key="$route.path"/>
     </q-page-container>
 
-    <q-footer v-if="$lisEmpty($authUser)">
+    <q-footer v-if="$lisEmpty($authUser.value)">
 <!--      <contact-footer :contact="contact">-->
 <!--        <template v-slot:left>-->
 <!--          <div class="row justify-center items-center full-height">-->

@@ -1,7 +1,7 @@
 <template>
   <div id="header-nav" class="flex">
 
-    <template v-if="!$lisEmpty($authUser)">
+    <template v-if="!$lisEmpty($authUser.value)">
 <!--      <q-btn v-if="smallScreen"-->
 <!--             :text-color="showSearchToolbar ? 'accent' : 'dark'"-->
 <!--             dense-->
@@ -56,9 +56,9 @@
                label="Results"></q-btn>
         <q-btn @click="clickers('contact')" :style="btnStyle" :size="btnSz" color="primary" flat
                label="Contact"></q-btn>
-        <q-btn v-if="$lisEmpty($authUser)" @click="clickers('login')" :style="btnStyle" :size="btnSz" icon="mdi-finance"
+        <q-btn v-if="$lisEmpty($authUser.value)" @click="clickers('login')" :style="btnStyle" :size="btnSz" icon="mdi-finance"
                color="primary" rounded push label="Login"></q-btn>
-        <q-btn v-if="!$lisEmpty($authUser)" @click="clickers('logout')" :style="btnStyle" :size="btnSz"
+        <q-btn v-if="!$lisEmpty($authUser.value)" @click="clickers('logout')" :style="btnStyle" :size="btnSz"
                icon="mdi-finance"
                color="primary" rounded push label="Logout"></q-btn>
       </template>
@@ -66,7 +66,7 @@
         <q-btn flat color="primary" icon="mdi-menu">
           <q-menu>
             <q-list>
-              <q-item v-for="item in [ 'about', 'results', 'contact', `${$lisEmpty($authUser) ? 'login' : 'logout'}`]"
+              <q-item v-for="item in [ 'about', 'results', 'contact', `${$lisEmpty($authUser.value) ? 'login' : 'logout'}`]"
                       :key="item" clickable
                       @click="clickers(item)">
                 <q-item-section>
