@@ -9,6 +9,12 @@ export default function (/*{store, ssrContext}*/) {
           name: 'home',
           component: () => import('pages/IndexPage.vue')
         },
+        {
+          path: 'messages',
+          name: 'messages',
+          // meta: {requiresAuth: true},
+          component: () => import ('pages/messages/Messages.vue'),
+        },
       ],
     },
 
