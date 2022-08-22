@@ -15,7 +15,7 @@
         clickable
         :tag="tag"
         :key="childLink.title"
-        @click="$emit('active',childLink.path)"
+        @click="$emit('active', childLink.path)"
       >
         <q-item-section v-if="icon" avatar>
           <q-icon :name="icon"/>
@@ -33,7 +33,7 @@
     <q-item clickable
             v-else
             :tag="tag"
-            @click="$emit('active',path)"
+            @click="$emit('active', path)"
             v-bind="$props"
     >
       <q-item-section v-if="icon" avatar>
@@ -73,5 +73,8 @@
         default: '',
       },
     },
+    emits: [
+      'active',
+    ],
   };
 </script>
