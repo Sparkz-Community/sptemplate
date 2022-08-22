@@ -3,7 +3,6 @@
     use-chips
     service="accounts"
     v-bind="$attrs"
-    v-on="$listeners"
     option-value="_id"
     option-label="name"
     multiple
@@ -31,7 +30,7 @@
         </q-item-section>
       </q-item>
     </template>
-    <template v-for="(_, slot) of $scopedSlots" v-slot:[slot]="scope">
+    <template v-for="(_, slot) of $slots" v-slot:[slot]="scope">
       <slot :name="slot" v-bind="scope"/>
     </template>
   </search-input>
@@ -39,11 +38,24 @@
 
 <script>
   import SearchInput from 'pages/messages/components/search-input';
-  import {models} from 'feathers-vuex';
+  import {models} from 'feathers-pinia';
+  import {inject} from 'vue';
 
   export default {
     name: 'accounts-filter',
     components: {SearchInput},
+    // eslint-disable-next-line no-unused-vars
+    setup(props) {
+      const {$lget} = inject('lodash');
+
+      return {
+        $lget,
+      };
+    },
+    emits: [
+      'add',
+      'input',
+    ],
     props: {
       value: {
         type: [Array, String],
@@ -55,9 +67,8 @@
     methods: {
       addAccount(newVal) {
         console.log('will add: ', newVal);
-        const ModelName = models.api.byServicePath['accounts'].modelName;
 
-        const form = new models.api[ModelName]().clone();
+        const form = new models.api.Accounts();
         console.log(form);
         this.$emit('add', newVal);
       },
