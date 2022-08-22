@@ -1,7 +1,7 @@
 <template>
   <div id="header-nav" class="flex">
 
-    <template v-if="!$lisEmpty($authUser)">
+    <template v-if="!$lisEmpty($authUser.value)">
 <!--      <q-btn v-if="smallScreen"-->
 <!--             :text-color="showSearchToolbar ? 'accent' : 'dark'"-->
 <!--             dense-->
@@ -38,9 +38,9 @@
                       :text-color="$q.dark.isActive || dark ? '' : 'dark'" unelevated no-caps>
         <template v-slot:label>
           <div class="row items-center no-wrap">
-            <random-avatar :user="$lget($store.getters, 'auth/activeAccount', {})" :menu="false" size="md"></random-avatar>
+            <random-avatar :user="$lget($store, 'auth/activeAccount', {})" :menu="false" size="md"></random-avatar>
             <div v-if="!smallScreen" class="text-center text-bold q-pa-sm">
-              {{ $lget($store.getters, 'auth/activeAccount.name', $lget($store.getters, 'auth/activeAccount.email', '')) }}
+              {{ $lget($store, 'auth/activeAccount.name', $lget($store, 'auth/activeAccount.email', '')) }}
             </div>
           </div>
         </template>
@@ -56,9 +56,9 @@
                label="Results"></q-btn>
         <q-btn @click="clickers('contact')" :style="btnStyle" :size="btnSz" color="primary" flat
                label="Contact"></q-btn>
-        <q-btn v-if="$lisEmpty($authUser)" @click="clickers('login')" :style="btnStyle" :size="btnSz" icon="mdi-finance"
+        <q-btn v-if="$lisEmpty($authUser.value)" @click="clickers('login')" :style="btnStyle" :size="btnSz" icon="mdi-finance"
                color="primary" rounded push label="Login"></q-btn>
-        <q-btn v-if="!$lisEmpty($authUser)" @click="clickers('logout')" :style="btnStyle" :size="btnSz"
+        <q-btn v-if="!$lisEmpty($authUser.value)" @click="clickers('logout')" :style="btnStyle" :size="btnSz"
                icon="mdi-finance"
                color="primary" rounded push label="Logout"></q-btn>
       </template>
@@ -66,7 +66,7 @@
         <q-btn flat color="primary" icon="mdi-menu">
           <q-menu>
             <q-list>
-              <q-item v-for="item in [ 'about', 'results', 'contact', `${$lisEmpty($authUser) ? 'login' : 'logout'}`]"
+              <q-item v-for="item in [ 'about', 'results', 'contact', `${$lisEmpty($authUser.value) ? 'login' : 'logout'}`]"
                       :key="item" clickable
                       @click="clickers(item)">
                 <q-item-section>
