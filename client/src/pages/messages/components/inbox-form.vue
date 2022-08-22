@@ -64,7 +64,7 @@
               v-model="attachmentForm"
               :fields="attachmentFields"
               useQform
-              :valid.sync="validAttachment"
+              :valid="validAttachment"
             />
           </q-card-section>
         </q-card>
@@ -95,12 +95,23 @@
 </template>
 
 <script>
-  import {models} from 'feathers-vuex';
+  import {models} from 'feathers-pinia';
   import AccountsFilter from 'pages/messages/components/accounts-filter';
+  import {inject} from 'vue';
+  import {useQuasar} from 'quasar';
 
   export default {
     name: 'inbox-form',
     components: {AccountsFilter},
+    setup() {
+      const {$lget} = inject('lodash');
+      const $q = useQuasar();
+
+      return {
+        $lget,
+        $q,
+      };
+    },
     props: {
       message: {
         type: Object,
@@ -110,13 +121,16 @@
         default: false,
       },
     },
+    emits: [
+      'sent',
+    ],
     data() {
       return {
         uploadDialog: false,
         placeholder: {
           to: 'Recipients: ',
         },
-        form: new models.api.Messages().clone(),
+        form: new models.api.Messages(),
         attachmentForm: {attachments: []},
         sending: false,
         validAttachment: false,
@@ -128,7 +142,7 @@
         deep: true,
         handler: function (newVal) {
           if (newVal) {
-            this.form = new models.api.Messages().clone({...newVal});
+            this.form = new models.api.Messages({...newVal});
           } else {
             this.form = new models.api.Messages().clone();
           }
@@ -142,7 +156,6 @@
         },
       },
     },
-
     computed: {
       attachmentFields() {
         return [{
@@ -173,7 +186,6 @@
       },
     },
     methods: {
-
       saveWork() {
         this.$q.notify({
           message: 'Saved your text to local storage',
@@ -213,7 +225,8 @@
             textColor: 'white',
             icon: 'attachment',
           });
-          this.form = new models.api.Messages().clone();
+          this.form.addToStore();
+          this.form = new models.api.Messages();
           this.sending = false;
           this.$emit('sent');
         } catch (e) {
