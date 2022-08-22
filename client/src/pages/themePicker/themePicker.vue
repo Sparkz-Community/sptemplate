@@ -82,12 +82,29 @@
 </template>
 
 <script>
-  import {mapGetters} from 'vuex';
+  import useAuthStore from 'stores/store.auth';
+  import {inject} from 'vue';
 
   import colorPicker from '@ionrev/quasar-app-extension-ir-form-gen-app/src/components/common/atoms/ColorSelectorRoundInput/ColorSelectorRoundInput.vue';
 
   export default {
-    name: 'themePicker',
+    name: 'ThemePicker',
+    setup() {
+      const {$lisNil} = inject('$lisNil');
+      const {$lisEmpty} = inject('$lisEmpty');
+      const {$lget} = inject('$lget');
+      const {$lset} = inject('$lset');
+
+      const authStore = useAuthStore;
+
+      return {
+        $lisNil,
+        $lisEmpty,
+        $lget,
+        $lset,
+        authStore,
+      };
+    },
     props: {
       show_buttons: {
         type: Boolean,
@@ -198,9 +215,9 @@
       },
     },
     computed: {
-      ...mapGetters('auth', {
-        stateUser: 'user',
-      }),
+      getAuthUser() {
+        return this.authStore.authUser;
+      },
     },
     methods: {
       handleColorBtn(card) {
