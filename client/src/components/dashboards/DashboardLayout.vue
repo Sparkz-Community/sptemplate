@@ -71,18 +71,10 @@
 
 <script>
   import DashboardMenuItem from './components/DashboardMenuItem';
-  import {useQuasar} from 'quasar';
 
   export default {
     name: 'dashboard-layout',
     components: {DashboardMenuItem},
-    setup() {
-      const $q = useQuasar();
-
-      return {
-        $q,
-      };
-    },
     props: {
       dashboardSideMenuLinks: {
         type: Array,

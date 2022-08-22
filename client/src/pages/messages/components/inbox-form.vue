@@ -97,21 +97,10 @@
 <script>
   import {models} from 'feathers-pinia';
   import AccountsFilter from 'pages/messages/components/accounts-filter';
-  import {inject} from 'vue';
-  import {useQuasar} from 'quasar';
 
   export default {
     name: 'inbox-form',
     components: {AccountsFilter},
-    setup() {
-      const {$lget} = inject('$lget');
-      const $q = useQuasar();
-
-      return {
-        $lget,
-        $q,
-      };
-    },
     props: {
       message: {
         type: Object,

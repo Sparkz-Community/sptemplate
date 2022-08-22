@@ -39,19 +39,10 @@
 <script>
   import SearchInput from 'pages/messages/components/search-input';
   import {models} from 'feathers-pinia';
-  import {inject} from 'vue';
 
   export default {
     name: 'accounts-filter',
     components: {SearchInput},
-    // eslint-disable-next-line no-unused-vars
-    setup(props) {
-      const {$lget} = inject('$lget');
-
-      return {
-        $lget,
-      };
-    },
     emits: [
       'add',
       'update:model-value',

@@ -61,17 +61,8 @@
 </template>
 
 <script>
-  import { useQuasar } from 'quasar';
-
   export default {
     name: 'inbox-dialog',
-    setup() {
-      const $q = useQuasar();
-
-      return {
-        $q,
-      };
-    },
     props: {
       value: {
         type: Boolean,

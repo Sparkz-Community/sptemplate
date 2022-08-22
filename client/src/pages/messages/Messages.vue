@@ -421,7 +421,6 @@
     from '@sparkz-community/common-client-lib/src/components/common/molecules/tables/TableTemplate.vue';
   import RandomAvatar from 'components/profile/RandomAvatar/RandomAvatar';
   import VueGroupAvatar from 'pages/messages/components/VueGroupAvatar/VueGroupAvatar';
-  import {inject} from 'vue';
 
   import useMessages from 'stores/services/messages';
 
@@ -439,8 +438,6 @@
     },
     setup() {
       const messagesStore = useMessages;
-      const {$lget} = inject('$lget');
-      const {$lset} = inject('$lset');
 
       useFindPaginate({
         model: messagesStore.model,
@@ -468,8 +465,6 @@
       });
 
       return {
-        $lget,
-        $lset,
         useFindPaginate,
       };
     },
