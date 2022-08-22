@@ -57,17 +57,8 @@
 </template>
 
 <script>
-  import {useQuasar} from 'quasar';
-
   export default {
     name: 'DraweredCards',
-    setup() {
-      const $q = useQuasar();
-
-      return {
-        $q,
-      };
-    },
     props: {
       title: {
         type: String,
