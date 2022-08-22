@@ -104,7 +104,7 @@
     name: 'inbox-form',
     components: {AccountsFilter},
     setup() {
-      const {$lget} = inject('lodash');
+      const {$lget} = inject('$lget');
       const $q = useQuasar();
 
       return {

@@ -59,11 +59,11 @@
             </q-item>
             <template
               v-for="link in bankLinks"
+              :key="link.title"
             >
               <bank-link
                 @active="activeLink=$event"
                 v-bind="link"
-                :key="link.title"
               />
             </template>
           </q-list>
@@ -80,15 +80,13 @@
 </template>
 
 <script>
-  // import {models} from 'feathers-vuex';
+  // import {models} from 'feathers-pinia';
   // import {mapGetters, mapActions} from 'vuex';
 
 
   export default {
     name: 'MessageLayout',
-    mixins: [
-
-    ],
+    mixins: [],
     data() {
       return {
         drawer: false,

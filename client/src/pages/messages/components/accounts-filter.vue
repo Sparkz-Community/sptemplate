@@ -46,7 +46,7 @@
     components: {SearchInput},
     // eslint-disable-next-line no-unused-vars
     setup(props) {
-      const {$lget} = inject('lodash');
+      const {$lget} = inject('$lget');
 
       return {
         $lget,

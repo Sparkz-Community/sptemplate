@@ -439,7 +439,8 @@
     },
     setup() {
       const messagesStore = useMessages;
-      const {$lget, $lset} = inject('lodash');
+      const {$lget} = inject('$lget');
+      const {$lset} = inject('$lset');
 
       useFindPaginate({
         model: messagesStore.model,
