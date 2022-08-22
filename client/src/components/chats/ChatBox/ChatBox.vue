@@ -72,8 +72,7 @@
   import {lodash, useFindPaginate} from '@sparkz-community/common-client-lib';
   import {mapState} from 'pinia';
   import {date /*QSpinnerCube*/} from 'quasar';
-  import lgroupBy from 'lodash.groupby';
-  const {$ldebounce} = lodash;
+  const {$ldebounce, $lgroupBy} = lodash;
 
   import useChats from '../../../stores/services/chats';
   import useParticipants from '../../../stores/services/participants';
@@ -199,7 +198,7 @@
           // console.log('exactDate', exactDate);
           element.groupDate = date.formatDate(exactDate, 'MMM DD, YYYY');
         });
-        return lgroupBy(this.chatsClone, 'groupDate');
+        return $lgroupBy(this.chatsClone, 'groupDate');
       },
     },
     methods: {
