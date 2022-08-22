@@ -85,7 +85,7 @@
   import useAuthStore from 'stores/store.auth';
   import {inject} from 'vue';
 
-  import colorPicker from '@ionrev/quasar-app-extension-ir-form-gen-app/src/components/common/atoms/ColorSelectorRoundInput/ColorSelectorRoundInput.vue';
+  import colorPicker from '@sparkz-community/form-gen-client-lib/src/components/common/atoms/ColorSelectorRoundInput/ColorSelectorRoundInput';
 
   export default {
     name: 'ThemePicker',
