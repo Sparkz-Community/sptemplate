@@ -256,7 +256,7 @@
             </q-item>
             <q-separator style="width: 100%"/>
           </template>
-          <template #form >
+          <template #form>
             <div class="q-py-md">
               <div class="row q-gutter-sm">
 
@@ -266,26 +266,26 @@
                        @click="openMessage=false"/>
                 <div :class="($q.screen.sm || $q.screen.xs)?'text-h6':'text-h4'">
                   <q-item-label v-if="!openedMessage">
-                    <q-skeleton flat  icon="fas fa-arrow-left"   type="text" style="width: 100px;"/>
+                    <q-skeleton flat icon="fas fa-arrow-left" type="text" style="width: 100px;"/>
                   </q-item-label>
                   <q-item-label v-else>{{ $lget(openedMessage, 'subject') }}</q-item-label>
                 </div>
               </div>
               <q-item>
                 <q-item-section top avatar>
-                  <q-skeleton flat  icon="fas fa-arrow-left" v-if="!openedMessage"  type="QAvatar"/>
+                  <q-skeleton flat icon="fas fa-arrow-left" v-if="!openedMessage" type="QAvatar"/>
                   <random-avatar v-else size="lg"
                                  :user="$lget(openedMessage ,['_fastjoin','from'])"
                                  :menu="false"/>
                 </q-item-section>
 
                 <q-item-section>
-                  <q-item-label  v-if="!openedMessage">
-                    <q-skeleton type="text" style="max-width: 100px;" />
+                  <q-item-label v-if="!openedMessage">
+                    <q-skeleton type="text" style="max-width: 100px;"/>
                   </q-item-label>
                   <q-item-label v-else>{{ $lget(openedMessage, ['_fastjoin', 'from', 'name']) }}</q-item-label>
-                  <q-item-label caption  v-if="!openedMessage">
-                    <q-skeleton type="text" style="max-width: 100px;" />
+                  <q-item-label caption v-if="!openedMessage">
+                    <q-skeleton type="text" style="max-width: 100px;"/>
                   </q-item-label>
                   <q-item-label v-else caption>{{ $lget(openedMessage, ['_fastjoin', 'from', 'email']) }}</q-item-label>
                 </q-item-section>
@@ -297,8 +297,8 @@
                 </q-item-section>
               </q-item>
 
-              <div  v-if="!openedMessage" class="q-pa-md">
-                <q-skeleton height="100px" square />
+              <div v-if="!openedMessage" class="q-pa-md">
+                <q-skeleton height="100px" square/>
               </div>
               <div v-else class="q-pa-md" v-html="$lget(openedMessage, 'body')"/>
               <div class="q-px-md justify-start">
@@ -417,9 +417,11 @@
   import InboxDialog from 'pages/messages/components/inbox-dialog';
   import InboxForm from 'pages/messages/components/inbox-form';
   import {routerMixin, useFindPaginate} from '@sparkz-community/common-client-lib';
-  import TableTemplate from '@sparkz-community/common-client-lib/src/components/common/molecules/tables/TableTemplate.vue';
+  import TableTemplate
+    from '@sparkz-community/common-client-lib/src/components/common/molecules/tables/TableTemplate.vue';
   import RandomAvatar from 'components/profile/RandomAvatar/RandomAvatar';
   import VueGroupAvatar from 'pages/messages/components/VueGroupAvatar/VueGroupAvatar';
+  import {inject} from 'vue';
 
   import useMessages from 'stores/services/messages';
 
@@ -437,6 +439,7 @@
     },
     setup() {
       const messagesStore = useMessages;
+      const {$lget, $lset} = inject('lodash');
 
       useFindPaginate({
         model: messagesStore.model,
@@ -462,6 +465,12 @@
           return this.params;
         },
       });
+
+      return {
+        $lget,
+        $lset,
+        useFindPaginate,
+      };
     },
     mixins: [
       routerMixin({
@@ -630,7 +639,7 @@
               label: this.capitalize(this.kebabize(col).replace('-', ' ')),
               value: col,
             }));
-            const id = this.$lget(this.$route,['query','openedMessageId']);
+            const id = this.$lget(this.$route, ['query', 'openedMessageId']);
             this.openedMessage = newVal.find(msg => msg._id === id);
           }
         },
