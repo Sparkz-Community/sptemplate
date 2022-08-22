@@ -1,9 +1,11 @@
 <template>
-  <q-input v-bind="$attrs" v-on="$listeners" :value="value" @input="$emit('input', $event)">
+  <q-input v-bind="$attrs" :model-value="'model-value'" @update:model-value="$emit('update:model-value', $event)">
     <template v-slot:prepend>
       <q-icon name="event" class="cursor-pointer">
         <q-popup-proxy transition-show="scale" transition-hide="scale">
-          <q-date :value="value" @input="$emit('input', $event)" mask="YYYY-MM-DD HH:mm">
+          <q-date :model-value="'model-value'"
+                  @update:model-value="$emit('update:model-value', $event)"
+                  mask="YYYY-MM-DD HH:mm">
             <div class="row items-center justify-end">
               <q-btn v-close-popup label="Close" color="primary" flat/>
             </div>
@@ -15,7 +17,9 @@
     <template v-slot:append>
       <q-icon name="access_time" class="cursor-pointer">
         <q-popup-proxy transition-show="scale" transition-hide="scale">
-          <q-time :value="value" @input="$emit('input', $event)" mask="YYYY-MM-DD HH:mm" format24h>
+          <q-time :model-value="'model-value'"
+                  @update:model-value="$emit('update:model-value', $event)"
+                  mask="YYYY-MM-DD HH:mm" format24h>
             <div class="row items-center justify-end">
               <q-btn v-close-popup label="Close" color="primary" flat/>
             </div>
@@ -30,7 +34,7 @@
   export default {
     name: 'date-piker',
     props: {
-      value: {
+      'model-value': {
         type: String,
         required: true,
       }
