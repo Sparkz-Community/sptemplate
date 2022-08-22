@@ -4,5 +4,7 @@ import feathersRestClient from '../api/feathers-rest-client';
 
 export default boot(({ app }) => {
   app.config.globalProperties.$feathersClient = feathersClient;
+  app.provide('$feathersClient', feathersClient);
   app.config.globalProperties.$feathersRestClient = feathersRestClient;
+  app.provide('$feathersRestClient', feathersRestClient);
 });
