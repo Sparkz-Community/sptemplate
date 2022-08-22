@@ -47,18 +47,16 @@
               </q-item-section>
             </q-item>
 
-            <template
-              v-for="link in dashboardSideMenuLinks"
-              :key="link.title"
-            >
-              <dashboard-menu-item
-                @active="clicked"
-                v-bind="link"
-              />
-            </template>
-          </q-list>
-        </q-scroll-area>
-      </q-drawer>
+               <dashboard-menu-item
+                 v-for="link in dashboardSideMenuLinks"
+                 @active="clicked"
+                 v-bind="link"
+                 :key="link.title"
+               />
+
+           </q-list>
+         </q-scroll-area>
+       </q-drawer>
 
       <q-page-container>
         <q-page class="q-pa-md column">
