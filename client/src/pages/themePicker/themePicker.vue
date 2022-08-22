@@ -102,7 +102,7 @@
       // eslint-disable-next-line no-undef
       this.$options.components.layout = require('layouts/MainLayout.vue').default;
       // eslint-disable-next-line no-undef
-      this.$options.components.PageIndex = require('pages/Index.vue').default;
+      this.$options.components.PageIndex = require('pages/IndexPage.vue').default;
     },
     data() {
       return {
