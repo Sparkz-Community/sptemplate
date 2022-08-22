@@ -28,6 +28,9 @@
     components: {
       Notification,
     },
+    emits: [
+      'close',
+    ],
     data() {
       return {
         notificationsList: [
