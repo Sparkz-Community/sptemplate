@@ -9,6 +9,18 @@ export default function (/*{store, ssrContext}*/) {
           name: 'home',
           component: () => import('pages/IndexPage.vue')
         },
+        {
+          path: 'balanced-sheets',
+          name: 'balanced-sheets',
+          meta: {requiresAuth: true},
+          component: () => import('pages/qbReports/BalancedSheets/BalancedSheets')
+        },
+        {
+          path: 'profit-and-loss',
+          name: 'profit-and-loss',
+          meta: {requiresAuth: true},
+          component: () => import('pages/qbReports/ProfitAndLoss/ProfitAndLoss')
+        },
       ],
     },
 

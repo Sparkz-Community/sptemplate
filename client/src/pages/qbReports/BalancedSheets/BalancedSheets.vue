@@ -73,13 +73,13 @@
 </template>
 
 <script>
-  import DashboardLayout from 'components/dashboards/DashboardLayout';
+  import DashboardLayout from 'components/dashboards/DashboardLayout/DashboardLayout';
   import api from 'src/api/feathers-client';
-  import {capitalize, kebabize, singularize} from '@iy4u/common-client-lib/src/utils';
+  import {capitalize, kebabize, singularize} from '@sparkz-community/common-client-lib/src/utils';
   import reportsLinks from 'pages/qbReports/helpers/queryLinks';
-  import InboxDialog from 'pages/messages/components/inbox-dialog';
+  import InboxDialog from 'components/messages/inbox-dialog';
   import {date} from 'quasar';
-  import ReportItemList from 'pages/../../../components/qbReports/ReportItemList/ReportItemList';
+  import ReportItemList from 'components/qbReports/ReportItemList/ReportItemList';
 
   export default {
     name: 'balance-sheets',

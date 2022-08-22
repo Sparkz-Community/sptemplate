@@ -10,7 +10,7 @@
 </template>
 
 <script>
-  import ReportItem from 'pages/../../../../components/qbReports/ReportItem/ReportItem';
+  import ReportItem from '../ReportItem/ReportItem';
   export default {
     name: 'report-item-list',
     components: {ReportItem},
@@ -23,6 +23,6 @@
   };
 </script>
 
-<style lang="scss" scoped src="_ReportItemList.scss">
+<style lang="scss" scoped src="./_ReportItemList.scss">
 
 </style>

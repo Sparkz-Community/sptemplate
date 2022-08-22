@@ -66,7 +66,7 @@
     }
   };
 </script>
-<style lang="scss" scoped src="_ReportItem.scss">
+<style lang="scss" scoped src="./_ReportItem.scss">
 
   .item-row{
     position: absolute;
