@@ -1,15 +1,13 @@
-
 <template>
   <q-dialog
     id="dia"
     v-bind="$attrs"
-    v-on="$listeners"
     transition-hide="fade"
     transition-show="fade"
     :seamless="!maxed"
     :no-backdrop-dismiss="!maxed"
     :value="value"
-    @input="$emit('input',$event)"
+    @update:model-value="$emit('update:model-value', $event)"
   >
     <q-card
       square
@@ -63,8 +61,17 @@
 </template>
 
 <script>
+  import { useQuasar } from 'quasar';
+
   export default {
     name: 'inbox-dialog',
+    setup() {
+      const $q = useQuasar();
+
+      return {
+        $q,
+      };
+    },
     props: {
       value: {
         type: Boolean,
@@ -75,6 +82,9 @@
         default: 'New Message'
       }
     },
+    emits: [
+      'close',
+    ],
     data() {
       return {
         maxed: false,

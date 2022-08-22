@@ -11,7 +11,7 @@
     dense
     @add="addAccount"
     @selected="selectedAccounts"
-    :value="value"
+    :model-value="value"
   >
     <template v-slot:option="scope">
       <q-item v-bind="scope.itemProps"
@@ -54,7 +54,7 @@
     },
     emits: [
       'add',
-      'input',
+      'update:model-value',
     ],
     props: {
       value: {
@@ -74,7 +74,7 @@
       },
       selectedAccounts(newVal) {
         console.log('selected: ', newVal);
-        this.$emit('input', newVal);
+        this.$emit('update:model-value', newVal);
       },
     },
   };

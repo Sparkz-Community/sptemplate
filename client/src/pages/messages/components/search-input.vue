@@ -1,25 +1,58 @@
 <template>
   <q-select v-bind="$attrs"
-            v-on="$listeners"
             :options="this['data']"
-            :value="value"
+            :model-value="'model-value'"
             use-input
-            @input="setModel"
+            @update:model-value="setModel"
             @filter="filterFn"
             new-value-mode="add-unique"
             @new-value="$emit('add', $event)">
-    <template v-for="(_, slot) of $scopedSlots" v-slot:[slot]="scope">
+    <template v-for="(_, slot) of $slots" v-slot:[slot]="scope">
       <slot :name="slot" v-bind="scope"/>
     </template>
   </q-select>
 </template>
 
 <script>
-  import {makeFindPaginateMixin} from '@iy4u/common-client-lib';
+  import {useFindPaginate} from '@sparkz-community/common-client-lib';
 
   export default {
     name: 'search-input',
     inheritAttrs: false,
+    setup(props) {
+      useFindPaginate({
+        limit: 6,
+        service() {
+          return props.service;
+        },
+        name: 'data',
+        infinite: true,
+        query() {
+          // if (!['', null, undefined].includes(this.search)) {
+          //   this.$lset(query, '$or', [
+          //     {
+          //       name: {$regex: `${this.search}`, $options: 'igm'},
+          //     },
+          //     {
+          //       email: {$regex: `${this.search}`, $options: 'igm'},
+          //     },
+          //   ]);
+          // }
+          return this.$lmerge({
+            $sort: {
+              name: 1,
+            },
+          }, this.localQuery, props.customQuery);
+        },
+        params() {
+          return {
+            qid: this.qid,
+            debounce: 500,
+            [`${props.service}_fJoinHookResolversQuery`]: this.fastJoinResolverQuery,
+          };
+        },
+      });
+    },
     props: {
       service: {
         type: String,
@@ -44,49 +77,18 @@
         type: String,
         default: 'name',
       },
-      value: {
+      'model-value': {
         type: [Array, String],
         default() {
           return [];
         },
       },
     },
-    mixins: [
-      makeFindPaginateMixin({
-        limit: 6,
-        service() {
-          return this.service;
-        },
-        name: 'data',
-        infinite: true,
-        query() {
-          let query = this.$lmerge({
-            $sort: {
-              name: 1,
-            },
-          }, this.localQuery, this.customQuery);
-
-          // if (!['', null, undefined].includes(this.search)) {
-          //   this.$lset(query, '$or', [
-          //     {
-          //       name: {$regex: `${this.search}`, $options: 'igm'},
-          //     },
-          //     {
-          //       email: {$regex: `${this.search}`, $options: 'igm'},
-          //     },
-          //   ]);
-          // }
-          return query;
-        },
-        params() {
-          return {
-            qid: this.qid,
-            debounce: 500,
-            [`${this.service}_fJoinHookResolversQuery`]: this.fastJoinResolverQuery,
-          };
-        },
-      }),
+    emits: [
+      'update:model-value',
+      'add',
     ],
+    mixins: [],
     data() {
       return {
         sort: undefined,
@@ -113,7 +115,7 @@
         });
       },
       setModel(val) {
-        this.$emit('input', val);
+        this.$emit('update:model-value', val);
       },
     },
   };
