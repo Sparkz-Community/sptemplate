@@ -83,28 +83,12 @@
 
 <script>
   import useAuthStore from 'stores/store.auth';
-  import {inject} from 'vue';
 
   import colorPicker from '@sparkz-community/form-gen-client-lib/src/components/common/atoms/ColorSelectorRoundInput/ColorSelectorRoundInput';
+  import {mapState} from 'pinia';
 
   export default {
     name: 'ThemePicker',
-    setup() {
-      const {$lisNil} = inject('$lisNil');
-      const {$lisEmpty} = inject('$lisEmpty');
-      const {$lget} = inject('$lget');
-      const {$lset} = inject('$lset');
-
-      const authStore = useAuthStore;
-
-      return {
-        $lisNil,
-        $lisEmpty,
-        $lget,
-        $lset,
-        authStore,
-      };
-    },
     props: {
       show_buttons: {
         type: Boolean,
@@ -115,7 +99,9 @@
       colorPicker,
     },
     beforeCreate() {
+      // eslint-disable-next-line no-undef
       this.$options.components.layout = require('layouts/MainLayout.vue').default;
+      // eslint-disable-next-line no-undef
       this.$options.components.PageIndex = require('pages/Index.vue').default;
     },
     data() {
@@ -215,9 +201,9 @@
       },
     },
     computed: {
-      getAuthUser() {
-        return this.authStore.authUser;
-      },
+      ...mapState(useAuthStore, {
+        stateUser: 'authUser',
+      }),
     },
     methods: {
       handleColorBtn(card) {
