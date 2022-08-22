@@ -8,7 +8,7 @@
 <script>
   import {mapActions, mapState} from 'pinia';
   import Accounts from '../../../stores/services/accounts';
-  import Auth from '@feathersjs/authentication-client';
+  import Auth from '@sparkz-community/auth-management-client-lib';
   import AccountProfileComponent from '@sparkz-community/common-client-lib/src/components/profile/AccountProfile';
 
   export default {
