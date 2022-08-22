@@ -1,8 +1,9 @@
-import { route } from 'quasar/wrappers';
-import { createRouter, createMemoryHistory, createWebHistory, createWebHashHistory } from 'vue-router';
-import routes from './routes';
+import {route} from 'quasar/wrappers';
+import {createRouter, createMemoryHistory, createWebHistory, createWebHashHistory} from 'vue-router';
+import Routes from './routes';
 
 import {Notify} from 'quasar';
+import {nextTick} from 'vue';
 
 import useAuth from '../stores/store.auth';
 
@@ -15,19 +16,32 @@ import useAuth from '../stores/store.auth';
  * with the Router instance.
  */
 
-export default route(function ( /*{ store/!*, ssrContext*!/ }*/ ) {
+export default route(function ({store, ssrContext}) {
   const createHistory = process.env.SERVER
     ? createMemoryHistory
     : (process.env.VUE_ROUTER_MODE === 'history' ? createWebHistory : createWebHashHistory);
 
+  let routes = Routes({store, ssrContext});
+
   const Router = createRouter({
-    scrollBehavior: () => ({ left: 0, top: 0 }),
+    scrollBehavior: (to, from, savedPosition) => new Promise((resolve) => {
+      const position = savedPosition || {top: 0, left: 0};
+      position.behavior = 'smooth';
+
+      if (!savedPosition) {
+        if (to.hash) {
+          position.el = to.hash;
+          position.top = 85;
+        }
+      }
+      nextTick(() => resolve(position));
+    }),
     routes,
 
     // Leave this as is and make changes in quasar.conf.js instead!
     // quasar.conf.js -> build -> vueRouterMode
     // quasar.conf.js -> build -> publicPath
-    history: createHistory(process.env.MODE === 'ssr' ? void 0 : process.env.VUE_ROUTER_BASE)
+    history: createHistory(process.env.MODE === 'ssr' ? void 0 : process.env.VUE_ROUTER_BASE),
   });
 
   Router.beforeEach(async (to, from, next) => {
