@@ -15,15 +15,14 @@
 
           </q-toolbar-title>
 
-         <slot name="close-drawer-btn">
-           <q-btn
-             flat
-             dense
-             icon="menu"
-             aria-label="Menu"
-             @click="drawer = !drawer"
-           />
-         </slot>
+          <slot name="close-drawer-btn">
+            <q-btn flat
+                   dense
+                   icon="menu"
+                   aria-label="Menu"
+                   @click="drawer = !drawer"
+            />
+          </slot>
 
         </q-toolbar>
       </q-header>
@@ -50,11 +49,11 @@
 
             <template
               v-for="link in dashboardSideMenuLinks"
+              :key="link.title"
             >
               <dashboard-menu-item
                 @active="clicked"
                 v-bind="link"
-                :key="link.title"
               />
             </template>
           </q-list>
@@ -74,11 +73,18 @@
 
 <script>
   import DashboardMenuItem from './components/DashboardMenuItem';
-
+  import {useQuasar} from 'quasar';
 
   export default {
     name: 'dashboard-layout',
     components: {DashboardMenuItem},
+    setup() {
+      const $q = useQuasar();
+
+      return {
+        $q,
+      };
+    },
     props: {
       dashboardSideMenuLinks: {
         type: Array,
@@ -96,6 +102,9 @@
         type: Boolean,
       },
     },
+    emits: [
+      'click-links',
+    ],
     data() {
       return {
         drawer: false,

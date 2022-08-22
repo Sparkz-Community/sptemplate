@@ -14,6 +14,7 @@
 
 <script>
   import VueAvatar from 'pages/messages/components/VueGroupAvatar/VueAvatar';
+
   export default {
     name: 'vue-group-avatar',
     components: {VueAvatar},
