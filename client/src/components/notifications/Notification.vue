@@ -3,7 +3,7 @@
     <q-item-section avatar top>
       <q-icon v-if="notification.icon" :name="notification.icon || 'mdi-message-text-outline'" size="34px"/>
       <q-avatar v-else-if="notification.avatar" size="34px">
-        <img :src="require(`../../assets/avatars/${notification.avatar}`)"/>
+        <img :src="require(`../../assets/avatars/${notification.avatar}`)" alt="Notification Avatar"/>
       </q-avatar>
       <q-icon v-else name="mdi-message-text-outline" size="34px"/>
     </q-item-section>
