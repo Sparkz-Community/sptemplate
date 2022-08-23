@@ -118,7 +118,7 @@
         // eslint-disable-next-line no-unused-vars
         handler(newVal, oldVal) {
           // console.log('Old: ', oldVal,'New: ', newVal);
-          if (JSON.stringify(this.value) !== JSON.stringify(newVal)) {
+          if (JSON.stringify(this['model-value']) !== JSON.stringify(newVal)) {
             this.$emit('update:model-value', newVal);
             this.selectedSuggestion = null;
           }

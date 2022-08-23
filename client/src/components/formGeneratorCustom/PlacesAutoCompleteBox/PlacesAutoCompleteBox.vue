@@ -3,8 +3,8 @@
     <q-expansion-item v-bind="$attrs['expansion-attrs']">
       <template v-slot:header="{}">
         <div style="width: 100%; display: grid; align-items: center;" @[ifClick].stop>
-          <places-auto-complete :value="newEditedAddress"
-                                @input="newEditedAddress = { ...value, ...$event }"
+          <places-auto-complete :model-value="newEditedAddress"
+                                @update:model-value="newEditedAddress = { ...'model-value', ...$event }"
                                 @error="searchInput = ''"
                                 :path="path"
                                 v-bind="$attrs['attrs']"></places-auto-complete>
@@ -16,37 +16,37 @@
           <div class="row q-col-gutter-sm">
             <div v-if="!hideFields.includes('address1')" class="col-12 col-sm-6">
               <q-input label="Address"
-                       :value="newEditedAddress.address1"
+                       :model-value="newEditedAddress.address1"
                        disable></q-input>
             </div>
             <div v-if="!hideFields.includes('city')" class="col-12 col-sm-6">
               <q-input label="City"
-                       :value="newEditedAddress.city"
+                       :model-value="newEditedAddress.city"
                        disable></q-input>
             </div>
             <div v-if="!hideFields.includes('region')" class="col-12 col-sm-6">
               <q-input label="Region"
-                       :value="newEditedAddress.region"
+                       :model-value="newEditedAddress.region"
                        disable></q-input>
             </div>
             <div v-if="!hideFields.includes('postal')" class="col-12 col-sm-6">
               <q-input label="Postal Code"
-                       :value="newEditedAddress.postal"
+                       :model-value="newEditedAddress.postal"
                        disable></q-input>
             </div>
             <div v-if="!hideFields.includes('country')" class="col-12 col-sm-6">
               <q-input label="Country"
-                       :value="newEditedAddress.country"
+                       :model-value="newEditedAddress.country"
                        disable></q-input>
             </div>
             <div v-if="!hideFields.includes('latitude')" class="col-12 col-sm-6">
               <q-input label="Latitude"
-                       :value="newEditedAddress.latitude"
+                       :model-value="newEditedAddress.latitude"
                        disable></q-input>
             </div>
             <div v-if="!hideFields.includes('longitude')" class="col-12 col-sm-6">
               <q-input label="Longitude"
-                       :value="newEditedAddress.longitude"
+                       :model-value="newEditedAddress.longitude"
                        disable></q-input>
             </div>
           </div>
@@ -65,7 +65,7 @@
       PlacesAutoComplete,
     },
     props: {
-      value: {
+      'model-value': {
         type: Object,
         required: false,
         default: function () {
@@ -126,12 +126,12 @@
         // eslint-disable-next-line no-unused-vars
         handler(newVal, oldVal) {
           // console.log('Old: ', oldVal,'New: ', newVal);
-          if (JSON.stringify(this.value) !== JSON.stringify(newVal)) {
+          if (JSON.stringify(this['model-value']) !== JSON.stringify(newVal)) {
             this.$emit('input', newVal);
           }
         },
       },
-      value: {
+      'model-value': {
         deep: true,
         immediate: true,
         // eslint-disable-next-line no-unused-vars
