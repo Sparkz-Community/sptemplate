@@ -1,13 +1,13 @@
 <template>
   <q-page>
-    <account-profile-component :value="{account}" square router-mixin-run />
+    <account-profile-component :model-value="{account}" square router-mixin-run />
     <q-img src="~assets/AccountProfilePlaceholder.png"/>
   </q-page>
 </template>
 
 <script>
   import {mapActions, mapState} from 'pinia';
-  import Accounts from '../../../stores/services/accounts';
+  import Accounts from '@sparkz-community/common-client-lib/src/stores/services/accounts';
   import Auth from '@sparkz-community/auth-management-client-lib';
   import AccountProfileComponent from '@sparkz-community/common-client-lib/src/components/profile/AccountProfile';
 
@@ -18,7 +18,7 @@
     },
     mounted() {
       this.$watch('stateAccount', async () => {
-        await this.setAccount();
+        // await this.setAccount();
       }, {
         immediate: true,
         deep: true,
