@@ -201,7 +201,8 @@
   import {mapState} from 'pinia';
   import MyAccounts from '../profile/MyAccounts';
 
-  import useLogins from '../../stores/services/logins';
+  import useLogins from 'stores/services/logins';
+  import useAuth from 'stores/store.auth';
 
   export default {
     name: 'UserInfo',
@@ -228,10 +229,13 @@
     },
     computed: {
       ...mapState(useLogins, {
-        isPatchLoginsPendingById: 'pendingById', // was isPatchPendingById
+        loginsPendingById: 'pendingById', // was isPatchPendingById
+      }),
+      ...mapState(useAuth, {
+        activeLogin: 'activeLogin',
       }),
       isPatchLogins() {
-        return this.isPatchLoginsPendingById(this.$lget(this.$store.getters['auth/activeLogin'], '_id'));
+        return this.$lget(this.loginsPendingById, [this.$lget(this.activeLogin, '_id'), 'patch'], false);
       },
       accounts() {
         return this.$lget(this.data, 'accounts', []).map(account => account.clone());
