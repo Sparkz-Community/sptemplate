@@ -22,6 +22,12 @@ export default function (/*{store, ssrContext}*/) {
           // },
           component: () => import('pages/profile/AccountProfile/AccountProfile'),
         },
+        {
+          path: 'notifications',
+          name: 'notifications',
+          // meta: {requiresAuth: true},
+          component: () => import ('pages/notifications/Notifications.vue'),
+        },
       ],
     },
 
