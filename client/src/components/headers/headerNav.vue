@@ -105,6 +105,10 @@
         }
       },
     },
+    emits: [
+      'menuMini',
+      'menuAutoExpand',
+    ],
     data() {
       return {
         scrollY: 0,

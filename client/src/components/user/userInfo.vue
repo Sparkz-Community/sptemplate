@@ -198,8 +198,10 @@
 
 <script>
   import RandomAvatar from 'components/profile/RandomAvatar/RandomAvatar';
-  import {mapGetters} from 'vuex';
+  import {mapState} from 'pinia';
   import MyAccounts from '../profile/MyAccounts';
+
+  import useLogins from '../../stores/services/logins';
 
   export default {
     name: 'UserInfo',
@@ -225,8 +227,8 @@
       },
     },
     computed: {
-      ...mapGetters('logins', {
-        isPatchLoginsPendingById: 'isPatchPendingById',
+      ...mapState(useLogins, {
+        isPatchLoginsPendingById: 'pendingById', // was isPatchPendingById
       }),
       isPatchLogins() {
         return this.isPatchLoginsPendingById(this.$lget(this.$store.getters['auth/activeLogin'], '_id'));

@@ -13,7 +13,7 @@
             :sms-attrs="{ color: 'primary' }"
             :phone-attrs="{ color: 'primary' }"
             :email-attrs="{ color: 'primary' }"
-            :value="contact"
+            :model-value="contact"
             :video="false"
             phone-path="phone"
             email-path="email"
