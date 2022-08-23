@@ -22,7 +22,7 @@
               }}</span>
           </q-item-label>
 
-          <q-item-label style="margin-top:-0.2rem; font-size: 7pt" class=" q-mt-none text-bold" caption
+          <q-item-label style="margin-top:-0.2rem; font-size: 7pt" class="q-mt-none text-bold" caption
                         lines="1">
             <div :class="`text-weight-medium ${($q.screen.xs || $q.screen.sm)? 'text-h6': 'text-h5'}`">
               {{(link.replace('-',' '))}}
@@ -77,7 +77,7 @@
   import ReportItemList from 'components/qbReports/ReportItemList/ReportItemList';
 
   export default {
-    name: 'profit-and-loss',
+    name: 'ProfitAndLoss',
     components: {ReportItemList, InboxDialog,  DashboardLayout},
     data() {
       return {

@@ -57,7 +57,7 @@
 
 <script>
   export default {
-    name: 'report-item',
+    name: 'ReportItem',
     props:{
       data: {
         type: Object,

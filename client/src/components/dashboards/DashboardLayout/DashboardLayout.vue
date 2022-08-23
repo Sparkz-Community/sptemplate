@@ -7,7 +7,7 @@
         <q-toolbar class="col-8 q-pa-lg text-primary">
 
           <q-toolbar-title>
-            <slot name="page-toolbar" v-bind="activeLink">
+            <slot name="page-toolbar" :activeLink="activeLink">
               <span class="text-h4">
                 {{ pageTitle }}
               </span>
@@ -77,7 +77,7 @@
 
 
   export default {
-    name: 'dashboard-layout',
+    name: 'DashboardLayout',
     components: {DashboardMenuItem},
     props: {
       dashboardSideMenuLinks: {
@@ -95,6 +95,12 @@
       hideDrawer: {
         type: Boolean,
       },
+    },
+    emits: [
+      'clicked-link',
+    ],
+    create() {
+      console.log('this is a new log');
     },
     data() {
       return {

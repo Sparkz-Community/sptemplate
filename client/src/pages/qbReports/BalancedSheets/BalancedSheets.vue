@@ -82,7 +82,7 @@
   import ReportItemList from 'components/qbReports/ReportItemList/ReportItemList';
 
   export default {
-    name: 'balance-sheets',
+    name: 'BalanceSheets',
     components: {ReportItemList, InboxDialog, DashboardLayout},
     data() {
       return {

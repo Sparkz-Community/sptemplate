@@ -12,7 +12,7 @@
 <script>
   import ReportItem from '../ReportItem/ReportItem';
   export default {
-    name: 'report-item-list',
+    name: 'ReportItemList',
     components: {ReportItem},
     props: {
       data: {

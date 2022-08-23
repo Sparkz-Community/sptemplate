@@ -52,7 +52,7 @@
 
 <script>
   export default {
-    name: 'dashboard-menu-item',
+    name: 'DashboardMenuItem',
     props: {
       title: {
         type: String,
@@ -73,6 +73,9 @@
         default: '',
       },
     },
+    emits: [
+      'active',
+    ],
   };
 </script>
 

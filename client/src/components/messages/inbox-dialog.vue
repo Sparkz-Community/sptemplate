@@ -7,7 +7,7 @@
     transition-show="fade"
     :seamless="!maxed"
     :no-backdrop-dismiss="!maxed"
-    :modelValue="modelValue"
+    :model-value="modelValue"
     @update:model-value="$emit('update:modelValue',$event)"
   >
     <q-card
@@ -63,7 +63,7 @@
 
 <script>
   export default {
-    name: 'inbox-dialog',
+    name: 'InboxDialog',
     props: {
       modelValue: {
         type: Boolean,
@@ -74,6 +74,10 @@
         default: 'New Message'
       }
     },
+    emits: [
+      'update:modelValue',
+      'close',
+    ],
     data() {
       return {
         maxed: false,
