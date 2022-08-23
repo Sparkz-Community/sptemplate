@@ -116,8 +116,8 @@
       },
     },
     computed: {
-      ...mapState(usePlacesAutoComplete, {placeloading: 'isFindPending'}),
-      ...mapState(useGeocode, {geoloading: 'isFindPending'}),
+      ...mapState(usePlacesAutoComplete, {placeloading: (state) => state.pendingById.Model.find}),
+      ...mapState(useGeocode, {geoloading: (state) => state.pendingById.Model.find}),
       ...mapState(usePlacesAutoComplete, {addresses: 'items'}),
       loading() {
         return this.placeloading || this.geoloading;
