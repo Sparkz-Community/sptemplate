@@ -15,6 +15,12 @@ export default function (/*{store, ssrContext}*/) {
           // meta: {requiresAuth: true},
           component: () => import ('pages/messages/Messages.vue'),
         },
+        {
+          path: 'notifications',
+          name: 'notifications',
+          // meta: {requiresAuth: true},
+          component: () => import ('pages/notifications/Notifications.vue'),
+        },
       ],
     },
 
