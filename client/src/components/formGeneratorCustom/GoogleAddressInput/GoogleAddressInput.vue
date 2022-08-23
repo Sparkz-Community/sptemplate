@@ -8,10 +8,11 @@
           <q-card-section>
             <div class="row q-col-gutter-md">
               <div class="col-12 col-sm-8">
-                <places-auto-complete :value="newEditedAddress"
-                                      @input="newEditedAddress = { ...value, ...$event }"
+                <places-auto-complete :model-value="newEditedAddress"
+                                      @update:model-value="newEditedAddress = { ...'model-value', ...$event }"
                                       @error="searchInput = ''"
-                                      :path="path"></places-auto-complete>
+                                      :path="path">
+                </places-auto-complete>
               </div>
 
               <div class="col-12 col-sm-4">
@@ -26,9 +27,10 @@
           </q-card-section>
         </q-card>
 
-        <places-auto-complete-box :value="newEditedAddress"
+        <places-auto-complete-box :model-value="newEditedAddress"
                                   :path="path"
-                                  :attrs="{readonly: true, borderless: false, 'hide-dropdown-icon': true}"></places-auto-complete-box>
+                                  :attrs="{readonly: true, borderless: false, 'hide-dropdown-icon': true}">
+        </places-auto-complete-box>
       </q-card-section>
     </q-card>
   </div>
@@ -45,7 +47,7 @@
       PlacesAutoCompleteBox,
     },
     props: {
-      value: {
+      'model-value': {
         type: Object,
         required: false,
         default: function () {
@@ -88,6 +90,9 @@
         default: '',
       },
     },
+    emits: [
+      'update:model-value',
+    ],
     data() {
       return {
         debounce: fn => this.$ldebounce(fn, 200),
@@ -114,12 +119,12 @@
         handler(newVal, oldVal) {
           // console.log('Old: ', oldVal,'New: ', newVal);
           if (JSON.stringify(this.value) !== JSON.stringify(newVal)) {
-            this.$emit('input', newVal);
+            this.$emit('update:model-value', newVal);
             this.selectedSuggestion = null;
           }
         },
       },
-      value: {
+      'model-value': {
         deep: true,
         immediate: true,
         // eslint-disable-next-line no-unused-vars

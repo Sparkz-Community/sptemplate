@@ -1,11 +1,10 @@
 <template>
   <div id="FGSearchInput" v-bind="$attrs['div-attrs']">
     <search-input v-bind="$attrs['attrs']"
-                  v-on="listeners"
                   :use-email="useEmail"
                   :service="service"
                   :qid="qid"
-                  :value="value">
+                  :model-value="'model-value'">
       <!--      @selected="updateForm"-->
       <template v-for="slot in slots"
                 v-slot:[slot]="slotProps">
@@ -25,7 +24,7 @@
       SearchInput,
     },
     props: {
-      value: {
+      'model-value': {
         type: [Array, String],
       },
       path: {
@@ -65,13 +64,7 @@
         },
       },
     },
-    computed: {
-      listeners() {
-        // eslint-disable-next-line no-unused-vars
-        const {...listeners} = this.$listeners;
-        return listeners;
-      },
-    },
+    computed: {},
     methods: {},
   };
 </script>

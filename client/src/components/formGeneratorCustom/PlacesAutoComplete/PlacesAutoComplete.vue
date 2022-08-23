@@ -1,14 +1,13 @@
 <template>
   <div id="PlacesAutoComplete" v-bind="$attrs['div-attrs']">
     <q-form autocomplete="off">
-      <q-select :value="input"
+      <q-select :model-value="input"
                 @input-value="setInput"
-                @input="geocode"
+                @update:model-value="geocode"
                 @clear="clearInput"
                 @filter="filterFn"
                 :options="addresses"
-                v-bind="$attrs['attrs']"
-                v-on="listeners">
+                v-bind="$attrs['attrs']">
         <template v-for="slot in slots" v-slot:[slot]="slotProps">
           <slot :name="slot" :key_name="path" v-bind="slotProps"></slot>
         </template>
@@ -26,12 +25,14 @@
 </template>
 
 <script>
-  import {mapState, mapGetters, mapMutations, mapActions} from 'vuex';
+  import { mapState, mapActions } from 'pinia';
+  import useGeocode from 'stores/services/geocode';
+  import usePlacesAutoComplete from 'stores/services/places-auto-complete';
 
   export default {
     name: 'PlacesAutoComplete',
     props: {
-      value: {
+      'model-value': {
         type: [Number, String, Array, Object],
       },
       path: {
@@ -53,6 +54,10 @@
         validator: value => ['long_name', 'short_name'].indexOf(value) >= 0,
       },
     },
+    emits: [
+      'update:model-value',
+      'error',
+    ],
     data() {
       return {
         input: null,
@@ -99,7 +104,7 @@
           }
         }
       },
-      value: {
+      'model-value': {
         deep: true,
         immediate: true,
         // eslint-disable-next-line no-unused-vars
@@ -111,25 +116,20 @@
       },
     },
     computed: {
-      ...mapState('places-auto-complete', {placeloading: 'isFindPending'}),
-      ...mapState('geocode', {geoloading: 'isFindPending'}),
-      ...mapGetters('places-auto-complete', {addresses: 'list'}),
+      ...mapState(usePlacesAutoComplete, {placeloading: 'isFindPending'}),
+      ...mapState(useGeocode, {geoloading: 'isFindPending'}),
+      ...mapState(usePlacesAutoComplete, {addresses: 'items'}),
       loading() {
         return this.placeloading || this.geoloading;
       },
-      listeners() {
-        // eslint-disable-next-line no-unused-vars
-        const {'input-value': input_value, input, clear, filter, ...listeners} = this.$listeners;
-        return listeners;
-      },
     },
     methods: {
-      ...mapMutations('places-auto-complete', {clearAddresses: 'clearAll'}),
-      ...mapActions('places-auto-complete', {findAddresses: 'find'}),
-      ...mapActions('geocode', {findgeocoded: 'find'}),
+      ...mapActions(usePlacesAutoComplete, {clearAddresses: 'clearAll'}),
+      ...mapActions(usePlacesAutoComplete, {findAddresses: 'find'}),
+      ...mapActions(useGeocode, {findgeocoded: 'find'}),
       async clearInput() {
         this.input = null;
-        this.$emit('input', {
+        this.$emit('update:model-value', {
           name: '',
           formatted: '',
           address1: '',
@@ -203,7 +203,7 @@
               googleAddress: response.data[0],
             };
           }
-          this.$emit('input', this.normalizedAddress);
+          this.$emit('update:model-value', this.normalizedAddress);
           // // eslint-disable-next-line no-console
           // console.log(response)
         }).catch(err => {
