@@ -4,9 +4,8 @@
       <q-card-section>
         <label class="text-weight-bold">Social Links:</label>
 
-        <template v-for="(formData, index) in listFormData">
-          <transition :key="index"
-                      appear
+        <template v-for="(formData, index) in listFormData" :key="index">
+          <transition appear
                       enter-active-class="animated backInLeft"
                       leave-active-class="animated backOutRight">
             <q-card :class="{'q-mt-sm': index !== 0}">
@@ -23,8 +22,8 @@
                 <form-generator v-model="listFormData[index]"
                                 :fields="getFields(listFormData[index])"
                                 useQform
-                                :valid.sync="valid"
-                                @input="handleInput">
+                                v-model:valid="valid"
+                                @update:model-value="handleInput">
                   <template v-slot:default="{data, btnAttrs, toggleDialog}">
                     <q-btn :icon="$lget(data, 'icon', $lget(btnAttrs, 'icon'))"
                            @click="toggleDialog"
@@ -32,12 +31,12 @@
                            v-bind="btnAttrs"/>
                   </template>
                   <template v-slot:option="scope">
-                    <q-item
-                      v-if="!(value || []).map(item => item.name).includes(scope.opt.value) || scope.opt.value === ''"
-                      v-bind="scope.itemProps"
-                      v-on="scope.itemEvents">
+                    <q-item v-if="!('model-value' || []).map(item => item.name).includes(scope.opt['model-value']) ||
+                                scope.opt['model-value'] === ''"
+                            v-bind="scope.itemProps"
+                            v-on="scope.itemEvents">
                       <q-item-section>
-                        <q-item-label v-html="scope.opt.label"/>
+                        <q-item-label>{{ scope.opt.label }}</q-item-label>
                       </q-item-section>
                     </q-item>
                   </template>
@@ -65,11 +64,14 @@
   export default {
     name: 'SocialLinkPicker',
     props: {
-      value: {
+      'model-value': {
         type: Array,
         required: true,
       },
     },
+    emits: [
+      'update:model-value',
+    ],
     data() {
       return {
         valid: false,
@@ -79,7 +81,7 @@
       };
     },
     watch: {
-      value: {
+      'model-value': {
         deep: true,
         immediate: true,
         handler(newValue) {
@@ -105,7 +107,7 @@
           if (newVal && JSON.stringify(newVal) !== JSON.stringify(this.oldVal)) {
             console.log(newVal);
             let emitVal = newVal.filter(item => Object.keys(item).length);
-            this.$emit('input', emitVal);
+            this.$emit('update:model-value', emitVal);
             this.oldVal = this.$lcloneDeep(newVal);
           }
         },

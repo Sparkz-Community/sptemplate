@@ -94,6 +94,9 @@
         },
       },
     },
+    emits: [
+      'update:model-value',
+    ],
     data() {
       return {
         newEditedAddress: {},
@@ -127,7 +130,7 @@
         handler(newVal, oldVal) {
           // console.log('Old: ', oldVal,'New: ', newVal);
           if (JSON.stringify(this['model-value']) !== JSON.stringify(newVal)) {
-            this.$emit('input', newVal);
+            this.$emit('update:model-value', newVal);
           }
         },
       },
