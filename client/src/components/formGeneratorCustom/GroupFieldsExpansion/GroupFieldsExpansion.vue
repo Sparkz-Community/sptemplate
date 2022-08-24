@@ -1,15 +1,12 @@
 <template>
   <div id="GroupFieldsExpansion" v-bind="$attrs['div-attrs']">
-    <q-expansion-item
-      v-bind="$attrs['expansion-attrs']"
-    >
+    <q-expansion-item v-bind="$attrs['expansion-attrs']">
       <q-card v-bind="$attrs['q-card-attrs']">
         <q-card-section>
-          <form-generator :value="value"
-                          @input="updateForm($event)"
+          <form-generator :model-value="'model-value'"
+                          @update:model-value="updateForm($event)"
                           :fields="templateFormFields"
-                          v-bind="$attrs['attrs']"
-                          v-on="listeners">
+                          v-bind="$attrs['attrs']">
             <template v-for="slot in slots"
                       v-slot:[slot]="slotProps">
               <slot :name="slot" v-bind="slotProps"></slot>
@@ -25,7 +22,7 @@
   export default {
     name: 'GroupFieldsExpansion',
     props: {
-      value: {
+      'model-value': {
         type: Object,
       },
       path: {
@@ -45,6 +42,9 @@
         },
       },
     },
+    emits: [
+      'update:model-value'
+    ],
     watch: {
       $attrs: {
         immediate: true,
@@ -67,16 +67,10 @@
         },
       },
     },
-    computed: {
-      listeners() {
-        // eslint-disable-next-line no-unused-vars
-        const {input, ...listeners} = this.$listeners;
-        return listeners;
-      },
-    },
+    computed: {},
     methods: {
       updateForm(val) {
-        this.$emit('input', val);
+        this.$emit('update:model-value', val);
       }
     },
   };
