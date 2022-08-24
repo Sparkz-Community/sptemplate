@@ -4,37 +4,48 @@
             :class="{expanded: state.expanded}"
             @click="toggleExpanded"
             @keypress="toggleExpanded">
-      <p class="dropdown-font-name">{{state.activeFont}}</p>
+      <p class="dropdown-font-name">{{ state.activeFont }}</p>
       <p class="dropdown-icon" :class="state.loadingStatus"></p>
     </button>
-    <ul v-if="state.loadingStatus === 'finished' && fontManager.fonts"
+    <ul v-if="state.loadingStatus === 'finished' && fontPicker.getFonts()"
         :class="{expanded: state.expanded}"
         @scroll="onScroll">
-      <li v-for="font in fontManager.fonts" :key="font.family">
+      <li v-for="font in fontPicker.getFonts()" :key="font.family">
         <button type="button"
-                :class="`font-${snakeCase(font.family)}${pickerSuffix} ${font.family === state.activeFont ? 'active-font' : ''}`"
+                :class="`font-${snakeCase(font.family)}${pickerSuffix}
+                  ${font.family === state.activeFont ? 'active-font' : ''}`"
                 @click="itemClick(font)"
-                @keypress="itemClick(font)">{{font.family}}</button>
+                @keypress="itemClick(font)">
+          {{ font.family }}
+        </button>
       </li>
     </ul>
   </div>
 </template>
 
 <script>
-  import { FontManager } from 'font-picker';
+  import FontPicker from 'font-picker';
+
   export default {
     name: 'FontPicker',
-    props: ['activeFont', 'apiKey', 'options'],
+    props: [
+      'activeFont',
+      'apiKey',
+      'options',
+    ],
+    emits: [
+      'change',
+    ],
     data() {
       return {
         state: {
           activeFont: this.activeFont,
           errorText: '',
           expanded: false,
-          loadingStatus: 'loading' // possible values: 'loading', 'finished', 'error'
+          loadingStatus: 'loading', // possible values: 'loading', 'finished', 'error'
         },
         pickerSuffix: '',
-        fontManager: null,
+        fontPicker: null,
       };
     },
     mounted() {
@@ -45,35 +56,36 @@
         this.pickerSuffix = '';
       }
       // Initialize FontManager object and generate the font list
-      this.fontManager = new FontManager(
+      this.fontPicker = new FontPicker(
         this.apiKey,
         this.activeFont,
-        this.options
+        this.options,
+        this.setActiveFont,
       );
-      this.fontManager.init()
+      this.fontPicker.init()
         .then(() => {
           // font list has finished loading
           this.setState({
             errorText: '',
-            loadingStatus: 'finished'
+            loadingStatus: 'finished',
           });
         })
         .catch((err) => {
           // error while loading font list
           this.setState({
             errorText: 'Error trying to fetch the list of available fonts',
-            loadingStatus: 'error'
+            loadingStatus: 'error',
           });
           console.error(this.state.errorText);
           console.error(err);
         });
     },
     watch: {
-      activeFont() {
-        if (this.state.activeFont !== this.activeFont) {
-          this.setActiveFont(this.activeFont);
-        }
-      },
+      // activeFont() {
+      //   if (this.state.activeFont !== this.activeFont) {
+      //     this.setActiveFont(this.activeFont);
+      //   }
+      // },
     },
     methods: {
       /**
@@ -101,30 +113,30 @@
       /**
        * Download the font previews for all visible font entries and the five after them
        */
-      onScroll(e) {
-        const elementHeight = e.target.scrollHeight / this.fontManager.fonts.length;
-        const downloadIndex = Math.ceil((e.target.scrollTop + e.target.clientHeight) / elementHeight);
-        this.fontManager.downloadPreviews(downloadIndex + 5);
-      },
+      // onScroll(e) {
+      //   const elementHeight = e.target.scrollHeight / this.fontPicker.getFonts().length;
+      //   const downloadIndex = Math.ceil((e.target.scrollTop + e.target.clientHeight) / elementHeight);
+      //   this.fontPicker.downloadPreviews(downloadIndex + 5);
+      // },
       /**
        * Set the font with the given font list index as the active one
        */
-      setActiveFont(fontFamily) {
-        const activeFontIndex = this.fontManager.setActiveFont(fontFamily);
+      setActiveFont() {
+        const activeFontIndex = this.fontPicker.setActiveFont(this.activeFont);
         if (activeFontIndex === -1) {
           // error trying to change font
           this.setState({
-            activeFont: fontFamily,
-            errorText: `Cannot update activeFont: The font "${fontFamily}" is not in the font list`,
-            loadingStatus: 'error'
+            activeFont: this.activeFont,
+            errorText: `Cannot update activeFont: The font "${this.activeFont}" is not in the font list`,
+            loadingStatus: 'error',
           });
           console.error(this.state.errorText);
         } else {
           // font change successful
           this.setState({
-            activeFont: fontFamily,
+            activeFont: this.activeFont,
             errorText: '',
-            loadingStatus: 'finished'
+            loadingStatus: 'finished',
           });
         }
       },
@@ -133,7 +145,7 @@
        */
       toggleExpanded() {
         this.setState({
-          expanded: !this.state.expanded
+          expanded: !this.state.expanded,
         });
       },
       snakeCase(text) {
@@ -142,7 +154,7 @@
       itemClick(font) {
         this.toggleExpanded();
         this.$emit('change', font);
-      }
+      },
     },
   };
 </script>
@@ -153,13 +165,16 @@
     display: inline-block;
     width: 200px;
     box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+
     * {
       box-sizing: border-box;
     }
+
     p {
       margin: 0;
       padding: 0;
     }
+
     button {
       background: none;
       border: 0;
@@ -168,6 +183,7 @@
       font-size: inherit;
       outline: none;
     }
+
     .dropdown-button {
       height: 35px;
       width: 100%;
@@ -176,20 +192,25 @@
       justify-content: space-between;
       padding: 0 10px;
       background: #CBCBCB;
+
       &:hover, &.expanded, &:focus {
         background: #bebebe;
       }
+
       .dropdown-font-name {
         overflow: hidden;
         white-space: nowrap;
       }
+
       &.expanded .dropdown-icon.finished:before {
         -webkit-transform: rotate(-180deg);
         transform: rotate(-180deg);
       }
     }
+
     .dropdown-icon {
       margin-left: 10px;
+
       &.loading:before {
         content: '';
         display: block;
@@ -201,6 +222,7 @@
         -webkit-animation: spinner 0.6s linear infinite;
         animation: spinner 0.6s linear infinite;
       }
+
       &.finished:before {
         content: '';
         display: block;
@@ -213,10 +235,12 @@
         transition: transform 0.3s, -webkit-transform 0.3s;
         margin: 0 2px;
       }
+
       &.error:before {
         content: '⚠';
       }
     }
+
     ul {
       position: absolute;
       z-index: 1;
@@ -230,12 +254,15 @@
       background: #EAEAEA;
       box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
       transition: 0.3s;
+
       &.expanded {
         max-height: 200px;
       }
+
       li {
         height: 35px;
         list-style: none;
+
         button {
           height: 100%;
           width: 100%;
@@ -243,9 +270,11 @@
           align-items: center;
           padding: 0 10px;
           white-space: nowrap;
+
           &:hover, &:focus {
             background: #dddddd;
           }
+
           &.active-font {
             background: #d1d1d1;
           }
@@ -253,12 +282,14 @@
       }
     }
   }
+
   @-webkit-keyframes spinner {
     to {
       -webkit-transform: rotate(360deg);
       transform: rotate(360deg);
     }
   }
+
   @keyframes spinner {
     to {
       -webkit-transform: rotate(360deg);
