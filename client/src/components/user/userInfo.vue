@@ -33,7 +33,7 @@
       <q-separator v-if="$q.screen.gt.xs"/>
 
       <div class="q-px-md text-overline">Links</div>
-      <q-item v-if="(!$lisEmpty($authUser.value) && this.$can('route', 'admin'))" class="q-py-xs q-px-md" clickable v-ripple
+      <q-item v-if="(!$lisEmpty(authUser) /*&& $can('route', 'admin')*/)" class="q-py-xs q-px-md" clickable v-ripple
               v-close-popup :to="{path: '/admin'}">
         <q-item-section v-if="$q.screen.gt.xs" avatar>
           <q-icon name="fas fa-users-cog"></q-icon>
@@ -190,24 +190,24 @@
 
           <q-btn flat round dense icon="close" v-close-popup/>
         </q-toolbar>
-          <my-accounts></my-accounts>
+<!--          <my-accounts></my-accounts>-->
       </q-card>
     </q-dialog>
   </div>
 </template>
 
 <script>
-  import RandomAvatar from 'components/profile/RandomAvatar/RandomAvatar';
   import {mapState} from 'pinia';
-  import MyAccounts from '../profile/MyAccounts';
 
-  import useLogins from 'stores/services/logins';
-  import useAuth from 'stores/store.auth';
+  import RandomAvatar from 'components/profile/RandomAvatar/RandomAvatar';
+  // import MyAccounts from '../profile/MyAccounts';
+
+  import useLoginsStore from 'stores/services/logins';
 
   export default {
     name: 'UserInfo',
     components: {
-      MyAccounts,
+      // MyAccounts,
       RandomAvatar,
     },
     props: {
@@ -215,6 +215,7 @@
         type: Object,
       },
     },
+    inject: ['authUser', 'activeLogin'],
     data() {
       return {
         manageAccounts: false,
@@ -228,14 +229,11 @@
       },
     },
     computed: {
-      ...mapState(useLogins, {
-        loginsPendingById: 'pendingById', // was isPatchPendingById
-      }),
-      ...mapState(useAuth, {
-        activeLogin: 'activeLogin',
+      ...mapState(useLoginsStore, {
+        loginsPendingById: 'pendingById',
       }),
       isPatchLogins() {
-        return this.$lget(this.loginsPendingById, [this.$lget(this.activeLogin, '_id'), 'patch'], false);
+        return this.loginsPendingById[this.$lget(this.activeLogin, '_id')];
       },
       accounts() {
         return this.$lget(this.data, 'accounts', []).map(account => account.clone());
