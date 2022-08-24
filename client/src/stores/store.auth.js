@@ -4,7 +4,7 @@ const {auth} = stores;
 
 import {Users} from './services/users.js';
 import {Logins} from './services/logins.js';
-import {Accounts} from './services/accounts.js';
+import {Accounts} from '@sparkz-community/common-client-lib/src/stores/services/accounts';
 
 export default auth({
   feathersClient,
