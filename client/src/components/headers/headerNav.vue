@@ -34,8 +34,11 @@
         <settings v-model:mini="menuMini" v-model:auto-expand="menuAutoExpand" @close="settingsOpen = false"></settings>
       </q-btn-dropdown>
 
-      <q-btn-dropdown id="user-menu" :content-style="{ 'max-height': 'unset', height: '100%' }" v-model="userInfoOpen"
-                      :text-color="$q.dark.isActive || dark ? '' : 'dark'" unelevated no-caps>
+      <q-btn-dropdown v-model="userInfoOpen"
+                      id="user-menu"
+                      :text-color="$q.dark.isActive || dark ? '' : 'dark'"
+                      unelevated
+                      no-caps>
         <template v-slot:label>
           <div class="row items-center no-wrap">
             <random-avatar :user="activeAccount" :menu="false" size="md"></random-avatar>
