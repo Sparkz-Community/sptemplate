@@ -1,4 +1,6 @@
-export default function (/*{store, ssrContext}*/) {
+import commonRoutes from './commonRoutes.js';
+
+export default function ({store, ssrContext}) {
   const routes = [
     {
       path: '/',
@@ -37,6 +39,8 @@ export default function (/*{store, ssrContext}*/) {
           name: 'refer-form',
           component: () => import('pages/referLinks/ReferForm.vue'),
         },
+
+        ...commonRoutes({store, ssrContext}),
       ],
     },
 
