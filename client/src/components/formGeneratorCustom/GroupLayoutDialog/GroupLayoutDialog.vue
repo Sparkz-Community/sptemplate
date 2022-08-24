@@ -1,6 +1,6 @@
 <template>
   <div id="GroupLayoutDialog" v-bind="$attrs['div-attrs']">
-    <slot :data="value" :btnAttrs="$attrs['btn-attrs']" :toggleDialog="toggleDialog">
+    <slot :data="'model-value'" :btnAttrs="$attrs['btn-attrs']" :toggleDialog="toggleDialog">
       <q-btn @click="dialogToggle = !dialogToggle" v-bind="$attrs['btn-attrs']"/>
     </slot>
     <q-dialog id="group-layout-dialog" v-model="dialogToggle" v-bind="$attrs['dialog-attrs']">
@@ -18,8 +18,7 @@
           <q-page class="q-pa-sm">
             <form-generator v-model="formData"
                             :fields="templateFormFields"
-                            v-bind="$attrs['attrs']"
-                            v-on="listeners">
+                            v-bind="$attrs['attrs']">
               <template v-for="slot in slots"
                         v-slot:[slot]="slotProps">
                 <slot :name="slot" v-bind="slotProps"></slot>
@@ -44,7 +43,7 @@
     name: 'GroupLayoutDialog',
     inheritAttrs: false,
     props: {
-      value: {
+      'model-value': {
         type: Object,
       },
       path: {
@@ -76,7 +75,7 @@
       };
     },
     watch: {
-      value: {
+      'model-value': {
         deep: true,
         immediate: true,
         // eslint-disable-next-line no-unused-vars
@@ -103,19 +102,13 @@
         },
       },
     },
-    computed: {
-      listeners() {
-        // eslint-disable-next-line no-unused-vars
-        const {input, ...listeners} = this.$listeners;
-        return listeners;
-      },
-    },
+    computed: {},
     methods: {
       toggleDialog() {
         this.dialogToggle = !this.dialogToggle;
       },
       updateForm() {
-        this.$emit('input', this.formData);
+        this.$emit('update:model-value', this.formData);
       },
     },
   };
