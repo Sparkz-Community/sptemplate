@@ -24,7 +24,7 @@
     "@feathersjs/socketio-client": "^4.5.15",
     "@quasar/extras": "^1.0.0",
     "@sparkz-community/auth-management-client-lib": "^0.1.8",
-    "@sparkz-community/common-client-lib": "^0.1.9",
+    "@sparkz-community/common-client-lib": "^0.1.10",
     "@sparkz-community/form-gen-client-lib": "^0.1.6",
     "@sparkz-community/roles-client-lib": "^0.1.2",
     "@stripe/stripe-js": "^1.32.0",
