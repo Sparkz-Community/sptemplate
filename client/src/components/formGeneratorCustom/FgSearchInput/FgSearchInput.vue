@@ -16,6 +16,7 @@
 
 <script>
   import SearchInput from 'pages/messages/components/search-input';
+  import {BaseModel} from 'feathers-pinia';
 
   export default {
     name: 'FGSearchInput',
@@ -31,7 +32,7 @@
         required: true,
       },
       model: {
-        type: Object,
+        type: BaseModel,
         required: true,
       },
       qid: {

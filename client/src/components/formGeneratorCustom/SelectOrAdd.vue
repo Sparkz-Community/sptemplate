@@ -1,8 +1,8 @@
 <template>
   <div style="width: 100%;">
-    <select-input :path="path" v-bind="$attrs" v-on="$listeners" :slots="inbuiltSlots" >
+    <select-input :path="path" v-bind="$attrs" :slots="inbuiltSlots">
       <template #before-options>
-        <q-linear-progress v-if="loading"  query :color="$q.dark.mode?'accent':'primary'" class="q-mt-none" reverse/>
+        <q-linear-progress v-if="loading" query :color="$q.dark.mode?'accent':'primary'" class="q-mt-none" reverse/>
         <q-space v-else/>
       </template>
       <template #option="scope">
@@ -36,25 +36,27 @@
           <q-btn color="primary" icon="add" label="New" @click="openAddForm = true"/>
           <div v-if="showPaginationControls" class="row items-center q-gutter-sm">
             <span class="text-caption">Rows per page: </span>
-            <q-select input-class="text-caption" dense outlined :value="pagination.rowsPerPage"
-                      @input="changeRowsPerPage($event)" :options="pagination.rowsPerPageOptions"/>
-            <q-btn v-if="showPaginationControls" dense flat color="primary" icon="fas fa-chevron-left" @click="decrementPage"/>
-            <q-btn v-if="showPaginationControls" dense flat color=primary icon="fas fa-chevron-right" @click="incrementPage"/>
+            <q-select input-class="text-caption" dense outlined :model-value="pagination.rowsPerPage"
+                      @update:model-value="changeRowsPerPage($event)" :options="pagination.rowsPerPageOptions"/>
+            <q-btn v-if="showPaginationControls" dense flat color="primary" icon="fas fa-chevron-left"
+                   @click="decrementPage"/>
+            <q-btn v-if="showPaginationControls" dense flat color=primary icon="fas fa-chevron-right"
+                   @click="incrementPage"/>
           </div>
         </div>
       </template>
-     <template #no-option>
-       <div class="row q-pa-md justify-between items-center">
-         <q-btn color="primary" icon="add" label="New" @click="openAddForm = true"/>
+      <template #no-option>
+        <div class="row q-pa-md justify-between items-center">
+          <q-btn color="primary" icon="add" label="New" @click="openAddForm = true"/>
 
-         <span class="text-caption text-primary">
+          <span class="text-caption text-primary">
              No {{ path }} results
          </span>
 
-       </div>
-     </template>
+        </div>
+      </template>
 
-      <template v-for="(_, slot) of $scopedSlots" v-slot:[slot]="scope">
+      <template v-for="(_, slot) of $slots" v-slot:[slot]="scope">
         <slot :name="slot" v-bind="scope"/>
       </template>
     </select-input>
@@ -69,7 +71,8 @@
           <form-generator
             v-model="formData"
             :fields="serviceToAddFields"
-            useQform :valid.sync="valid"
+            useQform
+            v-model:valid="valid"
             class="flex justify-center"
           />
         </q-card-section>
@@ -86,8 +89,9 @@
 
 <script>
   import SelectInput
-    from '@ionrev/quasar-app-extension-ir-form-gen-app/src/components/common/atoms/SelectInput/SelectInput.vue';
-  import isEmpty from '@iy4u/common-client-lib/src/utils/isEmpty.js';
+    from '@sparkz-community/form-gen-client-lib/src/components/common/atoms/SelectInput/SelectInput.vue';
+  import isEmpty from '@sparkz-community/common-client-lib/src/utils/isEmpty.js';
+  import {BaseModel} from 'feathers-pinia';
 
   export default {
     name: 'SelectOrAdd',
@@ -98,8 +102,8 @@
       path: {
         type: String,
       },
-      modelName: {
-        type: String,
+      model: {
+        type: BaseModel,
         required: true,
       },
       serviceToAdd: {
@@ -118,6 +122,9 @@
         type: Object,
       },
     },
+    emits: [
+      'pagination-changed',
+    ],
     data() {
       return {
         loading: false,
@@ -125,7 +132,7 @@
         formData: undefined,
         sending: false,
         valid: false,
-        inbuiltSlots: ['before-options','after-options','no-option'],
+        inbuiltSlots: ['before-options', 'after-options', 'no-option'],
         toEdit: false,
         pagination: {
           rowsPerPage: 5,
@@ -134,24 +141,16 @@
           descending: false,
           rowsPerPageOptions: [5, 10, 20, 35],
         },
-        fetching: false
+        fetching: false,
       };
     },
-
     computed: {
-      // listeners() {
-      //   // eslint-disable-next-line no-unused-vars
-      //   const {'pagination-changed':pagination_changed, input, ...listeners} = this.$listeners;
-      //   return listeners;
-      // },
-
       showPaginationControls() {
         const optionsLength = this.$lget(this.$attrs, ['attrs', 'options'], []).length;
-        return  optionsLength && this.pagination.rowsPerPage <= optionsLength;
+        return optionsLength && this.pagination.rowsPerPage <= optionsLength;
       },
     },
     watch: {
-
       serviceToAddOptionsMapping: {
         immediate: true,
         deep: true,
@@ -166,7 +165,7 @@
       async send() {
         try {
           this.sending = true;
-          const FormData = this.$FeathersVuex.api[this.modelName];
+          const FormData = this.model.api;
           const data = new FormData(this.formData).clone();
           await data.save({
             data: this.formData,
