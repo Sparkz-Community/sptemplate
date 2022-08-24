@@ -76,7 +76,7 @@
     },
     computed: {
       ...mapState(useForms, {
-        isGetPending: 'isLoading',
+        isGetPending: (state) => state.pendingById.Model.get || false,
         isPatchPending: 'isPatchPending',
       }),
     },
@@ -88,11 +88,11 @@
 
       submitForm() {
         // patch the form's responses array with formData
-        this.patchForm([this.$lget(this.$route, 'query.formId', ''), {
+        this.patchForm(this.$lget(this.$route, 'query.formId', ''), {
           $addToSet: {
             responses: this.formData,
           },
-        }]).then(() => {
+        }).then(() => {
           this.$q.notify({
             type: 'positive',
             message: 'Response submitted!',

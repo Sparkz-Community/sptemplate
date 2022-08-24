@@ -41,7 +41,7 @@
     },
     methods: {
       ...mapActions(useReferLinks, {
-        getReferLink: 'getFromStore',
+        getReferLink: 'get',
       }),
     },
   };

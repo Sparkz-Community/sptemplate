@@ -52,16 +52,20 @@
   import {useFindPaginate} from '@sparkz-community/common-client-lib';
   import {mapState} from 'pinia';
 
-  import useReferLinks from '../../stores/services/refer-links';
-  import {computed, ref} from 'vue';
+  import useReferLinks from 'stores/services/refer-links';
+  import { ReferLinks } from 'stores/services/refer-links';
+  import {computed, inject, ref} from 'vue';
 
   export default {
     name: 'referLinkGenerator',
     setup() {
+      const $lget = inject('$lget');
+      const $activeAccount = inject('$activeAccount');
+
       const query = computed(() => {
         return {
           _id: {
-            $in: this.$lget(this.$activeAccount, 'referLinks', []),
+            $in: $lget($activeAccount, 'referLinks', []),
           }
         };
       });
@@ -72,7 +76,7 @@
       });
 
       const {items: referLinks} = useFindPaginate({
-        model: useReferLinks,
+        model: ReferLinks,
         qid: ref('referLinksList'),
         infinite: ref(true),
         query,
@@ -85,14 +89,14 @@
     },
     data() {
       return {
-        formData: new models.api.ReferLinks().clone(),
+        formData: new models.api.ReferLinks(),
         valid: false,
         host: window.location.host,
       };
     },
     computed: {
       ...mapState(useReferLinks, {
-        isCreatePending: 'isLoading',
+        isCreatePending: 'isCreatePending',
       }),
 
       fields() {
@@ -170,7 +174,7 @@
 
         this.formData.create()
           .then(() => {
-            this.formData = new models.api.ReferLinks().clone();
+            this.formData = new models.api.ReferLinks();
             this.$q.notify({
               type: 'positive',
               message: 'Link Generated',
