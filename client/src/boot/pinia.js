@@ -14,12 +14,12 @@ const requireModule = require.context(
 const servicePlugins = requireModule
   .keys()
   .map(modulePath => requireModule(modulePath).default);
-import auth from '../stores/store.auth';
+import useAuthStore from 'stores/store.auth';
 
 export default boot(({ app }) => {
-  // app.use(createStore({}));
   servicePlugins.forEach(fn => fn());
-  let authStore = auth();
+
+  let authStore = useAuthStore();
   app.config.globalProperties.$authUser = toRef(authStore, 'authUser');
   app.provide('$authUser', toRef(authStore, 'authUser'));
 });
