@@ -50,6 +50,10 @@
           };
         },
       });
+
+      return {
+        useFindPaginate,
+      };
     },
     props: {
       model: {
