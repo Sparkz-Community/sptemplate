@@ -15,6 +15,7 @@
 
 <script>
   import {useFindPaginate} from '@sparkz-community/common-client-lib';
+  import {BaseModel} from 'feathers-pinia';
 
   export default {
     name: 'search-input',
@@ -57,7 +58,7 @@
     },
     props: {
       model: {
-        type: Object,
+        type: BaseModel,
         required: true,
       },
       qid: String,
