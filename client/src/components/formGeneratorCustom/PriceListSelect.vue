@@ -27,7 +27,7 @@
     <q-dialog v-model="open" position="right">
       <q-card style="max-width: 300px;">
         <q-card-section>
-          <form-generator v-model="productPrice" :fields="fields" :valid.sync="valid"/>
+          <form-generator v-model="productPrice" :fields="fields" v-model:valid="valid"/>
         </q-card-section>
         <q-card-actions>
           <q-btn label="Save" color="primary" @click="save"/>
@@ -57,12 +57,35 @@
 </template>
 
 <script>
-  import {makeFindPaginateMixin} from '@iy4u/common-client-lib';
+  import {useFindPaginate} from '@sparkz-community/common-client-lib';
+  import useProducts from 'stores/services/products';
 
   export default {
     name: 'price-list-select',
+    setup() {
+      const productsStore = useProducts;
+
+      useFindPaginate({
+        limit: 12,
+        model: productsStore.Model,
+        qid: 'products',
+        query() {
+          return {};
+        },
+        params() {
+          return {
+            debounce: 500,
+          };
+        },
+      });
+
+      return {
+        productsStore,
+        useFindPaginate,
+      };
+    },
     props: {
-      value: {
+      'model-value': {
         type: Array,
         default() {
           return [
@@ -77,22 +100,10 @@
         },
       },
     },
-    mixins: [
-      makeFindPaginateMixin({
-        limit: 12,
-        service: 'products',
-        name: 'products',
-        qid: 'products',
-        query() {
-          return {};
-        },
-        params() {
-          return {
-            debounce: 500,
-          };
-        },
-      }),
+    emits: [
+      'update:model-value',
     ],
+    mixins: [],
     data() {
       return {
         productPrice: {
@@ -108,7 +119,7 @@
       };
     },
     watch: {
-      value: {
+      'model-value': {
         immediate: true,
         deep: true,
         handler(newVal) {
@@ -199,7 +210,7 @@
           product: undefined,
           price: undefined,
         };
-        this.$emit('input', this.productPriceList);
+        this.$emit('update:model-value', this.productPriceList);
       },
       edit(value) {
         this.options = this.products;
