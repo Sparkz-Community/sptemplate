@@ -31,7 +31,7 @@
 
         <q-intersection @visibility="paginateChats">
           <div class="flex justify-center items-center">
-            <q-spinner-dots v-if="isFindChatsListPending" size="4em"/>
+            <q-spinner-dots v-if="isChatsListPending" size="4em"/>
           </div>
         </q-intersection>
       </q-scroll-area>
@@ -123,7 +123,8 @@
       const {
         items: chatsList,
         total: chatsListTotal,
-        currentPage: chatsListCurrentPage
+        currentPage: chatsListCurrentPage,
+        isPending: isChatsListPending,
       } = useFindPaginate({
         limit: ref(20),
         model: Chats,
@@ -137,6 +138,7 @@
         chatsList,
         chatsListTotal,
         chatsListCurrentPage,
+        isChatsListPending,
         room,
       };
     },
@@ -179,7 +181,7 @@
       };
     },
     // watch: {
-    //   isFindChatsListPending(newVal) {
+    //   isChatsListPending(newVal) {
     //     this.$isLoading(newVal, {spinner: QSpinnerCube});
     //   },
     // },
@@ -217,7 +219,7 @@
         if (isVisible) {
           if (this.chatsListTotal
             && this.chatsList.length < this.chatsListTotal
-            && !this.isFindChatsListPending) {
+            && !this.isChatsListPending) {
             this.chatsListCurrentPage += 1;
           }
         }
