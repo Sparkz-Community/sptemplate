@@ -1,4 +1,6 @@
-export default function (/*{store, ssrContext}*/) {
+import commonRoutes from './commonRoutes.js';
+
+export default function ({store, ssrContext}) {
   const routes = [
     {
       path: '/',
@@ -8,6 +10,12 @@ export default function (/*{store, ssrContext}*/) {
           path: '',
           name: 'home',
           component: () => import('pages/IndexPage.vue')
+        },
+        {
+          path: 'notifications',
+          name: 'notifications',
+          // meta: {requiresAuth: true},
+          component: () => import ('pages/notifications/Notifications.vue'),
         },
         {
           path: 'balanced-sheets',
@@ -21,6 +29,8 @@ export default function (/*{store, ssrContext}*/) {
           meta: {requiresAuth: true},
           component: () => import('pages/qbReports/ProfitAndLoss/ProfitAndLoss')
         },
+
+        ...commonRoutes({store, ssrContext}),
       ],
     },
 
