@@ -18,7 +18,7 @@
     },
     mounted() {
       this.$watch('stateAccount', async () => {
-        // await this.setAccount();
+        await this.setAccount();
       }, {
         immediate: true,
         deep: true,
