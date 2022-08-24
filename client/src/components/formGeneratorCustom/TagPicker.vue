@@ -14,7 +14,7 @@
       @input-value="val => searchInput = val"
       new-value-mode="add-unique"
       @keyup.enter="addTag"
-      @input="emitInput"
+      @update:model-value="emitInput"
       :behavior="behavior"
       :input-class="inputClass"
       clearable
@@ -68,18 +68,26 @@
         </q-item>
       </template>
       <template v-slot:selected-item="scope">
-        <q-chip :dark="dark" square :color="color" :icon="tagIcon" :label="scope.opt" removable @remove="scope.toggleOption(scope.opt)"></q-chip>
+        <q-chip :dark="dark"
+                square
+                :color="color"
+                :icon="tagIcon"
+                :label="scope.opt"
+                removable
+                @remove="scope.toggleOption(scope.opt)">
+        </q-chip>
       </template>
     </q-select>
   </div>
 </template>
+
 <script>
-  import axios from 'axios';
   const flattenArray = (arr) => {
     return arr.reduce(function (flat, toFlatten) {
       return flat.concat(Array.isArray(toFlatten) ? flattenArray(toFlatten) : toFlatten);
     }, []);
   };
+
   export default {
     name: 'TagPicker',
     props: {
@@ -135,8 +143,11 @@
         type: String,
         default: 'tags'
       },
-      value: [String, Array]
+      'model-value': [String, Array]
     },
+    emits: [
+      'update:model-value',
+    ],
     mounted(){
       this.loadTags();
     },
@@ -152,7 +163,7 @@
       };
     },
     watch: {
-      value: {
+      'model-value': {
         immediate: true,
         handler(newVal){
           this.selected = newVal;
@@ -184,16 +195,6 @@
         let limit = typeof this.limit === 'number' ? this.limit : 0;
         return skip * limit;
       },
-      axiosFeathers() {
-        return axios.create({
-          baseURL: process.env.VUE_APP_FEATHERS_URL || 'http://localhost:3030',
-          headers: {
-            ContentType: 'application/x-www-form-urlencoded',
-            Accept: 'application/json',
-            // Authorization: 'Bearer ' + this.$store.state.auth.accessToken
-          }
-        });
-      }
     },
     methods: {
       isSelected(tag){
@@ -204,7 +205,7 @@
       },
       emitInput(){
         this.searchInput = '';
-        this.$emit('input', this.selected);
+        this.$emit('update:model-input', this.selected);
       },
       addTag(){
         if(this.adding) {
