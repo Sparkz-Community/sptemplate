@@ -1,9 +1,9 @@
 <template>
   <div id="IconPicker" v-bind="$attrs['div-attrs']">
-    <q-field :value="value"
+    <q-field :model-value="'model-value'"
              v-bind="$attrs['q-field-attrs']"
              @focus="$refs['search'].focus()"
-             @clear="$emit('input', undefined)">
+             @clear="$emit('update:model-value', undefined)">
       <template v-slot:control>
         <div class="q-mt-md full-width">
           <q-select v-model="icon_set" v-bind="$attrs['icon-set-attrs']"/>
@@ -15,14 +15,13 @@
           <!--          </q-chip>-->
           <!--        </p>-->
           <!--        <q-separator class="q-my-lg"></q-separator>-->
-          <q-icon-picker :value="value"
-                         @input="$emit('input', $event)"
+          <q-icon-picker :model-value="'model-value'"
+                         @update:model-value="$emit('update:model-value', $event)"
                          :icon-set="icon_set"
-                         :pagination.sync="pagination"
+                         v-model:pagination="pagination"
                          :filter="filter"
                          :name="path"
-                         v-bind="$attrs['attrs']"
-                         v-on="listeners">
+                         v-bind="$attrs['attrs']">
             <template v-for="slot in slots" v-slot:[slot]="slotProps">
               <slot :name="slot" :key_name="path" v-bind="slotProps"></slot>
             </template>
@@ -38,7 +37,7 @@
     name: 'IconPicker',
     inheritAttrs: false,
     props: {
-      value: {
+      'model-value': {
         type: String,
       },
       path: {
@@ -54,7 +53,6 @@
     data() {
       return {
         icon_set: 'material-icons',
-
         filter: '',
         pagination: {
           itemsPerPage: 60,
@@ -121,13 +119,7 @@
         },
       },
     },
-    computed: {
-      listeners() {
-        // eslint-disable-next-line no-unused-vars
-        const {input, ...listeners} = this.$listeners;
-        return listeners;
-      },
-    },
+    computed: {},
   };
 </script>
 
