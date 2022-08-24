@@ -1,5 +1,7 @@
 <template>
-  <div @drop.prevent="addFile" @dragover.prevent @click="$refs.filePick.pickFiles()"
+  <div @drop.prevent="addFile"
+       @dragover.prevent
+       @click="$refs.filePick.pickFiles()"
        :style="'max-width: 100%; ' + $lget($attrs, 'div-attrs.style', '')">
     <div :class="`drop_zone bg-${$lget($attrs, 'color', 'primary')}`">
       <div class="drag_cover text-primary bg-background">
@@ -10,11 +12,15 @@
           <div class="text-xs text-mb-xs text-weight-light">{{ $lget($attrs, 'attrs.label', 'Drop it like its hot') }}
           </div>
         </div>
-        <q-file
-          ref="filePick"
-          dense prepend-icon="mdi-video-plus" :multiple="multiple" :value="files" bgcolor="transparent"
-          placeholder="Choose File" @input="setPending"
-        ></q-file>
+        <q-file ref="filePick"
+                dense
+                prepend-icon="mdi-video-plus"
+                :multiple="multiple"
+                :model-value="files"
+                bgcolor="transparent"
+                placeholder="Choose File"
+                @update:model-value="setPending">
+        </q-file>
         <!--        <q-uploader-->
         <!--          @start="handleStart"-->
         <!--          @uploading="handleUploading"-->
@@ -38,9 +44,18 @@
         <div class="text-sm text-mb-lg text-weight-medium">Confirm and name
           {{ files && files.length ? files.length : '' }} file {{ files && files.length === 1 ? '' : 's' }}
         </div>
-        <div :class="`row ${ files && files.length === 1 ? 'justify-center' : ''} q-px-md no-wrap`" style="width: 100%; overflow-x: scroll">
+        <div :class="`row ${ files && files.length === 1 ? 'justify-center' : ''} q-px-md no-wrap`"
+             style="width: 100%; overflow-x: scroll">
           <div class="q-mx-xs" v-for="(file, i) in files" :key="`file-${i}`">
-            <q-input clearable @clear="nameInputs[i] = ''" outlined class="q-mb-sm" dense label="Name File" hide-bottom-space v-model="nameInputs[i].name"></q-input>
+            <q-input clearable
+                     @clear="nameInputs[i] = ''"
+                     outlined
+                     class="q-mb-sm"
+                     dense
+                     label="Name File"
+                     hide-bottom-space
+                     v-model="nameInputs[i].name">
+            </q-input>
             <div class="row justify-center">
               <div style="border-radius: 2px; box-shadow: 0 0 4px rgba(0,0,0,.3); height: 130px; width: 100px">
                 <iframe :src="getPreviewURL(file)" height="130px" width="100px" frameborder="0"></iframe>
@@ -50,7 +65,14 @@
         </div>
         <div class="row justify-end">
           <q-btn class="q-mx-xs" size="sm" label="cancel" flat color="negative" @click="clearAll"/>
-          <q-btn flat icon="mdi-upload" class="q-mx-xs" size="sm" label="upload" push color="positive" @click="handleInput"/>
+          <q-btn flat
+                 icon="mdi-upload"
+                 class="q-mx-xs"
+                 size="sm"
+                 label="upload"
+                 push
+                 color="positive"
+                 @click="handleInput"/>
         </div>
       </q-card>
     </q-dialog>
@@ -58,51 +80,54 @@
 </template>
 
 <script>
-  import {mapActions} from 'vuex';
+  import {mapActions} from 'pinia';
+  import useFileUploader from 'stores/services/file-uploader';
 
   export default {
     name: 'DragUpload',
     props: {
-      value: [String, Array, Object],
+      'model-value': [String, Array, Object],
       multiple: {
         type: Boolean,
-        default: true
+        default: true,
       },
       // 'image', 'video', 'doc'
       fileType: {
         type: String,
-        default: 'video'
+        default: 'video',
       },
       returnFile: Boolean,
       uploadFile: {
         type: Boolean,
-        default: true
+        default: true,
       },
       storage: {
         type: String,
-        default: 's3'
-      }
-
+        default: 's3',
+      },
     },
+    emits: [
+      // 'update:model-value',
+    ],
     data() {
       return {
         newImage: {},
         files: null,
         nameInput: '',
         filePending: false,
-        nameInputs: []
+        nameInputs: [],
       };
     },
     watch: {
-      value: {
+      'model-value': {
         handler(newVal) {
           if (newVal && typeof newVal !== 'undefined') {
-            if(Array.isArray(newVal)) {
+            if (Array.isArray(newVal)) {
               this.files = newVal;
             } else this.files = [newVal];
           }
-        }
-      }
+        },
+      },
     },
     computed: {
       uploadUrl() {
@@ -113,11 +138,11 @@
       },
       uploadDisabled() {
         return this.files.length === 0;
-      }
+      },
     },
     methods: {
-      ...mapActions('file-uploader', {
-        uploadFiles: 'create'
+      ...mapActions(useFileUploader, {
+        uploadFiles: 'create',
       }),
       getPreviewURL(file) {
         return window.URL.createObjectURL(file);
@@ -165,7 +190,7 @@
         });
         setTimeout(() => {
           console.log('emitting files', this.files);
-        // this.$emit('input', this.files)
+          // this.$emit('update:model-value', this.files)
         }, 200);
       },
       setPending(files) {
@@ -180,7 +205,7 @@
         console.log('drag upload >> handling input', this.files);
         if (!this.uploadFile) {
           let pass = this.files && typeof this.files !== 'undefined';
-          if (pass) this.$emit('input', this.files);
+          if (pass) this.$emit('update:model-value', this.files);
         } else {
           this.upload();
         }
@@ -195,7 +220,7 @@
       setImage(avatar_key, data) {
         this.newImage[avatar_key] = data;
         this.$nextTick(() => {
-          this.$emit('input', this.newImage);
+          this.$emit('update:model-value', this.newImage);
         });
       },
       upload() {
@@ -210,46 +235,46 @@
             name: name,
             size: f.size,
             type: f.type,
-            lastModifiedDate: f.lastModifiedDate
+            lastModifiedDate: f.lastModifiedDate,
           };
           formData.append('info', JSON.stringify(info));
           let headers = {
             'content-type': 'application/x-www-form-urlencoded',
           };
           let token = this.$lget(this.$store, 'state.auth.accessToken');
-          if(token) headers.Authorization = 'Bearer ' + token;
+          if (token) headers.Authorization = 'Bearer ' + token;
           else headers['x-api-key'] = this.$lget(this.$attrs, 'api-key');
           this.$axios({
             method: 'post',
             url: `${this.uploadUrl}/file-uploader`,
             data: formData,
-            headers: headers
+            headers: headers,
           })
             .then(res => {
               console.log('got res', res);
               let val = res.data;
-              if(this.multiple && !Array.isArray(val)) val = [res.data];
-              console.log('emit input', val);
-              this.$emit('input', val);
+              if (this.multiple && !Array.isArray(val)) val = [res.data];
+              console.log('emit update:model-value', val);
+              this.$emit('update:model-value', val);
             })
             .catch(err => {
               console.log('error uploading file', err);
               this.$errNotify('Error uploading file ' + err.message);
             });
-        // fetch('https://httpbin.org/post', {
-        //   method: 'POST',
-        //   body: formData
-        // })
-        //   .then(res => res.json())
-        //   .then(res => {
-        //     console.log('done uploading', res);
-        //   })
-        //   .catch(e => {
-        //     console.error(JSON.stringify(e.message));
-        //   });
+          // fetch('https://httpbin.org/post', {
+          //   method: 'POST',
+          //   body: formData
+          // })
+          //   .then(res => res.json())
+          //   .then(res => {
+          //     console.log('done uploading', res);
+          //   })
+          //   .catch(e => {
+          //     console.error(JSON.stringify(e.message));
+          //   });
         });
-      }
-    }
+      },
+    },
   };
 </script>
 
