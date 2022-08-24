@@ -1,15 +1,13 @@
 <template>
   <div class="bg-transparent full-width q-pa-sm">
     <q-table title="Counted By" flat :data="accountQtyList" table-class="full-width self-center ">
-      <template  #header-cell="props">
+      <template #header-cell="props">
 
         <q-th v-if="props.col.name==='id'" :props="props">
           account
         </q-th>
         <q-th v-else :props="props">
-          {{
-            props.col.name
-          }}
+          {{ props.col.name }}
         </q-th>
 
       </template>
@@ -29,17 +27,17 @@
         </td>
 
       </template>
-        <template #no-data>
-          <div/>
-        </template>
+      <template #no-data>
+        <div/>
+      </template>
       <template #top-right>
-        <q-btn v-if="options.length > 0" icon="add"  @click="openDialog" outline color="primary"/>
+        <q-btn v-if="options.length > 0" icon="add" @click="openDialog" outline color="primary"/>
       </template>
     </q-table>
     <q-dialog v-model="open" position="right">
       <q-card style="max-width: 300px;">
         <q-card-section>
-          <form-generator v-model="accountQty" :fields="fields" :valid.sync="valid"/>
+          <form-generator v-model="accountQty" :fields="fields" v-model:valid="valid"/>
         </q-card-section>
         <q-card-actions>
           <q-btn label="Save" color="primary" @click="save"/>
@@ -68,12 +66,30 @@
 </template>
 
 <script>
-  import {makeFindPaginateMixin} from '@iy4u/common-client-lib';
+  import { useFindPaginate } from '@sparkz-community/common-client-lib';
+  import useAccounts from 'stores/services/accounts';
 
   export default {
     name: 'counted-by-list-select',
+    setup() {
+      const accountsStore = useAccounts();
+
+      useFindPaginate({
+        limit: 12,
+        model: accountsStore.Model,
+        qid: 'accounts',
+        query() {
+          return {};
+        },
+        params() {
+          return {
+            debounce: 500,
+          };
+        },
+      });
+    },
     props: {
-      value: {
+      'model-value': {
         type: Array,
         default() {
           return [
@@ -88,22 +104,10 @@
         },
       },
     },
-    mixins: [
-      makeFindPaginateMixin({
-        limit: 12,
-        service: 'accounts',
-        name: 'accounts',
-        qid: 'accounts',
-        query() {
-          return {};
-        },
-        params() {
-          return {
-            debounce: 500,
-          };
-        },
-      }),
+    emits: [
+      'update:model-value',
     ],
+    mixins: [],
     data() {
       return {
         accountQty: {
@@ -119,12 +123,12 @@
       };
     },
     watch: {
-      value: {
+      'model-value': {
         immediate: true,
         deep: true,
         handler(newVal) {
 
-          this.accountQtyList = newVal.map( accountQty => {
+          this.accountQtyList = newVal.map(accountQty => {
             const {id, quantity} = accountQty;
             return {id, quantity, actions: id};
           });
@@ -141,7 +145,6 @@
       },
     },
     computed: {
-
       fields() {
         return [
           {
@@ -208,7 +211,7 @@
           id: undefined,
           quantity: undefined,
         };
-        this.$emit('input', this.accountQtyList);
+        this.$emit('update:model-value', this.accountQtyList);
       },
       edit(value) {
         this.options = this.accounts;
@@ -225,7 +228,7 @@
       },
       confirmRemove() {
         this.accountQtyList = this.accountQtyList.filter(item => item['id'] !== this.accountQtyToRemove['id']);
-        console.log( this.accountQtyToRemove  );
+        console.log(this.accountQtyToRemove);
         this.accountQtyToRemove = undefined;
         this.openRemove = false;
       },
