@@ -23,6 +23,7 @@
     "@feathersjs/rest-client": "^4.5.15",
     "@feathersjs/socketio-client": "^4.5.15",
     "@quasar/extras": "^1.0.0",
+    "@quasar/quasar-app-extension-qiconpicker": "^2.0.6",
     "@sparkz-community/auth-management-client-lib": "^0.1.9",
     "@sparkz-community/common-client-lib": "^0.1.12",
     "@sparkz-community/form-gen-client-lib": "^0.1.6",
