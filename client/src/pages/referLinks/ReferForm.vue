@@ -14,7 +14,7 @@
           This form is invalid
         </h3>
         <q-card-actions class="justify-center">
-          <q-btn class="q-px-md"
+          <q-btn padding="sm md"
                  rounded
                  color="primary"
                  label="Go to Home"
@@ -29,7 +29,7 @@
           Form submitted
         </h3>
         <q-card-actions class="justify-center">
-          <q-btn class="q-px-md"
+          <q-btn padding="sm md"
                  rounded
                  color="primary"
                  label="Go to Home"
@@ -42,7 +42,7 @@
         <q-card-actions class="justify-center">
           <q-btn :disable="!valid"
                  :loading="isPatchPending"
-                 class="q-px-md"
+                 padding="sm md"
                  rounded
                  color="primary"
                  label="Submit Form"
