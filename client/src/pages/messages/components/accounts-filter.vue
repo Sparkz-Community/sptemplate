@@ -1,7 +1,7 @@
 <template>
   <search-input
     use-chips
-    service="accounts"
+    :model="accountsStore.Model"
     v-bind="$attrs"
     option-value="_id"
     option-label="name"
@@ -11,7 +11,7 @@
     dense
     @add="addAccount"
     @selected="selectedAccounts"
-    :model-value="value"
+    :model-value="'model-value'"
   >
     <template v-slot:option="scope">
       <q-item v-bind="scope.itemProps"
@@ -39,16 +39,24 @@
 <script>
   import SearchInput from 'pages/messages/components/search-input';
   import {models} from 'feathers-pinia';
+  import useAccounts from 'stores/services/accounts';
 
   export default {
     name: 'accounts-filter',
+    setup() {
+      const accountsStore = useAccounts;
+
+      return {
+        accountsStore,
+      };
+    },
     components: {SearchInput},
     emits: [
       'add',
       'update:model-value',
     ],
     props: {
-      value: {
+      'model-value': {
         type: [Array, String],
         default() {
           return [];

@@ -22,10 +22,8 @@
     setup(props) {
       useFindPaginate({
         limit: 6,
-        service() {
-          return props.service;
-        },
-        name: 'data',
+        model: props.model,
+        qid: props.qid,
         infinite: true,
         query() {
           // if (!['', null, undefined].includes(this.search)) {
@@ -48,14 +46,14 @@
           return {
             qid: this.qid,
             debounce: 500,
-            [`${props.service}_fJoinHookResolversQuery`]: this.fastJoinResolverQuery,
+            [`${props.model.servicePath}_fJoinHookResolversQuery`]: this.fastJoinResolverQuery,
           };
         },
       });
     },
     props: {
-      service: {
-        type: String,
+      model: {
+        type: Object,
         required: true,
       },
       qid: String,
