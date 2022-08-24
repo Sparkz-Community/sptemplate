@@ -2,7 +2,7 @@
   <div id="FGSearchInput" v-bind="$attrs['div-attrs']">
     <search-input v-bind="$attrs['attrs']"
                   :use-email="useEmail"
-                  :service="service"
+                  :model="model"
                   :qid="qid"
                   :model-value="'model-value'">
       <!--      @selected="updateForm"-->
@@ -30,8 +30,8 @@
       path: {
         required: true,
       },
-      service: {
-        type: String,
+      model: {
+        type: Object,
         required: true,
       },
       qid: {
