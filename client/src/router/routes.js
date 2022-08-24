@@ -9,6 +9,12 @@ export default function (/*{store, ssrContext}*/) {
           name: 'home',
           component: () => import('pages/IndexPage.vue')
         },
+        {
+          path: 'boards',
+          name: 'boards',
+          meta: {requiresAuth: true},
+          component: () => import ('pages/taskManager/BoardsPage'),
+        },
       ],
     },
 
