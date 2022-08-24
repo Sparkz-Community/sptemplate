@@ -13,7 +13,7 @@
               <q-btn round dense flat icon="add" @click.stop="createDMDialog = true"/>
 
               <q-dialog v-model="createDMDialog">
-                <q-card style="min-width: 30vw; padding: 10px; border-top: 25px solid var(--q-color-primary)">
+                <q-card style="min-width: 30vw; padding: 10px; border-top: 25px solid var(--q-primary)">
 <!--                  <account-search v-model="accountSelection"-->
 <!--                                  :filter-out="[$activeAccount._id]"></account-search>-->
                   <account-search-component v-model="accountSelection"
@@ -55,7 +55,7 @@
               <q-btn round dense flat icon="add" @click.stop="createRoomDialog = true"/>
 
               <q-dialog v-model="createRoomDialog">
-                <q-card style="min-width: 30vw; padding: 10px; border-top: 25px solid var(--q-color-primary)">
+                <q-card style="min-width: 30vw; padding: 10px; border-top: 25px solid var(--q-primary)">
                   <q-input v-model="newRoomName"
                            label="Room Name"
                            filled
@@ -101,7 +101,7 @@
   import ChatRoomItem from 'components/chats/ChatRoomItem/ChatRoomItem';
 
   import useRooms from '../../../stores/services/rooms';
-  import {computed, ref} from 'vue';
+  import {computed, inject, ref} from 'vue';
 
   export default {
     name: 'ChatRoomList',
@@ -114,12 +114,14 @@
       'select-room',
     ],
     setup() {
+      const $lget = inject('$lget');
+
       const query = computed(() => {
         return {
           $sort: {
             updatedAt: -1,
           },
-          participants: this.$lget(this.$activeAccount, 'participant', null),
+          participants: $lget(this.$activeAccount, 'participant', null),
           $or: [
             {
               participantEvents: {$size: 0},
