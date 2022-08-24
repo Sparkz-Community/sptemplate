@@ -1,4 +1,6 @@
-export default function (/*{store, ssrContext}*/) {
+import commonRoutes from './commonRoutes.js';
+
+export default function ({store, ssrContext}) {
   const routes = [
     {
       path: '/',
@@ -15,6 +17,8 @@ export default function (/*{store, ssrContext}*/) {
           // meta: {requiresAuth: true},
           component: () => import ('pages/notifications/Notifications.vue'),
         },
+
+        ...commonRoutes({store, ssrContext}),
       ],
     },
 
