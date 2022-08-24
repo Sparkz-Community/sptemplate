@@ -76,7 +76,7 @@
 <script setup>
   import {useFindPaginate} from '@sparkz-community/common-client-lib';
   import {computed, inject, ref, watch} from 'vue';
-  import {models} from 'feathers-pinia';
+  // import {models} from 'feathers-pinia';
   import {Container, Draggable} from 'vue3-smooth-dnd';
   import {QSpinnerFacebook, useQuasar} from 'quasar';
   import useColorStore from 'stores/services/colors';
@@ -121,7 +121,7 @@
   }));
 
   const {items} = useFindPaginate({
-    model: models.api.Boards,
+    model: props.model,
     qid: $lget(props, 'qid', 'items'),
     infinite: $lget(props, 'infinite', true),
     query,
@@ -455,10 +455,18 @@
           $q.loading.hide();
           openItemDialog.value = false;
         } else {
+          $q.loading.show({
+            spinner: QSpinnerFacebook,
+            spinnerColor: $lget(toSave, 'color.hexa', 'teal'),
+            spinnerSize: 140,
+            message: `saving ${toSave.name}.`,
+          });
           await toSave.save({
             ...props.params,
           });
           refreshItems();
+          $q.loading.hide();
+          openItemDialog.value = false;
         }
 
       } else {
@@ -523,8 +531,13 @@
       persistent: true,
     }).onOk(async () => {
       try {
-
         const toDelete = new props.model(item);
+        $q.loading.show({
+          spinner: QSpinnerFacebook,
+          spinnerColor: $lget(toDelete, 'color.hexa', 'teal'),
+          spinnerSize: 140,
+          message: `deleting ${toDelete.name}.`,
+        });
         await Promise.all([
           toDelete.remove(props.params),
           items.value.filter(item => $lget(item, '_id') !== $lget(toDelete, '_id'))
@@ -532,6 +545,8 @@
             .map(obj => obj.save({data: {order: (obj.order - 1)}})),
         ]);
         refreshItems();
+        $q.loading.hide();
+        openItemDialog.value = false;
       } catch (error) {
         $q.notify({
           type: 'negative',
