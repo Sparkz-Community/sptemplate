@@ -28,6 +28,7 @@ module.exports = configure(function (ctx) {
     boot: [
       'axios',
       'feathersClient',
+      'globalConfig',
       'i18n',
       'pinia',
       'spAuthManagementLib',
