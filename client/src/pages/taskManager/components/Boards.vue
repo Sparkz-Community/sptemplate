@@ -82,6 +82,15 @@
   import useColorStore from 'stores/services/colors';
   import {storeToRefs} from 'pinia';
 
+  function getMaxOrder (objectArray) {
+    if ($lget(objectArray,'length')) {
+      const boardOrders = objectArray.map(item => item?.order);
+      return Math.max(...boardOrders) + 1;
+    } else {
+      return 1;
+    }
+  }
+
   const $lget = inject('$lget');
   const $q = useQuasar();
 
@@ -164,7 +173,7 @@
         min: 1,
         center: true,
         dense: true,
-        max: items.value.length + 1,
+        max: getMaxOrder(items.value),
       },
       'div-attrs': {
         class: 'col-12',

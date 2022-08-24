@@ -36,6 +36,12 @@ export default function ({store, ssrContext}) {
           component: () => import ('pages/taskManager/BoardTemplatePage'),
         },
         {
+          path: 'board-templates/:id/board-template-lists',
+          name: 'boardTemplateLists',
+          meta: {requiresAuth: true},
+          component: () => import ('pages/taskManager/BoardTemplateListsPage'),
+        },
+        {
           path: 'notifications',
           name: 'notifications',
           // meta: {requiresAuth: true},
