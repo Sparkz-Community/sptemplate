@@ -18,10 +18,22 @@ export default function ({store, ssrContext}) {
           component: () => import ('pages/taskManager/BoardsPage'),
         },
         {
+          path: 'boards/:id',
+          name: 'board',
+          meta: {requiresAuth: true},
+          component: () => import ('pages/taskManager/BoardPage'),
+        },
+        {
           path: 'board-templates',
           name: 'boardTemplates',
           meta: {requiresAuth: true},
           component: () => import ('pages/taskManager/BoardTemplatesPage'),
+        },
+        {
+          path: 'board-templates/:id',
+          name: 'boardTemplate',
+          meta: {requiresAuth: true},
+          component: () => import ('pages/taskManager/BoardTemplatePage'),
         },
         {
           path: 'notifications',

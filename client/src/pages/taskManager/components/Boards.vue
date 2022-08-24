@@ -39,8 +39,8 @@
             </q-layout>
           </q-dialog>
         </q-card>
-        <Draggable v-else :tag="{value: 'tr', props: {class: 'wrap'}}">
-          <q-card class="board-card q-mx-sm">
+        <Draggable v-else :tag="{value: 'tr', props: {class: 'cursor-pointer'}}">
+          <q-card class="board-card q-mx-sm" @click="$emit('go-to-item',item)">
 
             <q-img
               :src="$lget(item, ['banner', 'raw', 'file'], '')"
@@ -102,6 +102,18 @@
         return {};
       },
     },
+  });
+
+  const $emit = defineEmits({
+    // Validate submit event
+    goToItem: (item) => {
+      if (item) {
+        return true;
+      } else {
+        console.warn('Invalid submit event payload!');
+        return false;
+      }
+    }
   });
 
   let openItemDialog = ref(false);

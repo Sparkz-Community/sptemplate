@@ -1,6 +1,6 @@
 <template>
   <div>
-    <boards :model="model" :params="params"/>
+    <boards :model="model" :params="params" @go-to-item="goToBoardTemplate"/>
   </div>
 
 
@@ -11,6 +11,9 @@
   // import {models} from 'feathers-pinia';
   import {reactive} from 'vue';
   import {BoardTemplates} from 'stores/services/board-templates';
+  import {useRouter} from 'vue-router/dist/vue-router';
+
+  const $router = useRouter();
   const model =  BoardTemplates;
   const params = reactive({
     query: {
@@ -25,6 +28,9 @@
       creator: true,
     },
   });
+  function goToBoardTemplate(item) {
+    $router.push({name: 'boardTemplate', params: {id: item._id}});
+  }
 </script>
 
 <style scoped>
