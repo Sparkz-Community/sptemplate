@@ -74,9 +74,10 @@
   import {date /*QSpinnerCube*/} from 'quasar';
   const {$ldebounce, $lgroupBy} = lodash;
 
-  import useChats from '../../../stores/services/chats';
+  import useChats from 'stores/services/chats';
+  import { Chats } from 'stores/services/chats';
   import useParticipants from '../../../stores/services/participants';
-  import {computed, ref} from 'vue';
+  import {computed, inject, ref} from 'vue';
 
   export default {
     name: 'ChatBox',
@@ -86,13 +87,19 @@
         type: Object,
       },
     },
-    setup() {
+    setup(props) {
+      const $lget = inject('$lget');
+
+      const room = computed(() => {
+        return $lget(props.modelValue, 'room', {});
+      });
+
       const query = computed(() => {
         return {
           $sort: {
             createdAt: -1,
           },
-          room: this.$lget(this.room, '_id', null),
+          room: $lget(room, '_id', null),
         };
       });
 
@@ -113,9 +120,13 @@
         };
       });
 
-      const {items: chatsList} = useFindPaginate({
+      const {
+        items: chatsList,
+        total: chatsListTotal,
+        currentPage: chatsListCurrentPage
+      } = useFindPaginate({
         limit: ref(20),
-        model: useChats,
+        model: Chats,
         qid: ref('chatsList'),
         infinite: ref(true),
         query,
@@ -124,11 +135,14 @@
 
       return {
         chatsList,
+        chatsListTotal,
+        chatsListCurrentPage,
+        room,
       };
     },
     data() {
       return {
-        newChat: new models.api.Chats().clone(),
+        newChat: new models.api.Chats(),
         initBottom: false,
         seenArr: [],
 
@@ -181,9 +195,6 @@
         return {
           '--date-bg-color': this.$q.dark.mode ? 'var(--q-color-dark)' : 'white',
         };
-      },
-      room() {
-        return this.$lget(this.modelValue, 'room', {});
       },
       myParticipant() {
         return this.getParticipant(this.$lget(this.$activeAccount, 'participant', ''));
@@ -262,7 +273,7 @@
 
             this.newChat.create()
               .then(() => {
-                this.newChat = new models.api.Chats().clone();
+                this.newChat = new models.api.Chats();
               })
               .catch(err => {
                 this.$q.notify({

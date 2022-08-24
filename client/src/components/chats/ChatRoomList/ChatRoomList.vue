@@ -99,9 +99,10 @@
   import {mapActions} from 'pinia';
   import {routerMixin, useFindPaginate} from '@sparkz-community/common-client-lib';
   import ChatRoomItem from 'components/chats/ChatRoomItem/ChatRoomItem';
+  import {computed, inject, ref} from 'vue';
 
   import useRooms from '../../../stores/services/rooms';
-  import {computed, inject, ref} from 'vue';
+  import { Rooms } from 'stores/services/rooms';
 
   export default {
     name: 'ChatRoomList',
@@ -115,13 +116,14 @@
     ],
     setup() {
       const $lget = inject('$lget');
+      const $activeAccount = inject('$activeAccount');
 
       const query = computed(() => {
         return {
           $sort: {
             updatedAt: -1,
           },
-          participants: $lget(this.$activeAccount, 'participant', null),
+          participants: $lget($activeAccount, 'participant', null),
           $or: [
             {
               participantEvents: {$size: 0},
@@ -158,7 +160,7 @@
 
       const {items: roomsList} = useFindPaginate({
         limit: ref(20),
-        model: useRooms,
+        model: Rooms,
         qid: ref('roomsList'),
         infinite: ref(true),
         // advanced: ref(true), // ?
@@ -192,7 +194,7 @@
 
         roomBeingCreated: false,
 
-        newRoom: new models.api.Rooms().clone(),
+        newRoom: new models.api.Rooms(),
       };
     },
     computed: {
@@ -258,7 +260,7 @@
             ],
           });
 
-          this.newRoom = new models.api.Rooms().clone();
+          this.newRoom = new models.api.Rooms();
           this.createDMDialog = false;
           this.roomBeingCreated = false;
         } else if (!Object.keys(this.newRoom.participants.map(item => item)).includes('owner')) {
@@ -277,7 +279,7 @@
             ],
           });
 
-          this.newRoom = new models.api.Rooms().clone();
+          this.newRoom = new models.api.Rooms();
           this.createDMDialog = false;
           this.roomBeingCreated = false;
         } else {
@@ -297,7 +299,7 @@
                 ],
               });
 
-              this.newRoom = new models.api.Rooms().clone();
+              this.newRoom = new models.api.Rooms();
               this.createDMDialog = false;
               this.roomBeingCreated = false;
             })
@@ -364,7 +366,7 @@
             ],
           });
 
-          this.newRoom = new models.api.Rooms().clone();
+          this.newRoom = new models.api.Rooms();
           this.createRoomDialog = false;
           this.roomBeingCreated = false;
         } else if (!Object.keys(this.newRoom.participants.map(item => item)).includes('owner')) {
@@ -383,7 +385,7 @@
             ],
           });
 
-          this.newRoom = new models.api.Rooms().clone();
+          this.newRoom = new models.api.Rooms();
           this.createDMDialog = false;
           this.roomBeingCreated = false;
         } else {
@@ -403,7 +405,7 @@
                 ],
               });
 
-              this.newRoom = new models.api.Rooms().clone();
+              this.newRoom = new models.api.Rooms();
               this.createRoomDialog = false;
               this.roomBeingCreated = false;
             })
