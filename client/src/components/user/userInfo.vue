@@ -33,7 +33,7 @@
       <q-separator v-if="$q.screen.gt.xs"/>
 
       <div class="q-px-md text-overline">Links</div>
-      <q-item v-if="(!$lisEmpty($authUser.value) && this.$can('route', 'admin'))" class="q-py-xs q-px-md" clickable v-ripple
+      <q-item v-if="(!$lisEmpty(authUser) /*&& $can('route', 'admin')*/)" class="q-py-xs q-px-md" clickable v-ripple
               v-close-popup :to="{path: '/admin'}">
         <q-item-section v-if="$q.screen.gt.xs" avatar>
           <q-icon name="fas fa-users-cog"></q-icon>
@@ -190,21 +190,24 @@
 
           <q-btn flat round dense icon="close" v-close-popup/>
         </q-toolbar>
-          <my-accounts></my-accounts>
+<!--          <my-accounts></my-accounts>-->
       </q-card>
     </q-dialog>
   </div>
 </template>
 
 <script>
+  import {mapState} from 'pinia';
+
   import RandomAvatar from 'components/profile/RandomAvatar/RandomAvatar';
-  import {mapGetters} from 'vuex';
-  import MyAccounts from '../profile/MyAccounts';
+  // import MyAccounts from '../profile/MyAccounts';
+
+  import useLoginsStore from 'stores/services/logins';
 
   export default {
     name: 'UserInfo',
     components: {
-      MyAccounts,
+      // MyAccounts,
       RandomAvatar,
     },
     props: {
@@ -212,6 +215,7 @@
         type: Object,
       },
     },
+    inject: ['authUser', 'activeLogin'],
     data() {
       return {
         manageAccounts: false,
@@ -225,11 +229,11 @@
       },
     },
     computed: {
-      ...mapGetters('logins', {
-        isPatchLoginsPendingById: 'isPatchPendingById',
+      ...mapState(useLoginsStore, {
+        loginsPendingById: 'pendingById',
       }),
       isPatchLogins() {
-        return this.isPatchLoginsPendingById(this.$lget(this.$store.getters['auth/activeLogin'], '_id'));
+        return this.loginsPendingById[this.$lget(this.activeLogin, '_id')];
       },
       accounts() {
         return this.$lget(this.data, 'accounts', []).map(account => account.clone());

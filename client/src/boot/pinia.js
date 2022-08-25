@@ -1,6 +1,4 @@
 import { boot } from 'quasar/wrappers';
-// import createStore from '../stores';
-import {toRef} from 'vue';
 
 // eslint-disable-next-line no-undef
 const requireModule = require.context(
@@ -16,12 +14,9 @@ const servicePlugins = requireModule
   .map(modulePath => requireModule(modulePath).default);
 import useAuthStore from 'stores/store.auth';
 
-export default boot(({ app }) => {
+export default boot((/*{ app }*/) => {
   servicePlugins.forEach(fn => fn());
-
-  let authStore = useAuthStore();
-  app.config.globalProperties.$authUser = toRef(authStore, 'authUser');
-  app.provide('$authUser', toRef(authStore, 'authUser'));
+  useAuthStore();
 });
 
 
