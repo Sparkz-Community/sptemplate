@@ -15,9 +15,9 @@
               <q-dialog v-model="createDMDialog">
                 <q-card style="min-width: 30vw; padding: 10px; border-top: 25px solid var(--q-primary)">
 <!--                  <account-search v-model="accountSelection"-->
-<!--                                  :filter-out="[$activeAccount._id]"></account-search>-->
+<!--                                  :filter-out="[activeAccount._id]"></account-search>-->
                   <account-search-component v-model="accountSelection"
-                                  :filter-out="[$activeAccount._id]"></account-search-component>
+                                  :filter-out="[activeAccount._id]"></account-search-component>
                   <q-card-actions align="right" class="q-mt-md">
                     <q-btn label="Cancel" v-close-popup color="red"/>
                     <q-btn label="Add"
@@ -62,10 +62,10 @@
                            class="q-mb-md"/>
 <!--                  <account-search v-model="accountSelection"-->
 <!--                                  :multiple="true"-->
-<!--                                  :filter-out="[$activeAccount._id]"></account-search>-->
+<!--                                  :filter-out="[activeAccount._id]"></account-search>-->
                   <account-search-component v-model="accountSelection"
                                   :multiple="true"
-                                  :filter-out="[$activeAccount._id]"></account-search-component>
+                                  :filter-out="[activeAccount._id]"></account-search-component>
                   <q-card-actions align="right" class="q-mt-md">
                     <q-btn label="Cancel" v-close-popup color="red"/>
                     <q-btn label="Add"
@@ -116,14 +116,14 @@
     ],
     setup() {
       const $lget = inject('$lget');
-      const $activeAccount = inject('$activeAccount');
+      const activeAccount = inject('activeAccount');
 
       const query = computed(() => {
         return {
           $sort: {
             updatedAt: -1,
           },
-          participants: $lget($activeAccount, 'participant', null),
+          participants: $lget(activeAccount, 'participant', null),
           $or: [
             {
               participantEvents: {$size: 0},
@@ -170,6 +170,7 @@
 
       return {
         roomsList,
+        activeAccount,
       };
     },
     mixins: [
@@ -220,7 +221,7 @@
       async createDM() {
         this.roomBeingCreated = true;
 
-        this.$lset(this.newRoom, 'participants', [this.$activeAccount.participant, this.accountSelection.participant]);
+        this.$lset(this.newRoom, 'participants', [this.activeAccount.participant, this.accountSelection.participant]);
         this.$lset(this.newRoom, 'directMessage', true);
 
         const compareRoom = await this.findRooms({
@@ -324,7 +325,7 @@
       async createRoom() {
         this.roomBeingCreated = true;
 
-        this.$lset(this.newRoom, 'participants', [this.$activeAccount.participant, ...this.accountSelection.map(i => i.participant)]);
+        this.$lset(this.newRoom, 'participants', [this.activeAccount.participant, ...this.accountSelection.map(i => i.participant)]);
         this.$lset(this.newRoom, 'name', this.newRoomName);
 
         const compareRoom = await this.findRooms({

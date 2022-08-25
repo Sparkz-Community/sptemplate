@@ -99,10 +99,10 @@
             <q-form class="flex items-center" @submit="addMembers">
 <!--              <account-search v-model="newMembers"-->
 <!--                              :multiple="true"-->
-<!--                              :filter-out="[$activeAccount._id, ...participantAccountIDs]"></account-search>-->
+<!--                              :filter-out="[activeAccount._id, ...participantAccountIDs]"></account-search>-->
               <account-search-component v-model="newMembers"
                               :multiple="true"
-                              :filter-out="[$activeAccount._id, ...participantAccountIDs]"></account-search-component>
+                              :filter-out="[activeAccount._id, ...participantAccountIDs]"></account-search-component>
               <q-btn icon="add"
                      class="q-ml-md"
                      color="primary"
@@ -144,6 +144,7 @@
       'refresh-rooms',
       'select-room',
     ],
+    inject: ['activeAccount'],
     data() {
       return {
         roomNameDialog: false,
@@ -169,13 +170,13 @@
         return this.$lget(this.modelValue, 'room', {});
       },
       myParticipant() {
-        return this.getParticipant(this.$lget(this.$activeAccount, 'participant', ''));
+        return this.getParticipant(this.$lget(this.activeAccount, 'participant', ''));
       },
       unseenCount() {
         return this.room.chats.filter((chat) => this.$lget(this.myParticipant, 'unseenChats', []).includes(chat)).length;
       },
       dmAccount() {
-        const dmParticipant = Object.assign({}, ...this.room._fastjoin.participants.filter(i => i._id !== this.$activeAccount.participant));
+        const dmParticipant = Object.assign({}, ...this.room._fastjoin.participants.filter(i => i._id !== this.activeAccount.participant));
         return this.$lget(dmParticipant, '_fastjoin.owner');
       },
       participantAccountIDs() {
@@ -291,7 +292,7 @@
             this.room.patch({
               data: {
                 $pull: {
-                  participants: this.$activeAccount.participant,
+                  participants: this.activeAccount.participant,
                 }
               },
             })
@@ -332,7 +333,7 @@
       participantNames(room) {
         let names = [];
         room._fastjoin.participants.forEach(p => {
-          if (p._id !== this.$activeAccount.participant) {
+          if (p._id !== this.activeAccount.participant) {
             names.push(p._fastjoin.owner.name);
           }
         });

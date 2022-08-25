@@ -89,6 +89,7 @@
     },
     setup(props) {
       const $lget = inject('$lget');
+      const activeAccount = inject('activeAccount');
 
       const room = computed(() => {
         return $lget(props.modelValue, 'room', {});
@@ -140,6 +141,7 @@
         chatsListCurrentPage,
         isChatsListPending,
         room,
+        activeAccount,
       };
     },
     data() {
@@ -199,7 +201,7 @@
         };
       },
       myParticipant() {
-        return this.getParticipant(this.$lget(this.$activeAccount, 'participant', ''));
+        return this.getParticipant(this.$lget(this.activeAccount, 'participant', ''));
       },
       chatsClone() {
         return this.chatsList.map(item => item.clone());
@@ -270,7 +272,7 @@
       addChat() {
         if (!this.chatsLoading) {
           if (this.$lget(this.newChat, 'text', '') !== '') {
-            this.$lset(this.newChat, 'sender', this.$activeAccount.participant);
+            this.$lset(this.newChat, 'sender', this.activeAccount.participant);
             this.$lset(this.newChat, 'room', this.room._id);
 
             this.newChat.create()
