@@ -54,6 +54,7 @@
 
 <script>
   import IconPicker from 'components/formGeneratorCustom/IconPicker';
+  import Timer from 'src/utils/timer.js';
 
   export default {
     name: 'iconEditor',
@@ -69,7 +70,7 @@
     data() {
       return {
         fontSizeUnits: ['', '$unset', 'px', 'rem', 'em', 'xs', 'sm', 'md', 'lg', 'xl'],
-        timer: new this.$timer(),
+        timer: new Timer(),
         flat: this.$lget(this.element, 'flat', false),
       };
     },

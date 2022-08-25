@@ -54,16 +54,16 @@ class Timer {
     }
   }
 }
-const timer = {
-  install(Vue) {
-    Vue.mixin({
-      methods: {
-        $timer: Timer
-      }
-    });
-  }
+// const Timer = {
+//   install(Vue) {
+//     Vue.mixin({
+//       methods: {
+//         $timer: Timer
+//       }
+//     });
+//   }
+//
+// };
 
-};
-
-export { Timer };
-export default timer;
+// export { Timer };
+export default Timer;
