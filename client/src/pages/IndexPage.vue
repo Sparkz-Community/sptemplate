@@ -1,16 +1,16 @@
 <template>
   <q-page>
-<!--    <p>pinia users:</p>-->
-<!--    <ol>-->
-<!--      <li v-for="(user, index) in users" :key="index">{{ user.name }}</li>-->
-<!--    </ol>-->
-<!--    <q-pagination :model-value="currentPage"-->
-<!--                  @update:model-value="toPage"-->
-<!--                  :max="pageCount"-->
-<!--                  :max-pages="6"-->
-<!--                  direction-links-->
-<!--                  boundary-links></q-pagination>-->
-    <form-generator v-model="formData" :fields="fields"></form-generator>
+    <p>pinia users:</p>
+    <ol>
+      <li v-for="(user, index) in users" :key="index">{{ user.name }}</li>
+    </ol>
+    <q-pagination :model-value="currentPage"
+                  @update:model-value="toPage"
+                  :max="pageCount"
+                  :max-pages="6"
+                  direction-links
+                  boundary-links></q-pagination>
+<!--    <form-generator v-model="formData" :fields="fields"></form-generator>-->
   </q-page>
 </template>
 
@@ -56,9 +56,9 @@
       });
       watch(isPending, (newVal) => {
         if (newVal) {
-          // $q.loading.show();
+          $q.loading.show();
         } else {
-          // $q.loading.hide();
+          $q.loading.hide();
         }
       }, {immediate: true});
 

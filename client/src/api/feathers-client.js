@@ -23,7 +23,7 @@ const socket = io(process.env.VUE_APP_FEATHERS_URL || 'http://localhost:3030', {
 
 const feathersClient = feathers()
   .configure(socketio(socket, {
-    timeout: 10000
+    timeout: 20000
   }))
   .configure(auth({
     storage: window.localStorage //default: localStorage if available, MemoryStorage otherwise - The storage to store the access token
