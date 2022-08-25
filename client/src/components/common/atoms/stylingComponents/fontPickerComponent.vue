@@ -29,11 +29,11 @@
                    min="0"
                    :disabled="disableCheck($lget(element, 'styles.font-size', '0px'))"
                    :model-value="separateValues($lget(element, 'styles.font-size', '0px'))"
-                   @update:model-value="emitDebounce($event.target.value + pullUnit($lget(element, 'styles.font-size', '0px')), 'styles.font-size')"/>
+                   @update:model-value="emitDebounce($event.target['model-value'] + pullUnit($lget(element, 'styles.font-size', '0px')), 'styles.font-size')"/>
             <q-select style="font-size: 14px; border: 0; outline: 0; height: 25px;"
                     :model-value="pullUnit($lget(element, 'styles.font-size', '0px'))"
-                    @change="emitCheck(element, $event.target.value, 'styles.font-size')">
-              <!--$emit('stylesUpdate', { path: 'styles.font-size', value: separateValues($lget(element, 'styles.font-size', '0px')) + $event.target.value})-->
+                    @change="emitCheck(element, $event.target['model-value'], 'styles.font-size')">
+              <!--$emit('stylesUpdate', { path: 'styles.font-size', value: separateValues($lget(element, 'styles.font-size', '0px')) + $event.target['model-value']})-->
               <q-tooltip>
                 Select Unit
               </q-tooltip>
@@ -54,11 +54,11 @@
                    min="0"
                    :disabled="disableCheck($lget(element, 'styles.letter-spacing', '0px'))"
                    :model-value="separateValues($lget(element, 'styles.letter-spacing', '0px'))"
-                   @update:model-value="emitDebounce($event.target.value + pullUnit($lget(element, 'styles.letter-spacing', '0px')), 'styles.letter-spacing')"/>
+                   @update:model-value="emitDebounce($event.target['model-value'] + pullUnit($lget(element, 'styles.letter-spacing', '0px')), 'styles.letter-spacing')"/>
             <q-select style="font-size: 14px; border: 0; outline: 0; height: 25px"
                     :model-value="pullUnit($lget(element, 'styles.letter-spacing', '0px'))"
-                    @change="emitCheck(element, $event.target.value, 'styles.letter-spacing'); disableCheck($event.target.value)">
-              <!--$emit('stylesUpdate', { path: 'styles.letter-spacing', value: separateValues($lget(element, 'styles.letter-spacing', '0px')) + $event.target.value});-->
+                    @change="emitCheck(element, $event.target['model-value'], 'styles.letter-spacing'); disableCheck($event.target['model-value'])">
+              <!--$emit('stylesUpdate', { path: 'styles.letter-spacing', value: separateValues($lget(element, 'styles.letter-spacing', '0px')) + $event.target['model-value']});-->
               <q-tooltip>
                 Select Unit
               </q-tooltip>
@@ -78,7 +78,7 @@
           <q-select
             style="width: 100%; height: 25px; padding: 0; margin: 0; background-color: #f2f2f2; outline: 0; border: 0;"
             :model-value="$lget(element, 'styles.font-weight', 'normal')"
-            @change="$emit('stylesUpdate', { path: 'styles.font-weight', value: $event.target.value })">
+            @change="$emit('stylesUpdate', { path: 'styles.font-weight', value: $event.target['model-value'] })">
             <option v-for="unit in fontWeightOptions" :key="unit" :value="unit">{{ unit }}</option>
           </q-select>
         </div>
@@ -91,18 +91,24 @@
           <div>
             <p style="padding: 0; margin: 0;">Line Height</p>
           </div>
-          <div
-            style="width: 90%; height: 25px; display: flex; flex-direction: row; align-items: center; background-color: #f2f2f2">
+          <div style="width: 90%;
+                      height: 25px;
+                      display: flex;
+                      flex-direction: row;
+                      align-items: center;
+                      background-color: #f2f2f2">
             <q-input style="width: 100%;"
                    type="number"
                    min="0"
                    :disabled="disableCheck($lget(element, 'styles.line-height', '0px'))"
                    :model-value="separateValues($lget(element, 'styles.line-height', '0px'))"
-                   @update:model-value="emitDebounce($event.target.value + pullUnit($lget(element, 'styles.line-height', '0px')), 'styles.line-height')"/>
+                   @update:model-value="emitDebounce($event.target['model-value'] +
+                      pullUnit($lget(element, 'styles.line-height', '0px')), 'styles.line-height')"/>
             <q-select style="font-size: 14px; border: 0; outline: 0; height: 25px;"
                     :model-value="pullUnit($lget(element, 'styles.line-height', '0px'))"
-                    @change="emitCheck(element, $event.target.value, 'styles.line-height'); disableCheck($event.target.value)">
-              <!--$emit('stylesUpdate', { path: 'styles.line-height', value: separateValues($lget(element, 'styles.line-height', '0px')) + $event.target.value })-->
+                    @change="emitCheck(element, $event.target['model-value'], 'styles.line-height');
+                        disableCheck($event.target['model-value'])">
+              <!--$emit('stylesUpdate', { path: 'styles.line-height', value: separateValues($lget(element, 'styles.line-height', '0px')) + $event.target['model-value'] })-->
               <q-tooltip>
                 Select Unit
               </q-tooltip>
@@ -260,10 +266,11 @@
   import ColorPicker from './colorPicker';
   import FontPicker from 'components/formGeneratorCustom/FontPicker';
 
-  const debounce = require('lodash.debounce');
+  // eslint-disable-next-line no-undef
+  const debounce = require('lodash');
 
   export default {
-    name: 'font',
+    name: 'FontPickerComponent',
     components: {
       FontPicker,
       ColorPicker,
@@ -271,6 +278,9 @@
     props: {
       element: Object,
     },
+    emits: [
+      'stylesUpdate',
+    ],
     mounted() {
       this.setUnits();
     },
@@ -290,9 +300,9 @@
       },
     },
     methods: {
-      setFont($event) {
-        this.activeFont = $event.family;
-        this.$emit('stylesUpdate', {path: 'styles.font-family', value: $event.family});
+      setFont(event) {
+        this.activeFont = event.family;
+        this.$emit('stylesUpdate', {path: 'styles.font-family', 'model-value': event.family});
       },
       setUnits() {
         this.hex = this.computedColor;
