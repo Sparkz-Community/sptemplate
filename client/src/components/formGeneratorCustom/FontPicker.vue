@@ -28,18 +28,21 @@
 
   export default {
     name: 'FontPicker',
-    props: [
-      'activeFont',
-      'apiKey',
-      'options',
-    ],
+    inheritAttrs: false,
+    props: {
+      defaultFamily: String,
+      apiKey: String,
+      options: {
+        required: false,
+      },
+    },
     emits: [
       'change',
     ],
     data() {
       return {
         state: {
-          activeFont: this.activeFont,
+          activeFont: this.defaultFamily,
           errorText: '',
           expanded: false,
           loadingStatus: 'loading', // possible values: 'loading', 'finished', 'error'
@@ -55,10 +58,10 @@
       } else {
         this.pickerSuffix = '';
       }
-      // Initialize FontManager object and generate the font list
+      // Initialize FontPicker object and generate the font list
       this.fontPicker = new FontPicker(
         this.apiKey,
-        this.activeFont,
+        this.defaultFamily,
         this.options,
         this.setActiveFont,
       );
