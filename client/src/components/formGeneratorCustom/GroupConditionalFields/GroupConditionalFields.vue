@@ -2,8 +2,7 @@
   <div id="GroupConditionalFields" v-bind="$attrs['div-attrs']">
     <form-generator v-model="formData"
                     :fields="filteredFormFields"
-                    v-bind="$attrs['attrs']"
-                    v-on="listeners">
+                    v-bind="$attrs['attrs']">
       <template v-for="slot in slots"
                 v-slot:[slot]="slotProps">
         <slot :name="slot" v-bind="slotProps"></slot>
@@ -16,7 +15,7 @@
   export default {
     name: 'GroupConditionalFields',
     props: {
-      value: {
+      'model-value': {
         type: Object,
       },
       path: {
@@ -46,7 +45,7 @@
       };
     },
     watch: {
-      value: {
+      'model-value': {
         immediate: true,
         deep: true,
         handler(newVal) {
@@ -114,13 +113,7 @@
         }
       }
     },
-    computed: {
-      listeners() {
-        // eslint-disable-next-line no-unused-vars
-        const {...listeners} = this.$listeners;
-        return listeners;
-      },
-    },
+    computed: {},
     methods: {
       changeFun(changeData, key, newVal, oldVal) {
         let val = newVal;
