@@ -22,6 +22,7 @@
     "@feathersjs/feathers": "^4.5.15",
     "@feathersjs/rest-client": "^4.5.15",
     "@feathersjs/socketio-client": "^4.5.15",
+    "@iy4u/zangodb": "^0.0.4",
     "@quasar/extras": "^1.0.0",
     "@sparkz-community/auth-management-client-lib": "^0.1.9",
     "@sparkz-community/common-client-lib": "^0.1.14",

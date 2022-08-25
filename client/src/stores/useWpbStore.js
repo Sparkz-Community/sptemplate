@@ -1,15 +1,18 @@
 import { defineStore } from 'pinia';
 import {Notify} from 'quasar';
+
 import axios from 'axios';
-
-import useAuthStore from './store.auth';
-
 import ZangoDb from '@iy4u/zangodb';
 
 import {lodash} from '@sparkz-community/common-client-lib';
 const {$lget, $lset, $lcloneDeep, $lunset} = lodash;
 
-import {Timer} from '../plugins/timer';
+import {Timer} from '../utils/timer';
+
+import useAuthStore from './store.auth';
+import useWpbPagesStore from './services/wpb-pages';
+import useWpbProjectsStore from './services/wpb-projects';
+
 
 Date.prototype.toDateTimeNum = function () {
   const yyyy = this.getFullYear().toString();
@@ -330,9 +333,10 @@ export const useWpbStore = defineStore('wpb', {
             await new Promise((resolve, reject) => {
               collection.update({_id: change_record._id}, {active: true}, error => error ? reject(error) : resolve());
             });
-            // dispatch('setUndoRedoStatus', pageCopy);
+            // this.setUndoRedoStatus(pageCopy);
           }
-          dispatch('wpb-pages/addOrUpdate', pageCopy);
+          let wpbPagesStore = useWpbPagesStore();
+          wpbPagesStore.addOrUpdate(pageCopy);
 
           let newCurrentElement = $lget(pageCopy, $lget(change_record, 'meta.pathToMe'));
           this.setCurrentElement({
@@ -350,7 +354,9 @@ export const useWpbStore = defineStore('wpb', {
     addToSaveQueue({changes = [], meta = {}, pageId}) {
       this.saved = false;
       let currentElementCopy = $lcloneDeep(this.getCurrentElement);
-      let pageCopy = $lcloneDeep(getters['wpb-pages/get'](pageId));
+      let wpbPagesStore = useWpbPagesStore();
+
+      let pageCopy = $lcloneDeep(wpbPagesStore.getFromStore(pageId));
       changes = changes.filter(change => change.before !== change.after);
       console.log(currentElementCopy);
 
@@ -410,7 +416,9 @@ export const useWpbStore = defineStore('wpb', {
               // console.log('could not find so resetting db');
               let authStore = useAuthStore();
               let user = authStore.authUser;
-              let {data: projects} = await dispatch('wpb-projects/find', {query: {_id: {$in: $lget(user, 'projects', [])}}});
+
+              let wpbProjectsStore = useWpbProjectsStore();
+              let {data: projects} = await wpbProjectsStore.find({query: {_id: {$in: $lget(user, 'projects', [])}}});
               let currentProject = projects.find(item => item.pages.includes(pageId));
               // console.log('styles >> methods >> saveElement >> try find catch >> currentProject', currentProject);
               await this.setCurrentDbCollection({
@@ -450,7 +458,7 @@ export const useWpbStore = defineStore('wpb', {
               await collection.insert(queueCopy[i]);
             }
 
-            dispatch('wpb-pages/addOrUpdate', pageCopy);
+            wpbPagesStore.addOrUpdate(pageCopy);
 
             const treePathLength = $lget(payload, 'treePath', []).length;
             if (treePathLength) {
@@ -486,7 +494,8 @@ export const useWpbStore = defineStore('wpb', {
             }
           } catch {
             let user = authStore.authUser;
-            let {data: projects} = await dispatch('wpb-projects/find', {query: {_id: {$in: $lget(user, 'projects', [])}}});
+            let wpbProjectsStore = useWpbProjectsStore();
+            let {data: projects} = await wpbProjectsStore.find({query: {_id: {$in: $lget(user, 'projects', [])}}});
             let currentProject = projects.find(item => item.pages.includes(pageId));
             // console.log('styles >> methods >> debounceSave >> try find catch >> currentProject', currentProject);
             await this.setCurrentDbCollection({project: currentProject._id, user, page: pageId});
@@ -595,8 +604,9 @@ export const useWpbStore = defineStore('wpb', {
 
           let changes = currentActive.changes.filter(item => item.id === currentActive.meta.currentStateId);
           let last_change = changes[changes.length - 1];
+          let wpbPagesStore = useWpbPagesStore();
           // TODO: when you select the page and try to set css classes this code breaks. meta.treePath is undefined
-          let pageCopy = $lcloneDeep(getters['wpb-pages/get'](last_change.meta.treePath[last_change.meta.treePath.length - 1]._id));
+          let pageCopy = $lcloneDeep(wpbPagesStore.getFromStore(last_change.meta.treePath[last_change.meta.treePath.length - 1]._id));
           // let pageCopy = $lcloneDeep(getters['wpb-pages/get'](pageId));
           let currentValue = $lget(pageCopy, $lget(last_change, 'meta.pathToMe') + last_change.path);
           let activeState = 'after';
@@ -660,8 +670,10 @@ export const useWpbStore = defineStore('wpb', {
       });
     },
     async setUndoRedoStatus(page) {
+      let wpbPagesStore = useWpbPagesStore();
+
       let pageId = $lget(page, '_id', page);
-      let pageCopy = typeof page === 'string' ? $lcloneDeep(getters['wpb-pages/get'](pageId)) : $lcloneDeep(page);
+      let pageCopy = typeof page === 'string' ? $lcloneDeep(wpbPagesStore.getFromStore(pageId)) : $lcloneDeep(page);
       if (!pageId) {
         throw Error(`dispatch: setUndoRedoStatus -- page: ${pageCopy}`);
       }
