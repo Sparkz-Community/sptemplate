@@ -14,7 +14,7 @@
               {{ $lget(link, 'usedFor') }}
             </p>
             <div class="flex items-center q-mb-lg"
-                 style="border: 1px solid var(--q-color-primary); border-radius: 5px; overflow: hidden">
+                 style="border: 1px solid var(--q-primary); border-radius: 5px; overflow: hidden">
               <input style="border: none; flex: 1; height: 35px; font-size: 20px"
                      :ref="`link${index}`"
                      type="text" readonly
@@ -60,12 +60,12 @@
     name: 'referLinkGenerator',
     setup() {
       const $lget = inject('$lget');
-      const $activeAccount = inject('$activeAccount');
+      const activeAccount = inject('activeAccount');
 
       const query = computed(() => {
         return {
           _id: {
-            $in: $lget($activeAccount, 'referLinks', []),
+            $in: $lget(activeAccount.value, 'referLinks', []),
           }
         };
       });
@@ -75,7 +75,7 @@
         };
       });
 
-      const {items: referLinks} = useFindPaginate({
+      const {items: referLinks, error} = useFindPaginate({
         model: ReferLinks,
         qid: ref('referLinksList'),
         infinite: ref(true),
@@ -85,6 +85,10 @@
 
       return {
         referLinks,
+        error,
+        query,
+
+        activeAccount,
       };
     },
     data() {
@@ -170,7 +174,7 @@
     },
     methods: {
       generateLink() {
-        this.$lset(this.formData, 'subjectId', this.$activeAccount._id);
+        this.$lset(this.formData, 'subjectId', this.activeAccount._id);
 
         this.formData.create()
           .then(() => {

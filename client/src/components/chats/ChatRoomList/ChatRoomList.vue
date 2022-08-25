@@ -123,7 +123,7 @@
           $sort: {
             updatedAt: -1,
           },
-          participants: $lget(activeAccount, 'participant', null),
+          participants: $lget(activeAccount.value, 'participant', null),
           $or: [
             {
               participantEvents: {$size: 0},
