@@ -1,5 +1,14 @@
 import feathersClient from '../../api/feathers-client';
-import accounts from '@sparkz-community/common-client-lib/src/stores/services/accounts';
+import {stores, classes} from '@sparkz-community/common-client-lib';
+
+const {accounts} = stores;
+const {Accounts: BaseModel} = classes;
+
+export class Accounts extends BaseModel {
+  constructor(data, options) {
+    super(data, options);
+  }
+}
 
 export default accounts({
   feathersClient,
@@ -73,14 +82,8 @@ export default accounts({
     },
   },
   state() {
-    return {
-    
-    };
+    return {};
   },
-  getters: {
-  
-  },
-  actions: {
-  
-  },
+  getters: {},
+  actions: {},
 });

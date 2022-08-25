@@ -18,12 +18,12 @@
       AccountProfileComponent,
     },
     mounted() {
-      // this.$watch('stateAccount', async () => {
-      //   await this.setAccount();
-      // }, {
-      //   immediate: true,
-      //   deep: true,
-      // });
+      this.$watch('stateAccount', async () => {
+        await this.setAccount();
+      }, {
+        immediate: true,
+        deep: true,
+      });
     },
     data() {
       return {
