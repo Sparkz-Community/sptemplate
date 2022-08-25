@@ -1,4 +1,6 @@
-export default function (/*{store, ssrContext}*/) {
+import commonRoutes from './commonRoutes.js';
+
+export default function ({store, ssrContext}) {
   const routes = [
     {
       path: '/',
@@ -9,6 +11,14 @@ export default function (/*{store, ssrContext}*/) {
           name: 'home',
           component: () => import('pages/IndexPage.vue')
         },
+        {
+          path: 'notifications',
+          name: 'notifications',
+          // meta: {requiresAuth: true},
+          component: () => import ('pages/notifications/Notifications.vue'),
+        },
+
+        ...commonRoutes({store, ssrContext}),
       ],
     },
 
