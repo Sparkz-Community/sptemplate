@@ -1,28 +1,28 @@
 <template>
   <div id="FGSearchInput" v-bind="$attrs['div-attrs']">
-    <search-input v-bind="$attrs['attrs']"
-                  :use-email="useEmail"
-                  :model="model"
-                  :qid="qid"
-                  :model-value="'model-value'">
-      <!--      @selected="updateForm"-->
-      <template v-for="slot in slots"
-                v-slot:[slot]="slotProps">
-        <slot :name="slot" v-bind="slotProps"></slot>
-      </template>
-    </search-input>
+<!--    <search-input v-bind="$attrs['attrs']"-->
+<!--                  :use-email="useEmail"-->
+<!--                  :model="model"-->
+<!--                  :qid="qid"-->
+<!--                  :model-value="'model-value'">-->
+<!--      &lt;!&ndash;      @selected="updateForm"&ndash;&gt;-->
+<!--      <template v-for="slot in slots"-->
+<!--                v-slot:[slot]="slotProps">-->
+<!--        <slot :name="slot" v-bind="slotProps"></slot>-->
+<!--      </template>-->
+<!--    </search-input>-->
   </div>
 </template>
 
 <script>
-  import SearchInput from 'pages/messages/components/search-input';
-  import {BaseModel} from 'feathers-pinia';
+  // import SearchInput from 'pages/messages/components/search-input';
+  import { BaseModel } from 'feathers-pinia';
 
   export default {
     name: 'FGSearchInput',
     inheritAttrs: false,
     components: {
-      SearchInput,
+      // SearchInput,
     },
     props: {
       'model-value': {
