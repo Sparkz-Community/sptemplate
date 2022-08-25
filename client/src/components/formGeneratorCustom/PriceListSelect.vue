@@ -62,6 +62,7 @@
 
   export default {
     name: 'price-list-select',
+    inheritAttrs: false,
     setup() {
       const productsStore = useProducts;
 

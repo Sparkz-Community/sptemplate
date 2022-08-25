@@ -31,6 +31,7 @@
 
   export default {
     name: 'PlacesAutoComplete',
+    inheritAttrs: false,
     props: {
       'model-value': {
         type: [Number, String, Array, Object],

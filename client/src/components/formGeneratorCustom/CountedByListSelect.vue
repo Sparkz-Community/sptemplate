@@ -71,6 +71,7 @@
 
   export default {
     name: 'counted-by-list-select',
+    inheritAttrs: false,
     setup() {
       const accountsStore = useAccounts();
 

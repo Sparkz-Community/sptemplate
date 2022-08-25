@@ -90,6 +90,7 @@
 
   export default {
     name: 'TagPicker',
+    inheritAttrs: false,
     props: {
       divStyle: String,
       behavior: {

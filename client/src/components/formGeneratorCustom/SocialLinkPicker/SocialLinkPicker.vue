@@ -63,6 +63,7 @@
 <script>
   export default {
     name: 'SocialLinkPicker',
+    inheritAttrs: false,
     props: {
       'model-value': {
         type: Array,

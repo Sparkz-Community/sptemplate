@@ -21,6 +21,7 @@
 <script>
   export default {
     name: 'GroupFieldsExpansion',
+    inheritAttrs: false,
     props: {
       'model-value': {
         type: Object,

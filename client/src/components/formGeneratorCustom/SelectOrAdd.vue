@@ -95,6 +95,7 @@
 
   export default {
     name: 'SelectOrAdd',
+    inheritAttrs: false,
     components: {
       SelectInput,
     },

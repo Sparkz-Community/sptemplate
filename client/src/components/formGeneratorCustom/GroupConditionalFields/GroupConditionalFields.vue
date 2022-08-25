@@ -14,6 +14,7 @@
 <script>
   export default {
     name: 'GroupConditionalFields',
+    inheritAttrs: false,
     props: {
       'model-value': {
         type: Object,

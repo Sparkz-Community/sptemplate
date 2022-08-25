@@ -42,6 +42,7 @@
 
   export default {
     name: 'GoogleAddressInput',
+    inheritAttrs: false,
     components: {
       PlacesAutoComplete,
       PlacesAutoCompleteBox,

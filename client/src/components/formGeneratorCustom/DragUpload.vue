@@ -85,6 +85,7 @@
 
   export default {
     name: 'DragUpload',
+    inheritAttrs: false,
     props: {
       'model-value': [String, Array, Object],
       multiple: {

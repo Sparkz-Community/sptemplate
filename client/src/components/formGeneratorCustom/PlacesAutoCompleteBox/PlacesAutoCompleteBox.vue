@@ -61,6 +61,7 @@
 
   export default {
     name: 'PlacesAutoCompleteBox',
+    inheritAttrs: false,
     components: {
       PlacesAutoComplete,
     },
