@@ -1,15 +1,19 @@
 <template>
   <div id="ChatMessage">
-    <q-chat-message :sent="$lget(chat, 'sender') === $lget($activeAccount, 'participant')"
+    <q-chat-message :sent="$lget(chat, 'sender') === $lget(activeAccount, 'participant')"
                     :stamp="`${humanizedDate} ${editedTag}`"
                     :avatar="$lget(chat, '_fastjoin.sender._fastjoin.owner.avatar.raw.file')"
-                    :text-color="$lget(chat, 'sender') === $lget($activeAccount, 'participant') ? 'white' : $q.dark.mode ? 'white' : 'black'"
-                    :bg-color="$lget(chat, 'sender') === $lget($activeAccount, 'participant') ? 'primary' : $q.dark.mode ? 'grey-9' : 'accent'"
-                    :text="isDeleting ? [] : [$lget(chat, 'text')]">
+                    :text-color="$lget(chat, 'sender') === $lget(activeAccount, 'participant') ? 'white' : $q.dark.mode ? 'white' : 'black'"
+                    :bg-color="$lget(chat, 'sender') === $lget(activeAccount, 'participant') ? 'primary' : $q.dark.mode ? 'grey-9' : 'accent'">
       <q-spinner v-if="isDeleting" size="1.5em"/>
+      <template v-else>
+        <div v-for="(text, index) in isDeleting ? [] : [$lget(chat, 'text')]" :key="index">
+          {{text}}
+        </div>
+      </template>
 
       <template v-slot:name>
-        <q-icon v-if="$lget(chat, 'sender') === $lget($activeAccount, 'participant')"
+        <q-icon v-if="$lget(chat, 'sender') === $lget(activeAccount, 'participant')"
                 class="cursor-pointer"
                 name="more_horiz">
           <q-menu>
@@ -33,7 +37,7 @@
             </q-list>
           </q-menu>
         </q-icon>
-        {{ $lget(chat, 'sender') === $lget($activeAccount, 'participant') ? 'me' : $lget(chat, '_fastjoin.sender._fastjoin.owner.name') }}
+        {{ $lget(chat, 'sender') === $lget(activeAccount, 'participant') ? 'me' : $lget(chat, '_fastjoin.sender._fastjoin.owner.name') }}
         <slot name="newBadge"></slot>
       </template>
     </q-chat-message>
@@ -87,6 +91,9 @@
         required: true,
       }
     },
+    inject: [
+      'activeAccount',
+    ],
     data() {
       return {
         isDeleting: false,

@@ -72,10 +72,9 @@
   import {lodash, useFindPaginate} from '@sparkz-community/common-client-lib';
   import {mapState} from 'pinia';
   import {date /*QSpinnerCube*/} from 'quasar';
-  const {$ldebounce, $lgroupBy} = lodash;
+  const {$ldebounce} = lodash;
 
-  import useChats from 'stores/services/chats';
-  import { Chats } from 'stores/services/chats';
+  import useChats, { Chats } from 'stores/services/chats';
   import useParticipants from '../../../stores/services/participants';
   import {computed, inject, ref} from 'vue';
 
@@ -100,7 +99,7 @@
           $sort: {
             createdAt: -1,
           },
-          room: $lget(room, '_id', null),
+          room: $lget(room.value, '_id', null),
         };
       });
 
@@ -140,6 +139,7 @@
         chatsListTotal,
         chatsListCurrentPage,
         isChatsListPending,
+
         room,
         activeAccount,
       };
@@ -213,7 +213,7 @@
           // console.log('exactDate', exactDate);
           element.groupDate = date.formatDate(exactDate, 'MMM DD, YYYY');
         });
-        return $lgroupBy(this.chatsClone, 'groupDate');
+        return this.$lgroupBy(this.chatsClone, 'groupDate');
       },
     },
     methods: {
