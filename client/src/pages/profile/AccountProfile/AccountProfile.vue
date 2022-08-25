@@ -9,7 +9,7 @@
 <script>
   import {mapActions, mapState} from 'pinia';
   import Accounts from 'stores/services/accounts';
-  import Auth from '@sparkz-community/auth-management-client-lib';
+  import Auth from 'stores/store.auth';
   import AccountProfileComponent from '@sparkz-community/common-client-lib/src/components/profile/AccountProfile';
 
   export default {
@@ -54,7 +54,9 @@
         if (!account) {
           account = await this.getDbAccounts(id);
         }
+        console.log('this is account before clone: ', account);
         this.account = account.clone();
+        console.log('this is account after clone: ', account);
       },
     },
   };
