@@ -141,7 +141,6 @@
       }
     },
     emits: [
-      'refresh-rooms',
       'select-room',
     ],
     inject: ['activeAccount'],
@@ -254,7 +253,6 @@
               });
               this.newMembers = null;
               this.addMembersDialog = false;
-              this.$emit('refresh-rooms');
             })
             .catch(err => {
               this.$q.notify({
@@ -310,7 +308,6 @@
                     },
                   ],
                 });
-                this.$emit('refresh-rooms');
               })
               .catch(err => {
                 this.$q.notify({

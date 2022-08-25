@@ -36,8 +36,7 @@
              :key="index">
           <chat-room-item :model-value="{room}"
                           :current-room="currentRoom"
-                          @select-room="selectRoom"
-                          @refresh-rooms="roomsListRefresh"></chat-room-item>
+                          @select-room="selectRoom"></chat-room-item>
         </div>
       </q-expansion-item>
 
@@ -84,8 +83,7 @@
              :key="index">
           <chat-room-item :model-value="{room}"
                           :current-room="currentRoom"
-                          @select-room="selectRoom"
-                          @refresh-rooms="roomsListRefresh"></chat-room-item>
+                          @select-room="selectRoom"></chat-room-item>
         </div>
       </q-expansion-item>
     </q-list>
