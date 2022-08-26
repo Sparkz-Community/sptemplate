@@ -194,7 +194,7 @@
             href: this.$lget(attachment, ['raw', 'file']),
           }),
         );
-        console.log(this.form.attachments);
+        // console.log(this.form.attachments);
         this.uploadDialog = false;
         this.$q.notify({
           message: `added ${this.$lget(this.form, 'attachments', []).length} ${this.$lget(this.form, 'attachments', []).length > 1 ? 'attachments' : 'attachment'} `,
