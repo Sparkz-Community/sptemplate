@@ -2,24 +2,36 @@ import feathersClient from '../../api/feathers-client';
 import { defineStore, BaseModel } from 'feathers-pinia';
 
 
-export class Products  extends BaseModel {
+export class BoardTemplates extends BaseModel {
   constructor(data, options) {
     super(data, options);
   }
 
   // Define default properties here
-  static instanceDefaults() {
+  static instanceDefaults(/*data, {models, store}*/) {
     return {
-      title: undefined,
+      name: undefined,
+      order: 1,
+      color: undefined,
+      banner: undefined,
+      creator: undefined,
+      category: 'Other',
+      visibility: 'public',
       description: undefined,
-      priceBooks: [],
+      comments: [],
+      lists: [],
+      counts: [],
+      boards: [],
+      viewers: [],
+      sharedWith: [],
+      supportedServices: [],
     };
   }
 }
 
-const servicePath = 'products';
+const servicePath = 'board-templates';
 const useStore = defineStore({
-  Model: Products,
+  Model: BoardTemplates,
   servicePath,
   clients: { api: feathersClient },
   idField: '_id',
@@ -39,7 +51,7 @@ feathersClient.service(servicePath).hooks({
     create: [],
     update: [],
     patch: [],
-    remove: [],
+    remove: []
   },
   after: {
     all: [],
@@ -48,7 +60,7 @@ feathersClient.service(servicePath).hooks({
     create: [],
     update: [],
     patch: [],
-    remove: [],
+    remove: []
   },
   error: {
     all: [],
@@ -57,8 +69,8 @@ feathersClient.service(servicePath).hooks({
     create: [],
     update: [],
     patch: [],
-    remove: [],
-  },
+    remove: []
+  }
 });
 
 export default useStore;

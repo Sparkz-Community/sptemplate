@@ -2,7 +2,7 @@ import feathersClient from '../../api/feathers-client';
 import { defineStore, BaseModel } from 'feathers-pinia';
 
 
-export class Products  extends BaseModel {
+export class Events extends BaseModel {
   constructor(data, options) {
     super(data, options);
   }
@@ -10,16 +10,24 @@ export class Products  extends BaseModel {
   // Define default properties here
   static instanceDefaults() {
     return {
-      title: undefined,
-      description: undefined,
-      priceBooks: [],
+      name: '',
+      startDate: undefined,
+      endDate: undefined,
+      images: [],
+      eventTemplate: undefined,
+      templateMeta: {},
+      participantEvents: [],
+      parent: undefined,
+      children: [],
+      subjectId: undefined,
+      subjectModel: '',
     };
   }
 }
 
-const servicePath = 'products';
+const servicePath = 'events';
 const useStore = defineStore({
-  Model: Products,
+  Model: Events,
   servicePath,
   clients: { api: feathersClient },
   idField: '_id',
@@ -39,7 +47,7 @@ feathersClient.service(servicePath).hooks({
     create: [],
     update: [],
     patch: [],
-    remove: [],
+    remove: []
   },
   after: {
     all: [],
@@ -48,7 +56,7 @@ feathersClient.service(servicePath).hooks({
     create: [],
     update: [],
     patch: [],
-    remove: [],
+    remove: []
   },
   error: {
     all: [],
@@ -57,8 +65,8 @@ feathersClient.service(servicePath).hooks({
     create: [],
     update: [],
     patch: [],
-    remove: [],
-  },
+    remove: []
+  }
 });
 
 export default useStore;

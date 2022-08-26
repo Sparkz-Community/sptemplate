@@ -2,7 +2,7 @@ import feathersClient from '../../api/feathers-client';
 import { defineStore, BaseModel } from 'feathers-pinia';
 
 
-export class Products  extends BaseModel {
+export class GlAccounts extends BaseModel {
   constructor(data, options) {
     super(data, options);
   }
@@ -10,16 +10,16 @@ export class Products  extends BaseModel {
   // Define default properties here
   static instanceDefaults() {
     return {
-      title: undefined,
-      description: undefined,
-      priceBooks: [],
+      name: undefined,
+      parent: undefined,
+      children: [],
     };
   }
 }
 
-const servicePath = 'products';
+const servicePath = 'gl-accounts';
 const useStore = defineStore({
-  Model: Products,
+ Model:GlAccounts,
   servicePath,
   clients: { api: feathersClient },
   idField: '_id',
@@ -39,7 +39,7 @@ feathersClient.service(servicePath).hooks({
     create: [],
     update: [],
     patch: [],
-    remove: [],
+    remove: []
   },
   after: {
     all: [],
@@ -48,7 +48,7 @@ feathersClient.service(servicePath).hooks({
     create: [],
     update: [],
     patch: [],
-    remove: [],
+    remove: []
   },
   error: {
     all: [],
@@ -57,8 +57,8 @@ feathersClient.service(servicePath).hooks({
     create: [],
     update: [],
     patch: [],
-    remove: [],
-  },
+    remove: []
+  }
 });
 
 export default useStore;

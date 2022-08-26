@@ -1,8 +1,9 @@
 import feathersClient from '../../api/feathers-client';
 import { defineStore, BaseModel } from 'feathers-pinia';
 
+// eslint-disable-next-line no-undef
 
-export class Products  extends BaseModel {
+export class StreamGroups extends BaseModel {
   constructor(data, options) {
     super(data, options);
   }
@@ -10,16 +11,16 @@ export class Products  extends BaseModel {
   // Define default properties here
   static instanceDefaults() {
     return {
-      title: undefined,
-      description: undefined,
-      priceBooks: [],
+      name: '',
+      room: undefined,
+      streams: [],
     };
   }
 }
 
-const servicePath = 'products';
+const servicePath = 'stream-groups';
 const useStore = defineStore({
-  Model: Products,
+  Model: StreamGroups,
   servicePath,
   clients: { api: feathersClient },
   idField: '_id',
@@ -39,7 +40,7 @@ feathersClient.service(servicePath).hooks({
     create: [],
     update: [],
     patch: [],
-    remove: [],
+    remove: []
   },
   after: {
     all: [],
@@ -48,7 +49,7 @@ feathersClient.service(servicePath).hooks({
     create: [],
     update: [],
     patch: [],
-    remove: [],
+    remove: []
   },
   error: {
     all: [],
@@ -57,8 +58,8 @@ feathersClient.service(servicePath).hooks({
     create: [],
     update: [],
     patch: [],
-    remove: [],
-  },
+    remove: []
+  }
 });
 
 export default useStore;

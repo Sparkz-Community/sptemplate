@@ -1,25 +1,32 @@
 import feathersClient from '../../api/feathers-client';
 import { defineStore, BaseModel } from 'feathers-pinia';
 
+// eslint-disable-next-line no-undef
 
-export class Products  extends BaseModel {
+export class wpbSections extends BaseModel {
   constructor(data, options) {
     super(data, options);
   }
 
   // Define default properties here
-  static instanceDefaults() {
+  static instanceDefaults () {
     return {
-      title: undefined,
-      description: undefined,
-      priceBooks: [],
+      active: true,
+      parent: undefined,
+      styles: {},
+      classes: [],
+      children: [],
+      elements: [],
+      template: false,
+      baseSection: false,
+      page: undefined
     };
   }
 }
 
-const servicePath = 'products';
+const servicePath = 'wpb-sections';
 const useStore = defineStore({
-  Model: Products,
+  Model: wpbSections,
   servicePath,
   clients: { api: feathersClient },
   idField: '_id',
@@ -39,7 +46,7 @@ feathersClient.service(servicePath).hooks({
     create: [],
     update: [],
     patch: [],
-    remove: [],
+    remove: []
   },
   after: {
     all: [],
@@ -48,7 +55,7 @@ feathersClient.service(servicePath).hooks({
     create: [],
     update: [],
     patch: [],
-    remove: [],
+    remove: []
   },
   error: {
     all: [],
@@ -57,8 +64,8 @@ feathersClient.service(servicePath).hooks({
     create: [],
     update: [],
     patch: [],
-    remove: [],
-  },
+    remove: []
+  }
 });
 
 export default useStore;
