@@ -1,32 +1,39 @@
 import feathersClient from '../../api/feathers-client';
-import {defineStore, BaseModel} from 'feathers-pinia';
+import { defineStore, BaseModel } from 'feathers-pinia';
 
 
-export class Messages extends BaseModel {
+export class BoardTemplates extends BaseModel {
   constructor(data, options) {
     super(data, options);
   }
 
   // Define default properties here
-  static instanceDefaults() {
+  static instanceDefaults(/*data, {models, store}*/) {
     return {
-      from: undefined,
-      to: [],
-      subject: undefined,
-      body: '',
-      isExternal: true,
-      status: 'new',
-      attachments: [],
-      replies: [],
+      name: undefined,
+      order: 1,
+      color: undefined,
+      banner: undefined,
+      creator: undefined,
+      category: 'Other',
+      visibility: 'public',
+      description: undefined,
+      comments: [],
+      lists: [],
+      counts: [],
+      boards: [],
+      viewers: [],
+      sharedWith: [],
+      supportedServices: [],
     };
   }
 }
 
-const servicePath = 'in-app-messages';
+const servicePath = 'board-templates';
 const useStore = defineStore({
-  Model: Messages,
+  Model: BoardTemplates,
   servicePath,
-  clients: {api: feathersClient},
+  clients: { api: feathersClient },
   idField: '_id',
   state() {
     return {};
@@ -35,7 +42,7 @@ const useStore = defineStore({
   actions: {},
 });
 
-// Set up the client-side Feathers hooks.
+// Setup the client-side Feathers hooks.
 feathersClient.service(servicePath).hooks({
   before: {
     all: [],
@@ -44,7 +51,7 @@ feathersClient.service(servicePath).hooks({
     create: [],
     update: [],
     patch: [],
-    remove: [],
+    remove: []
   },
   after: {
     all: [],
@@ -53,7 +60,7 @@ feathersClient.service(servicePath).hooks({
     create: [],
     update: [],
     patch: [],
-    remove: [],
+    remove: []
   },
   error: {
     all: [],
@@ -62,8 +69,8 @@ feathersClient.service(servicePath).hooks({
     create: [],
     update: [],
     patch: [],
-    remove: [],
-  },
+    remove: []
+  }
 });
 
 export default useStore;

@@ -1,8 +1,9 @@
 import feathersClient from '../../api/feathers-client';
-import {defineStore, BaseModel} from 'feathers-pinia';
+import { defineStore, BaseModel } from 'feathers-pinia';
 
+// eslint-disable-next-line no-undef
 
-export class Messages extends BaseModel {
+export class WpbPagePublications extends BaseModel {
   constructor(data, options) {
     super(data, options);
   }
@@ -10,23 +11,21 @@ export class Messages extends BaseModel {
   // Define default properties here
   static instanceDefaults() {
     return {
-      from: undefined,
-      to: [],
-      subject: undefined,
-      body: '',
-      isExternal: true,
-      status: 'new',
-      attachments: [],
-      replies: [],
+      version: undefined,
+      publish_date: undefined,
+      end_date: undefined,
+      active: false,
+      page_id: undefined,
+      page: {}
     };
   }
 }
 
-const servicePath = 'in-app-messages';
+const servicePath = 'wpb-page-publications';
 const useStore = defineStore({
-  Model: Messages,
+ Model: WpbPagePublications,
   servicePath,
-  clients: {api: feathersClient},
+  clients: { api: feathersClient },
   idField: '_id',
   state() {
     return {};
@@ -35,7 +34,7 @@ const useStore = defineStore({
   actions: {},
 });
 
-// Set up the client-side Feathers hooks.
+// Setup the client-side Feathers hooks.
 feathersClient.service(servicePath).hooks({
   before: {
     all: [],
@@ -44,7 +43,7 @@ feathersClient.service(servicePath).hooks({
     create: [],
     update: [],
     patch: [],
-    remove: [],
+    remove: []
   },
   after: {
     all: [],
@@ -53,7 +52,7 @@ feathersClient.service(servicePath).hooks({
     create: [],
     update: [],
     patch: [],
-    remove: [],
+    remove: []
   },
   error: {
     all: [],
@@ -62,8 +61,8 @@ feathersClient.service(servicePath).hooks({
     create: [],
     update: [],
     patch: [],
-    remove: [],
-  },
+    remove: []
+  }
 });
 
 export default useStore;

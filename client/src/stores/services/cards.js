@@ -1,8 +1,8 @@
 import feathersClient from '../../api/feathers-client';
-import {defineStore, BaseModel} from 'feathers-pinia';
+import { defineStore, BaseModel } from 'feathers-pinia';
 
 
-export class Messages extends BaseModel {
+export class Cards extends BaseModel {
   constructor(data, options) {
     super(data, options);
   }
@@ -10,23 +10,27 @@ export class Messages extends BaseModel {
   // Define default properties here
   static instanceDefaults() {
     return {
-      from: undefined,
-      to: [],
-      subject: undefined,
-      body: '',
-      isExternal: true,
-      status: 'new',
-      attachments: [],
-      replies: [],
+      name: undefined,
+      description: undefined,
+      order: 0,
+      priority: undefined,
+      category: undefined,
+      tags: [],
+      parent: undefined,
+      children: [],
+      boards:[],
+      comments: [],
+      createdBy: undefined,
+      updatedBy: undefined,
     };
   }
 }
 
-const servicePath = 'in-app-messages';
+const servicePath = 'cards';
 const useStore = defineStore({
-  Model: Messages,
+   Model: Cards,
   servicePath,
-  clients: {api: feathersClient},
+  clients: { api: feathersClient },
   idField: '_id',
   state() {
     return {};
@@ -35,7 +39,7 @@ const useStore = defineStore({
   actions: {},
 });
 
-// Set up the client-side Feathers hooks.
+// Setup the client-side Feathers hooks.
 feathersClient.service(servicePath).hooks({
   before: {
     all: [],
@@ -44,7 +48,7 @@ feathersClient.service(servicePath).hooks({
     create: [],
     update: [],
     patch: [],
-    remove: [],
+    remove: []
   },
   after: {
     all: [],
@@ -53,7 +57,7 @@ feathersClient.service(servicePath).hooks({
     create: [],
     update: [],
     patch: [],
-    remove: [],
+    remove: []
   },
   error: {
     all: [],
@@ -62,8 +66,8 @@ feathersClient.service(servicePath).hooks({
     create: [],
     update: [],
     patch: [],
-    remove: [],
-  },
+    remove: []
+  }
 });
 
 export default useStore;
