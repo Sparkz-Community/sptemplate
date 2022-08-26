@@ -1,39 +1,41 @@
 <template>
-  <div id="GoogleAddressInput" v-bind="$attrs['div-attrs']">
-    <q-card>
-      <q-card-section>
-        <p v-if="label" class="text-h3">{{ label }}:</p>
+  <transition v-bind="attrs['transition-attrs']">
+    <div id="GoogleAddressInput" v-bind="$attrs['div-attrs']">
+      <q-card>
+        <q-card-section>
+          <p v-if="label" class="text-h3">{{ label }}:</p>
 
-        <q-card class="q-mb-sm">
-          <q-card-section>
-            <div class="row q-col-gutter-md">
-              <div class="col-12 col-sm-8">
-                <places-auto-complete :model-value="newEditedAddress"
-                                      @update:model-value="newEditedAddress = { ...'model-value', ...$event }"
-                                      @error="searchInput = ''"
-                                      :path="path">
-                </places-auto-complete>
-              </div>
+          <q-card class="q-mb-sm">
+            <q-card-section>
+              <div class="row q-col-gutter-md">
+                <div class="col-12 col-sm-8">
+                  <places-auto-complete :model-value="newEditedAddress"
+                                        @update:model-value="newEditedAddress = { ...'model-value', ...$event }"
+                                        @error="searchInput = ''"
+                                        :path="path">
+                  </places-auto-complete>
+                </div>
 
-              <div class="col-12 col-sm-4">
-                <div>
-                  <q-input v-model="newEditedAddress.name"
-                           label="Name"
-                           filled
-                           :hide-details="hide_details"></q-input>
+                <div class="col-12 col-sm-4">
+                  <div>
+                    <q-input v-model="newEditedAddress.name"
+                             label="Name"
+                             filled
+                             :hide-details="hide_details"></q-input>
+                  </div>
                 </div>
               </div>
-            </div>
-          </q-card-section>
-        </q-card>
+            </q-card-section>
+          </q-card>
 
-        <places-auto-complete-box :model-value="newEditedAddress"
-                                  :path="path"
-                                  :attrs="{readonly: true, borderless: false, 'hide-dropdown-icon': true}">
-        </places-auto-complete-box>
-      </q-card-section>
-    </q-card>
-  </div>
+          <places-auto-complete-box :model-value="newEditedAddress"
+                                    :path="path"
+                                    :attrs="{readonly: true, borderless: false, 'hide-dropdown-icon': true}">
+          </places-auto-complete-box>
+        </q-card-section>
+      </q-card>
+    </div>
+  </transition>
 </template>
 
 <script>

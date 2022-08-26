@@ -24,7 +24,6 @@
   export default defineComponent({
     name: 'IndexPage',
     setup() {
-      // eslint-disable-next-line no-unused-vars
       const $q = useQuasar();
 
       const usersStore = useUsers();
