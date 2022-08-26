@@ -1,7 +1,7 @@
 <template>
   <q-select v-bind="$attrs"
             :options="this['data']"
-            :model-value="'model-value'"
+            :model-value="modelValue"
             use-input
             @update:model-value="setModel"
             @filter="filterFn"
@@ -15,7 +15,7 @@
 
 <script>
   import {useFindPaginate} from '@sparkz-community/common-client-lib';
-  import {ref, toRef} from 'vue';
+  import {inject, ref, toRef} from 'vue';
 
   export default {
     name: 'search-input',
@@ -43,7 +43,7 @@
         type: String,
         default: 'name',
       },
-      'model-value': {
+      modelValue: {
         type: [Array, String],
         default() {
           return [];
@@ -51,10 +51,14 @@
       },
     },
     setup(props) {
-      useFindPaginate({
+      const $lmerge = inject('$lmerge');
+      const qid = toRef(props, 'qid');
+      const localQuery = ref({});
+
+      const { currentPage } = useFindPaginate({
         limit: ref(6),
         model: props.model,
-        qid: toRef(props, 'qid'),
+        qid: qid,
         infinite: ref(true),
         query() {
           // if (!['', null, undefined].includes(this.search)) {
@@ -67,15 +71,15 @@
           //     },
           //   ]);
           // }
-          return this.$lmerge({
+          return $lmerge({
             $sort: {
               name: 1,
             },
-          }, this.localQuery, props.customQuery);
+          }, localQuery, props.customQuery);
         },
         params() {
           return {
-            qid: this.qid,
+            qid: qid,
             debounce: 500,
             [`${props.model.servicePath}_fJoinHookResolversQuery`]: this.fastJoinResolverQuery,
           };
@@ -83,7 +87,8 @@
       });
 
       return {
-        useFindPaginate,
+        localQuery,
+        currentPage,
       };
     },
     emits: [
@@ -94,7 +99,6 @@
       return {
         sort: undefined,
         search: '',
-        localQuery: {},
       };
     },
     // mounted() {
@@ -102,7 +106,7 @@
     // },
     methods: {
       dataScroll() {
-        this[`${this.service}CurrentPage`] += 1;
+        this.currentPage += 1;
       },
       filterFn(val, update) {
         update(() => {
