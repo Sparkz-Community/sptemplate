@@ -1,7 +1,7 @@
 <template>
   <div id="header-nav" class="flex">
 
-    <template v-if="!$lisEmpty($authUser.value)">
+    <template v-if="!$lisEmpty(authUser)">
 <!--      <q-btn v-if="smallScreen"-->
 <!--             :text-color="showSearchToolbar ? 'accent' : 'dark'"-->
 <!--             dense-->
@@ -34,17 +34,20 @@
         <settings v-model:mini="menuMini" v-model:auto-expand="menuAutoExpand" @close="settingsOpen = false"></settings>
       </q-btn-dropdown>
 
-      <q-btn-dropdown id="user-menu" :content-style="{ 'max-height': 'unset', height: '100%' }" v-model="userInfoOpen"
-                      :text-color="$q.dark.isActive || dark ? '' : 'dark'" unelevated no-caps>
+      <q-btn-dropdown v-model="userInfoOpen"
+                      id="user-menu"
+                      :text-color="$q.dark.isActive || dark ? '' : 'dark'"
+                      unelevated
+                      no-caps>
         <template v-slot:label>
           <div class="row items-center no-wrap">
-            <random-avatar :user="$lget($store, 'auth/activeAccount', {})" :menu="false" size="md"></random-avatar>
+            <random-avatar :user="activeAccount" :menu="false" size="md"></random-avatar>
             <div v-if="!smallScreen" class="text-center text-bold q-pa-sm">
-              {{ $lget($store, 'auth/activeAccount.name', $lget($store, 'auth/activeAccount.email', '')) }}
+              {{ $lget(activeAccount, 'name', $lget(activeAccount, 'email', '')) }}
             </div>
           </div>
         </template>
-<!--        <user-info :data="loginAccountData"></user-info>-->
+        <user-info :data="loginAccountData"></user-info>
       </q-btn-dropdown>
     </template>
 
@@ -56,9 +59,9 @@
                label="Results"></q-btn>
         <q-btn @click="clickers('contact')" :style="btnStyle" :size="btnSz" color="primary" flat
                label="Contact"></q-btn>
-        <q-btn v-if="$lisEmpty($authUser.value)" @click="clickers('login')" :style="btnStyle" :size="btnSz" icon="mdi-finance"
+        <q-btn v-if="$lisEmpty(authUser)" @click="clickers('login')" :style="btnStyle" :size="btnSz" icon="mdi-finance"
                color="primary" rounded push label="Login"></q-btn>
-        <q-btn v-if="!$lisEmpty($authUser.value)" @click="clickers('logout')" :style="btnStyle" :size="btnSz"
+        <q-btn v-if="!$lisEmpty(authUser)" @click="clickers('logout')" :style="btnStyle" :size="btnSz"
                icon="mdi-finance"
                color="primary" rounded push label="Logout"></q-btn>
       </template>
@@ -66,7 +69,7 @@
         <q-btn flat color="primary" icon="mdi-menu">
           <q-menu>
             <q-list>
-              <q-item v-for="item in [ 'about', 'results', 'contact', `${$lisEmpty($authUser.value) ? 'login' : 'logout'}`]"
+              <q-item v-for="item in [ 'about', 'results', 'contact', `${$lisEmpty(authUser) ? 'login' : 'logout'}`]"
                       :key="item" clickable
                       @click="clickers(item)">
                 <q-item-section>
@@ -83,20 +86,23 @@
 </template>
 
 <script>
+  import {mapState} from 'pinia';
 
   import RandomAvatar from 'components/profile/RandomAvatar/RandomAvatar';
   import Settings from 'components/settings/settings';
   import Notifications from 'components/notifications/Notifications';
-  // import UserInfo from 'components/user/userInfo.vue';
+  import UserInfo from 'components/user/userInfo.vue';
+
+  import useAuthStore from 'stores/store.auth';
 
   export default {
+    name: 'HeaderNav',
     components: {
       Settings,
-      // UserInfo,
+      UserInfo,
       Notifications,
       RandomAvatar,
     },
-    name: 'HeaderNav',
     props: {
       dark: {
         type: Boolean,
@@ -105,6 +111,7 @@
         }
       },
     },
+    inject: ['authUser', 'activeAccount'],
     data() {
       return {
         scrollY: 0,
@@ -119,6 +126,9 @@
       };
     },
     computed: {
+      ...mapState(useAuthStore, {
+        accounts: 'accounts'
+      }),
       btnSz() {
         return this.scrollY > 100 ? 'sm' : 'md';
       },
@@ -127,8 +137,8 @@
       },
       loginAccountData() {
         return {
-          accounts: this.$lget(this.$store.state, 'auth.accounts', []),
-          activeAccount: this.$lget(this.$store.getters, 'auth/activeAccount', undefined)
+          accounts: this.accounts,
+          activeAccount: this.activeAccount,
         };
       },
     },
