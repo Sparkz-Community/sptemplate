@@ -43,6 +43,7 @@
 
   export default {
     name: 'accounts-filter',
+    inheritAttrs: false,
     setup() {
       const accountsStore = useAccounts;
 
@@ -64,15 +65,27 @@
       },
     },
     methods: {
+      // eslint-disable-next-line no-unused-vars
       addAccount(newVal) {
-        console.log('will add: ', newVal);
+        // console.log('will add: ', newVal);
 
+        /**
+         * This is the original code from website-Builder
+         */
         const form = new models.api.Accounts();
-        console.log(form);
-        this.$emit('add', newVal);
+        // console.log(form);
+        this.$emit('add', form);
+
+        /**
+         * This is what I assume would be the intended behavior
+         */
+        // const form = new models.api.Accounts(newVal);
+        // form.addToStore();
+        // // console.log(form);
+        // this.$emit('add', form);
       },
       selectedAccounts(newVal) {
-        console.log('selected: ', newVal);
+        // console.log('selected: ', newVal);
         this.$emit('update:model-value', newVal);
       },
     },

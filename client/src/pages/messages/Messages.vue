@@ -660,11 +660,11 @@
 
           if (newValue.fromDate) {
             const froUnixTimestamp = Math.floor(new Date(newValue.fromDate).getTime() / 1000);
-            console.log(froUnixTimestamp);
+            // console.log(froUnixTimestamp);
           }
           if (newValue.toDate) {
             const toUnixTimestamp = Math.floor(new Date(newValue.toDate).getTime() / 1000);
-            console.log(toUnixTimestamp);
+            // console.log(toUnixTimestamp);
           }
 
           if (newValue.hasAttachment) {
@@ -780,10 +780,10 @@
       },
 
       selectedToAccounts(newVal) {
-        console.log('selected: ', newVal);
+        // console.log('selected: ', newVal);
       },
       selectedFroAccounts(newVal) {
-        console.log('selected: ', newVal);
+        // console.log('selected: ', newVal);
       },
       closeFilters() {
         this.showAddFilters = false;
@@ -836,7 +836,7 @@
               },
             },
           }).then(() => {
-            console.log(`removed ${row.subject} from unseenTasks`);
+            // console.log(`removed ${row.subject} from unseenTasks`);
           });
         }
       },
@@ -904,13 +904,13 @@
         }).onOk(async () => {
           try {
             const {_id, from, to} = messageToDelete;
-            console.log('outbox: ', to, ': ', this.$lget(this.activeAccount, '_id'));
+            // console.log('outbox: ', to, ': ', this.$lget(this.activeAccount, '_id'));
             // if you are the sender
             if (from === this.$lget(this.activeAccount, '_id')) {
               const messagesYouSent = this.$lget(this.activeAccount, 'outbox', []);
               // remove this  from the list of messages you sent
               const outbox = messagesYouSent.filter(id => (id !== _id));
-              console.log('outbox: ', outbox);
+              // console.log('outbox: ', outbox);
               await this.activeAccount.save({
                 data: {outbox},
               });
@@ -924,7 +924,7 @@
               const messagesYouReceived = this.$lget(this.activeAccount, 'inbox', []);
               // remove this  from the list of messages you sent
               const inbox = messagesYouReceived.filter(id => (id !== _id));
-              console.log('inbox: ', inbox);
+              // console.log('inbox: ', inbox);
               await this.activeAccount.save({
                 data: {inbox},
               });
