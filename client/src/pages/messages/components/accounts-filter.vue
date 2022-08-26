@@ -11,7 +11,7 @@
     dense
     @add="addAccount"
     @selected="selectedAccounts"
-    :model-value="'model-value'"
+    :model-value="modelValue"
   >
     <template v-slot:option="scope">
       <q-item v-bind="scope.itemProps"
@@ -56,7 +56,7 @@
       'update:model-value',
     ],
     props: {
-      'model-value': {
+      modelValue: {
         type: [Array, String],
         default() {
           return [];

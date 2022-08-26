@@ -146,9 +146,7 @@
               Actions
             </q-th>
             <q-th v-else :props="props">
-              {{
-                capitalize(kebabize(props.col.name).replace('-', ' '))
-              }}
+              {{ capitalize(kebabize(props.col.name).replace('-', ' ')) }}
             </q-th>
 
           </template>
@@ -175,7 +173,7 @@
                                  :menu="false"/>
                   <p> {{ $lget(props, ['row', '_fastjoin', props.col.name, 'name']) }} </p>
                 </div>
-                <q-badge v-if="$lget($activeAccount, 'unseenMessages', []).includes($lget(props, ['row', '_id']))"
+                <q-badge v-if="$lget(activeAccount, 'unseenMessages', []).includes($lget(props, ['row', '_id']))"
                          id="newBadge"
                          class="q-ml-sm"
                          align="middle">new!
@@ -204,9 +202,7 @@
               <div style="max-width:16rem;" v-html="$lget(props, ['row', 'body'])" class="ellipsis text-caption"/>
             </q-td>
             <q-td v-else :props="props">
-              {{
-                $lget(props, ['row', props.col.name])
-              }}
+              {{ $lget(props, ['row', props.col.name]) }}
             </q-td>
 
           </template>
@@ -423,6 +419,7 @@
   import VueGroupAvatar from 'pages/messages/components/VueGroupAvatar/VueGroupAvatar';
 
   import useMessages from 'stores/services/messages';
+  import {computed, inject, ref} from 'vue';
 
   export default {
     name: 'Messages',
@@ -437,35 +434,99 @@
       DashboardLayout,
     },
     setup() {
-      const messagesStore = useMessages;
+      const $lget = inject('$lget');
+      const $lmerge = inject('$lmerge');
+      const messagesStore = useMessages();
 
-      useFindPaginate({
-        model: messagesStore.model,
-        qid: 'messages',
-        skip: 0,
-        limit: 8,
-        query() {
-          // console.log('twaha: ',query);
-          return Object.assign(
-            {},
+      const filter = ref({
+        words: '',
+        fromDate: '',
+        toDate: '',
+        hasAttachment: false,
+      });
+      const selectedFilters = ref([]);
+      const linkQuery = ref({});
+
+      const selectedFilterQuery = computed(() => {
+        let selectedFilterQuery = {};
+        selectedFilters.value.map(selectedFilter => {
+          $lmerge(selectedFilterQuery, $lget(selectedFilter, 'query', {}));
+        });
+        return selectedFilterQuery;
+      });
+      const searchBoxQuery = computed(() => {
+        const words = $lget(filter.value, 'words');
+        return {
+          $or: [
             {
-              $sort: {
-                updatedAt: -1,
-                status: 'new',
-              },
+              subject:
+                {
+                  $regex: words,
+                  $options: 'igm',
+                },
             },
-            this.linkQuery,
-            this.selectedFilterQuery,
-            this.searchBoxQuery,
-          );
-        },
-        params() {
-          return this.params;
-        },
+            {
+              body:
+                {
+                  $regex: words,
+                  $options: 'igm',
+                },
+            },
+          ],
+        };
+      });
+
+      const messagesQuery = computed(() => {
+        return Object.assign(
+          {},
+          {
+            $sort: {
+              updatedAt: -1,
+              status: 'new',
+            },
+          },
+          linkQuery.value,
+          selectedFilterQuery.value,
+          searchBoxQuery.value,
+        );
+      });
+      const messagesParams = computed(() => {
+        return {
+          // paginate: false,
+          ['in-app-messages_fJoinHookResolversQuery']: {
+            from: true,
+            to: true,
+          },
+          replyResolversQuery: {
+            replies: true,
+          },
+        };
+      });
+
+      const {
+        items: messages,
+        itemsCount: messagesTotal,
+        pagination: messagesPagination,
+        currentPage: messagesCurrentPage,
+      } = useFindPaginate({
+        model: messagesStore.Model,
+        qid: ref('messages'),
+        skip: ref(0),
+        limit: ref(8),
+        query: messagesQuery,
+        params: messagesParams,
       });
 
       return {
-        useFindPaginate,
+        messages,
+        messagesTotal,
+        messagesPagination,
+        messagesCurrentPage,
+        linkQuery,
+        filter,
+        searchBoxQuery,
+        selectedFilters,
+        selectedFilterQuery,
       };
     },
     mixins: [
@@ -489,11 +550,13 @@
         },
       }),
     ],
+    inject: [
+      'activeAccount',
+    ],
     data() {
       const DAY_MS = 7 * 24 * 60 * 60 * 1000;
       return {
         visibleColumns: [],
-        linkQuery: {},
         columns: [],
         selected: [],
         pagination: {
@@ -530,14 +593,6 @@
           },
 
         ],
-        selectedFilters: [],
-        filter: {
-          words: '',
-          fromDate: '',
-          toDate: '',
-          hasAttachment: false,
-
-        },
         link: 'inbox',
         showFilters: false,
         showAddFilters: false,
@@ -577,7 +632,7 @@
           if (newVal !== 'trash') {
             this.linkQuery = {
               _id: {
-                $in: this.$lget(this.$activeAccount, [newVal], []),
+                $in: this.$lget(this.activeAccount, [newVal], []),
               },
             };
           } else {
@@ -585,13 +640,13 @@
               $and: [
                 {
                   _id: {
-                    $nin: this.$lget(this.$activeAccount, 'outbox', []).concat(this.$lget(this.$activeAccount, 'inbox', [])),
+                    $nin: this.$lget(this.activeAccount, 'outbox', []).concat(this.$lget(this.activeAccount, 'inbox', [])),
                   },
                 },
                 {
                   $or: [
-                    {from: this.$lget(this.$activeAccount, '_id')},
-                    {to: this.$lget(this.$activeAccount, '_id')},
+                    {from: this.$lget(this.activeAccount, '_id')},
+                    {to: this.$lget(this.activeAccount, '_id')},
                   ],
                 },
               ],
@@ -643,9 +698,8 @@
       messagesTotal: {
         immediate: true,
         handler(newVal, oldVal) {
-
           if (newVal !== oldVal) {
-            this.pagination.rowsPerPage = this.messagesLimit;
+            this.pagination.rowsPerPage = this.messagesPagination.$limit;
             this.pagination.rowsNumber = newVal;
           }
         },
@@ -661,10 +715,10 @@
         return ['from', 'subject', 'body'];
       },
       messageLinks() {
-        // const  newInbox =  this.messages.filter(message => this.$activeAccount.inbox.includes(message._id) && message.status==='new').length;
+        // const  newInbox =  this.messages.filter(message => this.activeAccount.inbox.includes(message._id) && message.status==='new').length;
         //
-        const inbox = this.$lget(this.$activeAccount, 'inbox', []).length;
-        const outbox = this.$lget(this.$activeAccount, 'outbox', []).length;
+        const inbox = this.$lget(this.activeAccount, 'inbox', []).length;
+        const outbox = this.$lget(this.activeAccount, 'outbox', []).length;
         return [
           {
             icon: 'fas fa-inbox',
@@ -684,36 +738,6 @@
             path: 'trash',
           },
         ];
-      },
-
-      selectedFilterQuery() {
-        let selectedFilterQuery = {};
-        this.selectedFilters.map(filter => {
-          this.$lmerge(selectedFilterQuery, this.$lget(filter, 'query', {}));
-        });
-        return selectedFilterQuery;
-      },
-      searchBoxQuery() {
-        const words = this.$lget(this.filter, 'words');
-
-        return {
-          $or: [
-            {
-              subject:
-                {
-                  $regex: words,
-                  $options: 'igm',
-                },
-            },
-            {
-              body:
-                {
-                  $regex: words,
-                  $options: 'igm',
-                },
-            },
-          ],
-        };
       },
       searchPlaceholder() {
         if (this.link === 'inbox') {
@@ -738,19 +762,6 @@
           'options-cover': true,
         };
       },
-      params() {
-
-        return {
-          // paginate: false,
-          ['in-app-messages_fJoinHookResolversQuery']: {
-            from: true,
-            to: true,
-          },
-          replyResolversQuery: {
-            replies: true,
-          },
-        };
-      },
     },
     methods: {
       capitalize, kebabize, singularize,
@@ -759,7 +770,6 @@
         if (this.$q.screen.xs) {
           this.showAddFilters = true;
         }
-
       },
       toggleSelected(filter) {
         if (this.selectedFilters.some(f => f.label === filter.label)) {
@@ -796,7 +806,7 @@
 
       },
       setPagination(newVal) {
-        this.messagesLimit = newVal.pagination.rowsPerPage === 0 ? this['messagesTotal'] : newVal.pagination.rowsPerPage;
+        this.messagesPagination.$limit = newVal.pagination.rowsPerPage === 0 ? this['messagesTotal'] : newVal.pagination.rowsPerPage;
         this.messagesCurrentPage = newVal.pagination.page;
         this.pagination = newVal.pagination;
 
@@ -818,8 +828,8 @@
         this.openMessage = true;
         this.openedMessageId = row._id;
         this.openedMessage = row;
-        if (this.$lget(this.$activeAccount, 'unseenMessages', []).includes(row._id)) {
-          this.$activeAccount.patch({
+        if (this.$lget(this.activeAccount, 'unseenMessages', []).includes(row._id)) {
+          this.activeAccount.patch({
             data: {
               $pull: {
                 unseenMessages: row._id,
@@ -894,14 +904,14 @@
         }).onOk(async () => {
           try {
             const {_id, from, to} = messageToDelete;
-            console.log('outbox: ', to, ': ', this.$lget(this.$activeAccount, '_id'));
+            console.log('outbox: ', to, ': ', this.$lget(this.activeAccount, '_id'));
             // if you are the sender
-            if (from === this.$lget(this.$activeAccount, '_id')) {
-              const messagesYouSent = this.$lget(this.$activeAccount, 'outbox', []);
+            if (from === this.$lget(this.activeAccount, '_id')) {
+              const messagesYouSent = this.$lget(this.activeAccount, 'outbox', []);
               // remove this  from the list of messages you sent
               const outbox = messagesYouSent.filter(id => (id !== _id));
               console.log('outbox: ', outbox);
-              await this.$activeAccount.save({
+              await this.activeAccount.save({
                 data: {outbox},
               });
               this.linkQuery = {
@@ -909,13 +919,13 @@
                   $in: outbox,
                 },
               };
-            } else if (to.includes(this.$lget(this.$activeAccount, '_id'))) {
+            } else if (to.includes(this.$lget(this.activeAccount, '_id'))) {
               // if you are the receiver
-              const messagesYouReceived = this.$lget(this.$activeAccount, 'inbox', []);
+              const messagesYouReceived = this.$lget(this.activeAccount, 'inbox', []);
               // remove this  from the list of messages you sent
               const inbox = messagesYouReceived.filter(id => (id !== _id));
               console.log('inbox: ', inbox);
-              await this.$activeAccount.save({
+              await this.activeAccount.save({
                 data: {inbox},
               });
               this.linkQuery = {
@@ -964,7 +974,7 @@
         if (this.link !== 'trash') {
           this.linkQuery = {
             _id: {
-              $in: this.$lget(this.$activeAccount, [this.link], []),
+              $in: this.$lget(this.activeAccount, [this.link], []),
             },
           };
         } else {
@@ -972,13 +982,14 @@
             $and: [
               {
                 _id: {
-                  $nin: this.$lget(this.$activeAccount, 'outbox', []).concat(this.$lget(this.$activeAccount, 'inbox', [])),
+                  $nin: this.$lget(this.activeAccount, 'outbox', [])
+                    .concat(this.$lget(this.activeAccount, 'inbox', [])),
                 },
               },
               {
                 $or: [
-                  {from: this.$lget(this.$activeAccount, '_id')},
-                  {to: this.$lget(this.$activeAccount, '_id')},
+                  {from: this.$lget(this.activeAccount, '_id')},
+                  {to: this.$lget(this.activeAccount, '_id')},
                 ],
               },
             ],

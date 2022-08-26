@@ -15,17 +15,47 @@
 
 <script>
   import {useFindPaginate} from '@sparkz-community/common-client-lib';
-  import {BaseModel} from 'feathers-pinia';
+  import {ref, toRef} from 'vue';
 
   export default {
     name: 'search-input',
     inheritAttrs: false,
+    props: {
+      model: {
+        required: true,
+      },
+      qid: String,
+      path: {
+        type: String,
+        default: 'auto',
+      },
+      customQuery: {
+        type: Object,
+        default() {
+          return {};
+        },
+      },
+      useEmail: {
+        type: Boolean,
+        default: true,
+      },
+      searchField: {
+        type: String,
+        default: 'name',
+      },
+      'model-value': {
+        type: [Array, String],
+        default() {
+          return [];
+        },
+      },
+    },
     setup(props) {
       useFindPaginate({
-        limit: 6,
+        limit: ref(6),
         model: props.model,
-        qid: props.qid,
-        infinite: true,
+        qid: toRef(props, 'qid'),
+        infinite: ref(true),
         query() {
           // if (!['', null, undefined].includes(this.search)) {
           //   this.$lset(query, '$or', [
@@ -56,42 +86,10 @@
         useFindPaginate,
       };
     },
-    props: {
-      model: {
-        type: BaseModel,
-        required: true,
-      },
-      qid: String,
-      path: {
-        type: String,
-        default: 'auto',
-      },
-      customQuery: {
-        type: Object,
-        default() {
-          return {};
-        },
-      },
-      useEmail: {
-        type: Boolean,
-        default: true,
-      },
-      searchField: {
-        type: String,
-        default: 'name',
-      },
-      'model-value': {
-        type: [Array, String],
-        default() {
-          return [];
-        },
-      },
-    },
     emits: [
       'update:model-value',
       'add',
     ],
-    mixins: [],
     data() {
       return {
         sort: undefined,
@@ -99,9 +97,9 @@
         localQuery: {},
       };
     },
-    mounted() {
-      console.log(this.$attrs);
-    },
+    // mounted() {
+    //   console.log(this.$attrs);
+    // },
     methods: {
       dataScroll() {
         this[`${this.service}CurrentPage`] += 1;

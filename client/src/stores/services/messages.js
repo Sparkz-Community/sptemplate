@@ -34,7 +34,7 @@ const useStore = defineStore({
   actions: {},
 });
 
-// Setup the client-side Feathers hooks.
+// Set up the client-side Feathers hooks.
 feathersClient.service(servicePath).hooks({
   before: {
     all: [],
