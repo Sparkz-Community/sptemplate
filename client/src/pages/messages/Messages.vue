@@ -423,6 +423,7 @@
 
   export default {
     name: 'Messages',
+    inheritAttrs: false,
     components: {
       VueGroupAvatar,
       RandomAvatar,
