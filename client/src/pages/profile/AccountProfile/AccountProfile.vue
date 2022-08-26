@@ -36,7 +36,7 @@
         stateAccount: 'activeAccount',
       }),
       ...mapState(Accounts, {
-        getStateAccounts: 'get',
+        getStateAccounts: 'getFromStore',
       }),
     },
     methods: {
@@ -54,9 +54,7 @@
         if (!account) {
           account = await this.getDbAccounts(id);
         }
-        console.log('this is account before clone: ', account);
         this.account = account.clone();
-        console.log('this is account after clone: ', account);
       },
     },
   };
