@@ -659,10 +659,12 @@
         handler(newValue) {
 
           if (newValue.fromDate) {
+            // eslint-disable-next-line no-unused-vars
             const froUnixTimestamp = Math.floor(new Date(newValue.fromDate).getTime() / 1000);
             // console.log(froUnixTimestamp);
           }
           if (newValue.toDate) {
+            // eslint-disable-next-line no-unused-vars
             const toUnixTimestamp = Math.floor(new Date(newValue.toDate).getTime() / 1000);
             // console.log(toUnixTimestamp);
           }
@@ -779,9 +781,11 @@
         }
       },
 
+      // eslint-disable-next-line no-unused-vars
       selectedToAccounts(newVal) {
         // console.log('selected: ', newVal);
       },
+      // eslint-disable-next-line no-unused-vars
       selectedFroAccounts(newVal) {
         // console.log('selected: ', newVal);
       },
