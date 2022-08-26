@@ -17,6 +17,23 @@ export default function ({store, ssrContext}) {
           // meta: {requiresAuth: true},
           component: () => import ('pages/notifications/Notifications.vue'),
         },
+        {
+          path: 'projects',
+          name: 'projects',
+          meta: {requiresAuth: true},
+          component: () => import('pages/Projects'),
+        },
+        {
+          path: 'WpbEditor/:page_id?',
+          name: 'WpbEditor',
+          component: () => import('pages/WpbEditor/WpbEditor'),
+          props: (route) => {
+            return {
+              ...route.params,
+            };
+          },
+          meta: {requiresAuth: true},
+        },
 
         ...commonRoutes({store, ssrContext}),
       ],
