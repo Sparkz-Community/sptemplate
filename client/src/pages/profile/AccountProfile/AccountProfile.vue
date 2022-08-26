@@ -8,7 +8,7 @@
 
 <script>
   import {mapActions, mapState} from 'pinia';
-  import Accounts from 'stores/services/accounts';
+  import useAccountsStore from 'stores/services/accounts';
   import Auth from 'stores/store.auth';
   import AccountProfileComponent from '@sparkz-community/common-client-lib/src/components/profile/AccountProfile';
 
@@ -35,12 +35,12 @@
       ...mapState(Auth, {
         stateAccount: 'activeAccount',
       }),
-      ...mapState(Accounts, {
+      ...mapState(useAccountsStore, {
         getStateAccounts: 'getFromStore',
       }),
     },
     methods: {
-      ...mapActions(Accounts, {
+      ...mapActions(useAccountsStore, {
         getDbAccounts: 'get',
       }),
       tabClick(tab) {
