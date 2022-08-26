@@ -1,6 +1,6 @@
 <template>
   <q-page>
-    <lists v-if="boardTemplate" :item="boardTemplate">
+    <lists v-if="boardTemplate" v-model="boardTemplate">
       <template #update-name>
         <q-input v-model="boardTemplate.name" @keyup.enter="changeName"
                  borderless
@@ -52,15 +52,7 @@
   import {useFindPaginate} from '@sparkz-community/common-client-lib';
   import {Boards} from 'stores/services/boards';
   import {useQuasar} from 'quasar';
-
-  function getMaxOrder (objectArray) {
-    if ($lget(objectArray,'length')) {
-      const boardOrders = objectArray.map(item => item?.order);
-      return Math.max(...boardOrders);
-    } else {
-      return 1;
-    }
-  }
+  import {getMaxOrder} from 'pages/taskManager/utils';
 
   const $router = useRouter();
   const $q = useQuasar();
@@ -83,8 +75,10 @@
   });
   const {item: boardTemplate, changeName} = useItemLists({service: 'board-templates'});
 
-  watch(boardTemplate, (newVal) => {
-    boardTitle.value = $lget(newVal, 'name');
+  watch(boardTemplate, async (newVal) => {
+    if($lget(newVal,'_id')) {
+      await new models.api.BoardTemplates(newVal).save();
+    }
   }, {immediate: true, deep: true});
 
   watch(boards, (newVal) => {
@@ -117,39 +111,45 @@
       const boardToSave = new models.api.Boards({...data, lists: [...data.lists.map(lst => ({...lst, cards: []}))]});
 
       const addCardsInSequence = async (boardId) => {
-        for (let crd of cardsToAdd) {
-          delete crd._id;
-          const {total, data} = await models.api.Cards.find({
-            query: {
-              ...crd,
-            },
-          });
-          let crdAdded;
 
-          if (total) {
-            crdAdded = await data[0].save({
-              data: {
-                $addToSet: {
-                  boards: {
-                    id: boardId,
-                    currentList: $lget(crd, ['list']),
-                  },
-                },
+        try{
+          for (let crd of cardsToAdd) {
+            delete crd._id;
+            const {total, data} = await models.api.Cards.find({
+              query: {
+                ...crd,
               },
             });
-          } else {
-            crdAdded = await new models.api.Cards({
-              ...crd,
-              boards: [{
-                id: boardId,
-                currentList: $lget(crd, ['list']),
-              }],
-            }).save();
-          }
+            let crdAdded;
 
-          console.log(`Added ${crdAdded}`);
+            if (total) {
+
+              crdAdded = await data[0].save({
+                data: {
+                  $addToSet: {
+                    boards: {
+                      id: boardId,
+                      currentList: $lget(crd, ['list']),
+                    },
+                  },
+                },
+              });
+            } else {
+              crdAdded = await new models.api.Cards({
+                ...crd,
+                boards: [{
+                  id: boardId,
+                  currentList: $lget(crd, ['list']),
+                }],
+              }).save();
+            }
+
+            console.log(`Added ${crdAdded}`);
+          }
+        } catch (err) {
+          console.log({err});
         }
-        console.log('All cards Added');
+
       };
 
 
@@ -158,7 +158,7 @@
         boardToSave.save(),
         boards.value.filter(item => item.order >= boardToSave.order).map(item => item.save({data: {order: (item.order + 1)}})),
       ]);
-
+      console.log('oooo',{savedBoard});
       if (keepCards.value) {
         await addCardsInSequence(savedBoard._id);
       }

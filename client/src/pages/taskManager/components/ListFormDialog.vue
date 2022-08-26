@@ -5,7 +5,7 @@
       <q-header class="bg-primary">
         <q-toolbar>
           <q-toolbar-title>{{ formData['_id'] ? 'Edit' : 'New' }} List</q-toolbar-title>
-          <q-btn flat v-close-popup round dense icon="close"/>
+          <q-btn flat  round dense icon="close" @click="$emit('close')"/>
         </q-toolbar>
       </q-header>
 
@@ -15,10 +15,10 @@
           <q-toggle v-model="formData.completeCard" label="Completes Card"></q-toggle>
         </q-page>
       </q-page-container>
-
       <q-footer :class="$q.dark.mode ? 'bg-dark' : 'bg-white'" bordered>
-        <q-toolbar>
+        <q-toolbar class="row justify-between">
           <q-btn color="primary" @click="$emit('save-list',formData)">Save</q-btn>
+          <q-btn v-if="initialValue?.value?._id" color="negative" @click="$emit('delete-list',formData)">Delete</q-btn>
         </q-toolbar>
       </q-footer>
     </q-layout>
@@ -49,7 +49,7 @@
   const formData = ref({});
 
   watch(props.initialValue,function (newVal) {
-    formData.value = newVal;
+    formData.value = newVal.value;
   },{ deep: true, immediate: true});
 
   const fields = computed(() => [

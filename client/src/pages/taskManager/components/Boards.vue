@@ -81,15 +81,8 @@
   import {QSpinnerFacebook, useQuasar} from 'quasar';
   import useColorStore from 'stores/services/colors';
   import {storeToRefs} from 'pinia';
+  import {getMaxOrder, moveItem} from '../utils';
 
-  function getMaxOrder (objectArray) {
-    if ($lget(objectArray,'length')) {
-      const boardOrders = objectArray.map(item => item?.order);
-      return Math.max(...boardOrders) + 1;
-    } else {
-      return 1;
-    }
-  }
 
   const $lget = inject('$lget');
   const $q = useQuasar();
@@ -359,65 +352,13 @@
   async function onDrop(dragResult) {
     const {removedIndex, addedIndex, payload} = dragResult;
     if (removedIndex !== null && !!addedIndex) {
-
-      if (removedIndex > addedIndex) {
-        $q.loading.show({
-          spinner: QSpinnerFacebook,
-          spinnerColor: $lget(payload, 'color.hexa', 'teal'),
-          spinnerSize: 140,
-          message: `moving ${payload.name}.`,
-        });
-        await Promise.all([
-          payload.save({
-            ...props.params,
-            data: {
-              order: addedIndex,
-            },
-          }),
-          items.value.filter(item => $lget(item, '_id') !== $lget(payload, '_id'))
-            .filter(item => (item.order < removedIndex && item.order >= addedIndex))
-            .map(item => item.save({
-              ...props.params,
-              data: {
-                order: (item.order + 1),
-              },
-
-            })),
-        ]);
-        $q.loading.hide();
-        openItemDialog.value = false;
-      }
-
-      if (removedIndex < addedIndex) {
-        $q.loading.show({
-          spinner: QSpinnerFacebook,
-          spinnerColor: $lget(payload, 'color.hexa', 'teal'),
-          spinnerSize: 140,
-          message: `moving ${payload.name}.`,
-        });
-        await Promise.all([
-          payload.save({
-            ...props.params,
-            data: {
-              order: addedIndex,
-            },
-          }),
-          items.value.filter(item => $lget(item, '_id') !== $lget(payload, '_id'))
-            .filter(item => (item.order > removedIndex && item.order <= addedIndex))
-            .map(item => item.save({
-              ...props.params,
-              data: {
-                order: (item.order - 1),
-              },
-            })),
-        ]);
-        $q.loading.hide();
-        openItemDialog.value = false;
-      }
-
+      const allItems =  moveItem(removedIndex,addedIndex,payload,items.value);
+      await Promise.all([
+        allItems.map(item => item.save(props.params)),
+      ]);
+      openItemDialog.value = false;
     }
   }
-
 
   async function handleSaveItem() {
     try {
