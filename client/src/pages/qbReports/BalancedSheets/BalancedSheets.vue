@@ -1,7 +1,7 @@
 <template>
   <dashboard-layout
     :dashboard-side-menu-links="reportsLinks"
-    @clicked-link="link=$event"
+    @clicked-link="link = $event"
   >
     <template #side-menu-top>
       <q-btn class="q-mb-md q-mt-xs fill-width"
@@ -83,7 +83,11 @@
 
   export default {
     name: 'BalanceSheets',
-    components: {ReportItemList, InboxDialog, DashboardLayout},
+    components: {
+      ReportItemList,
+      InboxDialog,
+      DashboardLayout,
+    },
     data() {
       return {
         showFilters: false,
@@ -106,7 +110,7 @@
     computed: {
       query() {
         const active = this.reportsLinks.find(item => item.path === this.link);
-        console.log('active', active);
+        // console.log('active', active);
         return this.$lget(active, 'query', {});
       },
     },

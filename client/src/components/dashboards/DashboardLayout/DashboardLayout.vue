@@ -78,7 +78,9 @@
 
   export default {
     name: 'DashboardLayout',
-    components: {DashboardMenuItem},
+    components: {
+      DashboardMenuItem,
+    },
     props: {
       dashboardSideMenuLinks: {
         type: Array,
@@ -99,9 +101,6 @@
     emits: [
       'clicked-link',
     ],
-    create() {
-      console.log('this is a new log');
-    },
     data() {
       return {
         drawer: false,

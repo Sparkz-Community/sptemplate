@@ -13,7 +13,9 @@
   import ReportItem from '../ReportItem/ReportItem';
   export default {
     name: 'ReportItemList',
-    components: {ReportItem},
+    components: {
+      ReportItem,
+    },
     props: {
       data: {
         type: Object,
