@@ -16,15 +16,19 @@
             <div style="width: 100%; display: flex;flex-direction: row;position: absolute;top: 0;left: 0;z-index: 1;"
                  v-if="allBorderColor">
               <div style="display: flex; flex-direction: column;">
-                <q-btn round color="positive" icon="check" class="q-mb-sm q-mr-sm"
+                <q-btn round
+                       color="positive"
+                       icon="check"
+                       class="q-mb-sm q-mr-sm"
                        @click="initialBorder(setColor)"></q-btn>
-                <q-btn round color="negative" icon="close" class="q-mb-sm q-mr-sm"
+                <q-btn round
+                       color="negative"
+                       icon="close"
+                       class="q-mb-sm q-mr-sm"
                        @click="allBorderColor = false"></q-btn>
               </div>
-              <ColorPicker
-                :value="$lget(element, 'styles.border-top', '0 0 0').split(' ')[2]"
-                @colorPicker="setColor = $event"
-              />
+              <ColorPicker :value="$lget(element, 'styles.border-top', '0 0 0').split(' ')[2]"
+                           @colorPicker="setColor = $event"/>
             </div>
           </transition>
         </div>
@@ -34,13 +38,11 @@
           <span class=" text-weight-light q-mr-md">Border Width (px)</span>
         </div>
         <div class="inputBackground" style="display: flex; flex-direction: row; align-items: center;">
-          <input
-            style="width: 100%;"
-            :value="separateValues($lget(element, 'styles.border-top', '0 0 0').split(' ')[0])"
-            @input="initialBorder('setWidth', $event)"
-            type="number"
-            min="0"
-          />
+          <input style="width: 100%;"
+                 :value="separateValues($lget(element, 'styles.border-top', '0 0 0').split(' ')[0])"
+                 @input="initialBorder('setWidth', $event)"
+                 type="number"
+                 min="0"/>
         </div>
       </div>
       <div style="display: flex; justify-content: flex-start;align-items: center;" v-if="bordersSame" class="q-mt-sm">
@@ -48,11 +50,9 @@
           <span class=" text-weight-light q-mr-md">Border Style</span>
         </div>
         <div class="inputBackground" style="display: flex; flex-direction: row; align-items: center;">
-          <select
-            :value="$lget(element, 'styles.border-top', '0 0 0').split(' ')[1]"
-            @change="initialBorder($event.target.value)"
-            style="width: 80px;"
-          >
+          <select :value="$lget(element, 'styles.border-top', '0 0 0').split(' ')[1]"
+                  @change="initialBorder($event.target.value)"
+                  style="width: 80px;">
             <option v-for="unit in borderStyles" :key="unit" :value="unit">{{ unit }}</option>
           </select>
         </div>
@@ -67,13 +67,11 @@
           </q-icon>
         </div>
         <div class="inputBackground" style="display: flex; flex-direction: row; align-items: center;">
-          <input
-            style="width: 100%;"
-            :value="separateValues($lget(element, 'styles.border-radius'))"
-            @input="emitDebounce($event.target.value + 'px', 'styles.border-radius')"
-            type="number"
-            min="0"
-          />
+          <input style="width: 100%;"
+                 :value="separateValues($lget(element, 'styles.border-radius'))"
+                 @input="emitDebounce($event.target.value + 'px', 'styles.border-radius')"
+                 type="number"
+                 min="0"/>
         </div>
       </div>
     </q-card-section>
@@ -83,7 +81,8 @@
           <div class="addButton">
             <q-btn round icon="add" size="sm" color="black" @click="editing.top = !editing.top"/>
             <transition name="slide-fade">
-              <border-editing v-if="editing.top" position="top"
+              <border-editing v-if="editing.top"
+                              position="top"
                               :element-border-properties="$lget(element, 'styles.border-top')"
                               @close="editing.top = false"
                               @changeColor="$emit('stylesUpdate', $event)"></border-editing>
@@ -93,7 +92,8 @@
             <div class="addButton">
               <q-btn round icon="add" size="sm" color="black" @click="editing.left = !editing.left"/>
               <transition name="slide-fade">
-                <border-editing v-if="editing.left" position="left"
+                <border-editing v-if="editing.left"
+                                position="left"
                                 :element-border-properties="$lget(element, 'styles.border-left')"
                                 @close="editing.left = false"
                                 @changeColor="$emit('stylesUpdate', $event)"></border-editing>
@@ -104,7 +104,8 @@
             <div class="addButton">
               <q-btn round icon="add" size="sm" color="black" @click="editing.right = !editing.right"/>
               <transition name="slide-fade">
-                <border-editing v-if="editing.right" position="right"
+                <border-editing v-if="editing.right"
+                                position="right"
                                 :element-border-properties="$lget(element, 'styles.border-right')"
                                 @close="editing.right = false"
                                 @changeColor="$emit('stylesUpdate', $event)"></border-editing>
@@ -114,7 +115,9 @@
           <div class="addButton">
             <q-btn round icon="add" size="sm" color="black" @click="editing.bottom = !editing.bottom"/>
             <transition name="slide-fade">
-              <border-editing v-if="editing.bottom" position="bottom" @close="editing.bottom = false"
+              <border-editing v-if="editing.bottom"
+                              position="bottom"
+                              @close="editing.bottom = false"
                               :element-border-properties="$lget(element, 'styles.border-bottom')"
                               @changeColor="$emit('stylesUpdate', $event)"></border-editing>
             </transition>
@@ -128,10 +131,12 @@
 </template>
 
 <script>
-  import ColorPicker from 'components/common/atoms/stylingComponents/colorPicker';
-  import BorderEditing from 'components/common/atoms/stylingComponents/border/borderEditing';
+  import {lodash} from '@sparkz-community/common-client-lib';
+  const {$ldebounce} = lodash;
 
-  const debounce = require('lodash.debounce');
+  import ColorPicker from './colorPicker';
+  import BorderEditing from './border/borderEditing';
+
 
   export default {
     name: 'borderSettings',
@@ -350,7 +355,7 @@
           return 'none';
         } else return 'px';
       },
-      emitDebounce: debounce(function (value, path) {
+      emitDebounce: $ldebounce(function (value, path) {
         this.$emit('stylesUpdate', {
           path,
           value,

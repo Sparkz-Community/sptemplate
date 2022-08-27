@@ -11,11 +11,9 @@
       </p>
     </div>
     <p style="margin: 0">Label: </p>
-    <input
-      class="inputBackground"
-      :value="$lget(elementData, 'src')"
-      @input="debounce({path: 'src', value: $event.target.value})"
-    />
+    <input class="inputBackground"
+           :value="$lget(elementData, 'src')"
+           @input="debounce({path: 'src', value: $event.target.value})"/>
   </div>
 </template>
 
@@ -23,12 +21,12 @@
   export default {
     name: 'mapSettings',
     props: {
-      element: Object
+      element: Object,
     },
     data() {
       return {
         timer: new this.$timer(),
-        elementData: {}
+        elementData: {},
       };
     },
     watch: {
@@ -37,8 +35,8 @@
         deep: true,
         handler(newVal) {
           this.elementData = this.$lcloneDeep(newVal);
-        }
-      }
+        },
+      },
     },
     methods: {
       debounce(val) {
@@ -47,22 +45,22 @@
         };
         this.timer.start({cb: emit, iv: 2000});
         console.log('emitting......');
-      }
-    }
+      },
+    },
   };
 </script>
 
 <style scoped>
-.inputBackground {
-  background-color: #f2f2f2;
-  border: none;
-}
+  .inputBackground {
+    background-color: #f2f2f2;
+    border: none;
+  }
 
 
-p {
-  color: #848484;
-  margin: 0;
-  padding: 0;
-}
+  p {
+    color: #848484;
+    margin: 0;
+    padding: 0;
+  }
 
 </style>

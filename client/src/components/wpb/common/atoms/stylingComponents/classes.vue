@@ -29,7 +29,7 @@
             </q-item-section>
           </q-item>
         </template>
-        <template v-slot:option="scope" style="position: relative;">
+        <template v-slot:option="scope"><!-- style="position: relative;" -->
           <q-item v-if="scope"
                   @mouseleave="onOptionLeave(scope.opt)"
                   @mouseover="onOptionHover(scope.opt)"
@@ -39,8 +39,9 @@
               <q-icon :color="isSelected(scope.opt) ? color : 'grey-5'" :name="tagIcon" size="sm"></q-icon>
             </q-item-section>
             <q-item-section>
-              <q-item-label class="text-xs text-mb-sm text-weight-light text-grey"
-                            v-html="$wpbHighlight(scope.opt.name, scope.opt.classValue)"></q-item-label>
+              <q-item-label class="text-xs text-mb-sm text-weight-light text-grey">
+                <span v-html="$wpbHighlight(scope.opt.name, scope.opt.classValue)"></span>
+              </q-item-label>
             </q-item-section>
           </q-item>
           <q-item v-else>
@@ -65,7 +66,12 @@
 
 
 <script>
-  import {mapActions} from 'vuex';
+  import {mapActions, mapState} from 'pinia';
+
+  import {useWpbStore} from 'stores/useWpbStore';
+  import useWpbElements from 'stores/services/wpb-elements';
+  import useWpbSections from 'stores/services/wpb-sections';
+  import useWpbPages from 'stores/services/wpb-pages';
 
   export default {
     name: 'Classes',
@@ -180,14 +186,20 @@
       },
     },
     computed: {
-      stateClasses() {
-        return this.$store.getters['getAvailableClasses'];
-      },
+      ...mapState(useWpbStore, {
+        stateClasses: 'getAvailableClasses',
+      }),
     },
     methods: {
-      ...mapActions('wpb-pages', {patchPage: 'patch'}),
-      ...mapActions('wpb-elements', {patchElement: 'patch'}),
-      ...mapActions('wpb-sections', {patchSection: 'patch'}),
+      ...mapActions(useWpbElements, {
+        patchElement: 'patch',
+      }),
+      ...mapActions(useWpbSections, {
+        patchSection: 'patch',
+      }),
+      ...mapActions(useWpbPages, {
+        patchPage: 'patch',
+      }),
       isSelected(tag) {
         if (Array.isArray(this.selected)) {
           if (this.multiple) return this.selected.map(item => item.label + item.name).indexOf(tag.label + tag.name) > -1;

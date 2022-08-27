@@ -47,7 +47,9 @@
 </template>
 
 <script>
-  import {mapFields} from 'vuex-map-fields';
+  import {mapWritableState} from 'pinia';
+  
+  import {useWpbStore} from 'stores/useWpbStore';
 
   export default {
     name: 'editingOptions',
@@ -70,11 +72,10 @@
         deleteDialog: false
       };
     },
-    created() {
-    },
-    mounted() {
-    },
     computed: {
+      ...mapWritableState(useWpbStore, {
+        currentElement: 'currentElement',
+      }),
       feathersAxios() {
         return this.$axios.create({
           baseURL: process.env.VUE_APP_FEATHERS_URL || 'http://localhost:3030',
@@ -88,7 +89,6 @@
       jumpToParent() {
         return {...this.parent, parentJump: true};
       },
-      ...mapFields(['currentElement']),
       handleMessage() {
         if (this.deleteItem._type) {
           return 'element';

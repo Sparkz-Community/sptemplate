@@ -161,7 +161,7 @@
 </template>
 
 <script>
-  import GridFlex from 'components/stylingComponents/gridFlex';
+  import GridFlex from 'components/wpb/stylingComponents/gridFlex';
 
   export default {
     name: 'general',

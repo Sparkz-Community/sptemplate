@@ -33,7 +33,8 @@
 </template>
 
 <script>
-  const {lodash: {$ldebounce}} = require('@iy4u/common-client-lib');
+  import {lodash} from '@sparkz-community/common-client-lib';
+  const {$ldebounce} = lodash;
 
   export default {
     name: 'hyperLinkSettings',

@@ -129,8 +129,14 @@
 </template>
 
 <script>
+  import {mapActions, mapState, mapWritableState} from 'pinia';
+
+  import {useWpbStore} from 'stores/useWpbStore';
+  import useAuthStore from 'stores/store.auth';
+  import useWpbElements from 'stores/services/wpb-elements';
+  import useWpbSections from 'stores/services/wpb-sections';
+
   import draggableTree from 'components/common/atoms/draggableTree/draggableTree';
-  import {mapActions, mapGetters} from 'vuex';
 
   export default {
     name: 'layers',
@@ -141,6 +147,7 @@
       form: Object,
       parentHeight: Number,
     },
+    inject: ['authUser'],
     data() {
       return {
         formCopy: {},
@@ -234,8 +241,11 @@
       },
     },
     computed: {
-      ...mapGetters('auth', {
-        user: 'user',
+      ...mapWritableState(useWpbStore, {
+        currentElement: 'currentElement',
+      }),
+      ...mapState(useAuthStore, {
+        accessToken: (state) => state?.payload?.accessToken,
       }),
       axiosFeathers() {
         return this.$axios.create({
@@ -243,7 +253,7 @@
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
-            Authorization: 'Bearer ' + this.$store.state.auth.accessToken,
+            Authorization: 'Bearer ' + this.accessToken,
           },
         });
       },
@@ -253,7 +263,7 @@
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
-            Authorization: 'Bearer ' + this.$store.state.auth.accessToken,
+            Authorization: 'Bearer ' + this.accessToken,
           },
         });
       },
@@ -268,21 +278,15 @@
           this.formCopy = formCopy;
         },
       },
-      currentElement: {
-        get() {
-          return this.$store.getters.getCurrentElement;
-        },
-        set(element) {
-          this.$store.dispatch('setCurrentElement', element);
-        },
-      },
     },
     methods: {
-      ...mapActions('wpb-elements', {
+      ...mapActions(useWpbElements, {
         patchElement: 'patch',
+        removeElement: 'remove',
       }),
-      ...mapActions('wpb-sections', {
+      ...mapActions(useWpbSections, {
         patchSection: 'patch',
+        removeSection: 'remove',
       }),
       updateName(val, change) {
         this.contentEditable = false;
@@ -448,8 +452,8 @@
             templateCopy.devTemplate = this.devTemplate;
             templateCopy.icon = this.edited_item.icon;
             templateCopy.name = this.templateName;
-            templateCopy.ownerId = this.user._id;
-            console.log('ownerId:', templateCopy.ownerId, 'userID', this.user._id);
+            templateCopy.ownerId = this.authUser._id;
+            console.log('ownerId:', templateCopy.ownerId, 'userID', this.authUser._id);
             const data = {
               value: templateCopy,
               action: 'makeElementTemplate',
@@ -471,7 +475,7 @@
                 devTemplate: this.devTemplate,
                 icon: this.edited_item.icon,
                 name: this.templateName,
-                ownerId: this.user._id,
+                ownerId: this.authUser._id,
               },
               action: 'makeSectionTemplate',
             };
@@ -493,7 +497,7 @@
             templateCopy.devTemplate = this.devTemplate;
             templateCopy.icon = this.edited_item.icon;
             templateCopy.name = this.templateName;
-            templateCopy.ownerId = this.user._id;
+            templateCopy.ownerId = this.authUser._id;
             const data = {
               value: templateCopy,
               action: 'makeElementTemplate',
@@ -516,7 +520,7 @@
                 devTemplate: this.devTemplate,
                 icon: this.edited_item.icon,
                 name: this.templateName,
-                ownerId: this.user._id,
+                ownerId: this.authUser._id,
               },
               action: 'makeSectionTemplate',
             };
@@ -545,10 +549,10 @@
         let element = this.currentElement._type;
         this.$q.loading.show({message: 'Removing', ignoreDefaults: true});
         if (element) {
-          await this.$store.dispatch('wpb-elements/remove', this.currentElement._id)
+          await this.removeElement(this.currentElement._id)
             .catch(err => console.error('problem removing element\n', err));
         } else {
-          await this.$store.dispatch('wpb-sections/remove', this.currentElement._id)
+          await this.removeSection(this.currentElement._id)
             .catch(err => console.error('problem removing section\n', err));
         }
         this.removeDialog = false;

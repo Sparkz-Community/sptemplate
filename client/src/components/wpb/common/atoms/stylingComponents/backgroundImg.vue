@@ -1,10 +1,16 @@
 <template>
   <q-card flat class="q-pa-sm">
-    <q-btn v-if="computedImgUrl" class="q-my-sm" style="width: 100%;" label="Clear Background" color="red"
+    <q-btn v-if="computedImgUrl"
+           class="q-my-sm"
+           style="width: 100%;"
+           label="Clear Background"
+           color="red"
            @click="resetImgStyles"/>
     <q-card-section>
-      <SingleImageUpload style="height: 200px" :addLabel="computedImgUrl ? 'Change' : 'Add'"
-                         :value="{large: {file: computedImgUrl}}" @input="emitImg"/>
+      <SingleImageUpload style="height: 200px"
+                         :addLabel="computedImgUrl ? 'Change' : 'Add'"
+                         :value="{large: {file: computedImgUrl}}"
+                         @input="emitImg"/>
     </q-card-section>
     <q-card-section class="cardSection">
       <p style="font-size: 21px; color: #404040">Background Settings</p>
@@ -16,11 +22,9 @@
             <p>Repeat</p>
           </div>
           <div style="width: 90%; display: flex; flex-direction: row; align-items: center">
-            <select
-              style="font-size: 14px; height: 25px; width: 100%"
-              :value="$lget(element, 'styles.background-repeat', 'no-repeat')"
-              @input="$emit('stylesUpdate', {path: 'styles.background-repeat', value: $event.target.value })"
-            >
+            <select style="font-size: 14px; height: 25px; width: 100%"
+                    :value="$lget(element, 'styles.background-repeat', 'no-repeat')"
+                    @input="$emit('stylesUpdate', {path: 'styles.background-repeat', value: $event.target.value })">
               <q-tooltip>
                 Select Unit
               </q-tooltip>
@@ -36,11 +40,9 @@
             <p>Position</p>
           </div>
           <div style="width: 90%; display: flex; flex-direction: row; align-items: center">
-            <select
-              style="font-size: 14px; height: 25px; width: 100%"
-              :value="$lget(element, 'styles.background-position', 'center center')"
-              @input="$emit('stylesUpdate', {path: 'styles.background-position', value: $event.target.value })"
-            >
+            <select style="font-size: 14px; height: 25px; width: 100%"
+                    :value="$lget(element, 'styles.background-position', 'center center')"
+                    @input="$emit('stylesUpdate', {path: 'styles.background-position', value: $event.target.value })">
               <q-tooltip>
                 Select Unit
               </q-tooltip>
@@ -58,11 +60,9 @@
             <p>Attachment</p>
           </div>
           <div style="width: 90%; display: flex; flex-direction: row; align-items: center">
-            <select
-              style="font-size: 14px; height: 25px; width: 100%"
-              :value="$lget(element, 'styles.background-attachment', 'scroll')"
-              @input="$emit('stylesUpdate', {path: 'styles.background-attachment', value: $event.target.value })"
-            >
+            <select style="font-size: 14px; height: 25px; width: 100%"
+                    :value="$lget(element, 'styles.background-attachment', 'scroll')"
+                    @input="$emit('stylesUpdate', {path: 'styles.background-attachment', value: $event.target.value })">
               <q-tooltip>
                 Select Unit
               </q-tooltip>
@@ -78,11 +78,9 @@
             <p>Size</p>
           </div>
           <div style="width: 90%; display: flex; flex-direction: row; align-items: center">
-            <select
-              style="font-size: 14px; height: 25px; width: 100%"
-              :value="!['cover', 'contain', 'auto'].includes($lget(element, 'styles.background-size', 'auto')) ? 'custom' : $lget(element, 'styles.background-size', 'auto')"
-              @input="checkSizing($event.target.value)"
-            >
+            <select style="font-size: 14px; height: 25px; width: 100%"
+                    :value="!['cover', 'contain', 'auto'].includes($lget(element, 'styles.background-size', 'auto')) ? 'custom' : $lget(element, 'styles.background-size', 'auto')"
+                    @input="checkSizing($event.target.value)">
               <q-tooltip>
                 Select Unit
               </q-tooltip>
@@ -91,25 +89,23 @@
           </div>
 
         </div>
-        <div v-if="customSize || !['cover', 'contain', 'auto'].includes($lget(element, 'styles.background-size', 'auto'))" class="row q-my-xs" style="width: 100%;" >
+        <div
+          v-if="customSize || !['cover', 'contain', 'auto'].includes($lget(element, 'styles.background-size', 'auto'))"
+          class="row q-my-xs" style="width: 100%;">
           <div class="column" style="width: 50%">
             <div>
               <p>X Axis</p>
             </div>
             <div class="inputBackground" style="width: 90%; display: flex; flex-direction: row; align-items: center">
-              <input
-                style="width: 100%; height: 25px"
-                type="number"
-                min="0"
-                :disabled="disableCheck(customBgSize.xAxisUnit)"
-                v-model="customBgSize.xAxis"
-                @input="emitBgSize({path: 'styles.background-size', value: $event.target.innerText})"
-              />
-              <select
-                style="font-size: 14px; border: 0; outline: 0; height: 25px"
-                v-model="customBgSize.xAxisUnit"
-                @change="emitBgSize({path: 'styles.background-size', value: $event.target.value})"
-              >
+              <input style="width: 100%; height: 25px"
+                     type="number"
+                     min="0"
+                     :disabled="disableCheck(customBgSize.xAxisUnit)"
+                     v-model="customBgSize.xAxis"
+                     @input="emitBgSize({path: 'styles.background-size', value: $event.target.innerText})"/>
+              <select style="font-size: 14px; border: 0; outline: 0; height: 25px"
+                      v-model="customBgSize.xAxisUnit"
+                      @change="emitBgSize({path: 'styles.background-size', value: $event.target.value})">
                 <q-tooltip>
                   Select Unit
                 </q-tooltip>
@@ -118,26 +114,22 @@
             </div>
           </div>
 
-          <q-space />
+          <q-space/>
 
           <div class="column" style="width: 50%">
             <div>
               <p>Y Axis</p>
             </div>
             <div class="inputBackground" style="width: 90%; display: flex; flex-direction: row; align-items: center">
-              <input
-                style="width: 100%; height: 25px"
-                type="number"
-                min="0"
-                :disabled="disableCheck(customBgSize.yAxisUnit)"
-                v-model="customBgSize.yAxis"
-                @input="emitBgSize({path: 'styles.background-size', value: $event.target.innerText})"
-              />
-              <select
-                style="font-size: 14px; border: 0; outline: 0; height: 25px"
-                v-model="customBgSize.yAxisUnit"
-                @change="emitBgSize({path: 'styles.background-size', value: $event.target.value})"
-              >
+              <input style="width: 100%; height: 25px"
+                     type="number"
+                     min="0"
+                     :disabled="disableCheck(customBgSize.yAxisUnit)"
+                     v-model="customBgSize.yAxis"
+                     @input="emitBgSize({path: 'styles.background-size', value: $event.target.innerText})"/>
+              <select style="font-size: 14px; border: 0; outline: 0; height: 25px"
+                      v-model="customBgSize.yAxisUnit"
+                      @change="emitBgSize({path: 'styles.background-size', value: $event.target.value})">
                 <q-tooltip>
                   Select Unit
                 </q-tooltip>
@@ -151,11 +143,9 @@
             <p>Rotate</p>
           </div>
           <div style="width: 90%; display: flex; flex-direction: row; align-items: center">
-            <select
-              style="font-size: 14px; height: 25px; width: 100%"
-              :value="splitAndGrab($lget(element, 'styles.transform', 'rotate(0deg)'), 7, 6, 'rotate')"
-              @input="$emit('stylesUpdate', {path: 'styles.transform', value: $event.target.value === '$unset' ? '$unset' : `rotate(${$event.target.value})` })"
-            >
+            <select style="font-size: 14px; height: 25px; width: 100%"
+                    :value="splitAndGrab($lget(element, 'styles.transform', 'rotate(0deg)'), 7, 6, 'rotate')"
+                    @input="$emit('stylesUpdate', {path: 'styles.transform', value: $event.target.value === '$unset' ? '$unset' : `rotate(${$event.target.value})` })">
               <q-tooltip>
                 Rotate the background
               </q-tooltip>
@@ -169,11 +159,9 @@
             <p>GreyScale</p>
           </div>
           <div style="width: 90%; display: flex; flex-direction: row; align-items: center">
-            <select
-              style="font-size: 14px; height: 25px; width: 100%"
-              :value="splitAndGrab($lget(element, 'styles.filter', 'grayscale(0%)') , 10, 3, 'grayscale')"
-              @input="$emit('stylesUpdate', {path: 'styles.filter', value: $event.target.value === '$unset' ? '$unset' : `grayscale(${$event.target.value})` })"
-            >
+            <select style="font-size: 14px; height: 25px; width: 100%"
+                    :value="splitAndGrab($lget(element, 'styles.filter', 'grayscale(0%)') , 10, 3, 'grayscale')"
+                    @input="$emit('stylesUpdate', {path: 'styles.filter', value: $event.target.value === '$unset' ? '$unset' : `grayscale(${$event.target.value})` })">
               <q-tooltip>
                 Change Background to Black & White
               </q-tooltip>
@@ -188,15 +176,15 @@
 </template>
 
 <script>
-  import SingleImageUpload from 'components/images/SingleImageUpload';
+  import SingleImageUpload from 'components/wpb/images/SingleImageUpload';
 
   export default {
     name: 'backgroundImg',
     props: {
-      element: Object
+      element: Object,
     },
     components: {
-      SingleImageUpload
+      SingleImageUpload,
     },
     mounted() {
       this.initBackgroundSize();
@@ -215,15 +203,15 @@
           xAxis: 0,
           xAxisUnit: 'px',
           yAxis: 0,
-          yAxisUnit: 'px'
-        }
+          yAxisUnit: 'px',
+        },
       };
     },
     computed: {
       computedImgUrl() {
         let imgUrl = this.$lget(this.element, 'styles.background-image');
         return imgUrl ? imgUrl.split('\'')[1] : '';
-      }
+      },
     },
     methods: {
       checkMax(unit) {
@@ -233,7 +221,7 @@
           return 999;
         }
       },
-      disableCheck(val){
+      disableCheck(val) {
         return val === 'auto';
       },
       initBackgroundSize() {
@@ -329,13 +317,15 @@
         } else return 'px';
       },
       resetImgStyles() {
-        this.$emit('stylesUpdate', [{path: 'styles.transform', value: '$unset'},
-                                    {path: 'styles.filter', value: '$unset'},
-                                    {path: 'styles.background-size', value: '$unset'},
-                                    {path: 'styles.background-repeat', value: '$unset'},
-                                    {path: 'styles.background-position', value: '$unset'},
-                                    {path: 'styles.background-attachment', value: '$unset'},
-                                    {path: 'styles.background-image', value: '$unset'}]);
+        this.$emit('stylesUpdate', [
+          {path: 'styles.transform', value: '$unset'},
+          {path: 'styles.filter', value: '$unset'},
+          {path: 'styles.background-size', value: '$unset'},
+          {path: 'styles.background-repeat', value: '$unset'},
+          {path: 'styles.background-position', value: '$unset'},
+          {path: 'styles.background-attachment', value: '$unset'},
+          {path: 'styles.background-image', value: '$unset'},
+        ]);
       },
       debounce(val) {
         this.$lset(this.elementData, val.path, val.value);
@@ -356,31 +346,31 @@
         val.value = `${this.customBgSize.xAxis}${this.customBgSize.xAxisUnit} ${this.customBgSize.yAxis}${this.customBgSize.yAxisUnit}`;
         console.log('val changes', val);
         this.$emit('stylesUpdate', val);
-      }
-    }
+      },
+    },
   };
 </script>
 
 <style scoped>
-p {
-  color: #848484;
-  margin: 0;
-  padding: 0;
-}
+  p {
+    color: #848484;
+    margin: 0;
+    padding: 0;
+  }
 
-select {
-  border: 0;
-  outline: 0;
-  background-color: #f2f2f2;
-}
+  select {
+    border: 0;
+    outline: 0;
+    background-color: #f2f2f2;
+  }
 
-input {
-  border: 0;
-  outline: 0;
-  background-color: #f2f2f2;
-}
+  input {
+    border: 0;
+    outline: 0;
+    background-color: #f2f2f2;
+  }
 
-.cardSection {
-  padding: 0
-}
+  .cardSection {
+    padding: 0
+  }
 </style>

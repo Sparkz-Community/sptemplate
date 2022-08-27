@@ -23,41 +23,52 @@
 </template>
 
 <script>
-  import {makeFindPaginateMixin} from '@iy4u/common-client-lib';
+  import {computed, ref} from 'vue';
+  import {useFindPaginate} from '@sparkz-community/common-client-lib';
+
+  import useWpbSections from 'stores/services/wpb-sections';
 
   export default {
     name: 'BaseSections',
     props: {
-      value: String,
+      modelValue: String,
       currentElement: Object,
     },
-    mixins: [
-      makeFindPaginateMixin({
-        service: 'wpb-sections',
-        name: 'baseSections',
-        qid: 'baseSections',
-        query() {
-          return {
-            baseSection: true,
-            template: true,
-            devTemplate: true,
-            isPublic: true
-          };
-        },
-        params() {
-          return {
-            paginate: false,
-          };
-        },
-      }),
-    ],
+    setup() {
+      let wpbSections = useWpbSections();
+
+      const sectionQuery = computed(() => {
+        return {
+          baseSection: true,
+          template: true,
+          devTemplate: true,
+          isPublic: true
+        };
+      });
+      const sectionParams = computed(() => {
+        return {
+          paginate: false,
+        };
+      });
+
+      const {items: baseSections} = useFindPaginate({
+        model: wpbSections.Model,
+        qid: ref('baseSections'),
+        query: sectionQuery,
+        params: sectionParams,
+      });
+      return {
+        baseSections,
+      };
+    },
+    emits: ['update:modelValue'],
     data() {
       return {
         expand: null,
       };
     },
     watch: {
-      value: {
+      modelValue: {
         immediate: true,
         handler(newVal, oldVal) {
           if (newVal !== oldVal) {
@@ -70,7 +81,7 @@
     methods: {
       setExpand(val) {
         this.expand = val;
-        this.$emit('input', val);
+        this.$emit('update:modelValue', val);
       },
     },
   };

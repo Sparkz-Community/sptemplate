@@ -7,18 +7,14 @@
             <p>Width</p>
           </div>
           <div class="inputBackground" style="width: 90%; display: flex; flex-direction: row; align-items: center">
-            <input
-              style="width: 100%"
-              :value="separateValues($lget(elementData, 'styles.width'))"
-              @input="emitDebounce($event, 'styles.width')"
-              type="number"
-              :disabled="disableCheck($lget(elementData, 'styles.width', 'auto'))"
-              min="0"
-            />
-            <select
-              :value="pullUnit($lget(elementData, 'styles.width'))"
-              @change="emitCheck(elementData, $event.target.value,'styles.width')"
-            >
+            <input style="width: 100%"
+                   :value="separateValues($lget(elementData, 'styles.width'))"
+                   @input="emitDebounce($event, 'styles.width')"
+                   type="number"
+                   :disabled="disableCheck($lget(elementData, 'styles.width', 'auto'))"
+                   min="0"/>
+            <select :value="pullUnit($lget(elementData, 'styles.width'))"
+                    @change="emitCheck(elementData, $event.target.value,'styles.width')">
               <q-tooltip>
                 Select Unit
               </q-tooltip>
@@ -34,18 +30,14 @@
             <p>Height</p>
           </div>
           <div class="inputBackground" style="width: 90%; display: flex; flex-direction: row; align-items: center">
-            <input
-              style="width: 100%"
-              :value="separateValues($lget(elementData, 'styles.height', 'auto'))"
-              @input="emitDebounce($event, 'styles.height')"
-              type="number"
-              :disabled="disableCheck($lget(elementData, 'styles.height', 'auto'))"
-              min="0"
-            />
-            <select
-              :value="pullUnit($lget(elementData, 'styles.height', 'auto'))"
-              @change="emitCheck(elementData, $event.target.value, 'styles.height')"
-            >
+            <input style="width: 100%"
+                   :value="separateValues($lget(elementData, 'styles.height', 'auto'))"
+                   @input="emitDebounce($event, 'styles.height')"
+                   type="number"
+                   :disabled="disableCheck($lget(elementData, 'styles.height', 'auto'))"
+                   min="0"/>
+            <select :value="pullUnit($lget(elementData, 'styles.height', 'auto'))"
+                    @change="emitCheck(elementData, $event.target.value, 'styles.height')">
               <q-tooltip>
                 Select Unit
               </q-tooltip>
@@ -65,18 +57,14 @@
             <p>Min-Width</p>
           </div>
           <div class="inputBackground" style="width: 90%; display: flex; flex-direction: row; align-items: center">
-            <input
-              style="width: 100%"
-              :value="separateValues($lget(elementData, 'styles.min-width', 'auto'))"
-              @input="emitDebounce($event, 'styles.min-width')"
-              type="number"
-              :disabled="disableCheck($lget(elementData, 'styles.min-width', 'auto'))"
-              min="0"
-            />
-            <select
-              :value="pullUnit($lget(elementData, 'styles.min-width', 'auto'))"
-              @change="emitCheck(elementData, $event.target.value, 'styles.min-width')"
-            >
+            <input style="width: 100%"
+                   :value="separateValues($lget(elementData, 'styles.min-width', 'auto'))"
+                   @input="emitDebounce($event, 'styles.min-width')"
+                   type="number"
+                   :disabled="disableCheck($lget(elementData, 'styles.min-width', 'auto'))"
+                   min="0"/>
+            <select :value="pullUnit($lget(elementData, 'styles.min-width', 'auto'))"
+                    @change="emitCheck(elementData, $event.target.value, 'styles.min-width')">
               <q-tooltip>
                 Select Unit
               </q-tooltip>
@@ -92,18 +80,14 @@
             <p>Max Width</p>
           </div>
           <div class="inputBackground" style="width: 90%; display: flex; flex-direction: row; align-items: center">
-            <input
-              style="width: 100%"
-              :value="separateValues($lget(elementData, 'styles.max-width', 'auto'))"
-              @input="emitDebounce($event, 'styles.max-width')"
-              type="number"
-              :disabled="disableCheck($lget(elementData, 'styles.max-width', 'auto'))"
-              min="0"
-            />
-            <select
-              :value="pullUnit($lget(elementData, 'styles.max-width', 'auto'))"
-              @change="emitCheck(elementData, $event.target.value, 'styles.max-width')"
-            >
+            <input style="width: 100%"
+                   :value="separateValues($lget(elementData, 'styles.max-width', 'auto'))"
+                   @input="emitDebounce($event, 'styles.max-width')"
+                   type="number"
+                   :disabled="disableCheck($lget(elementData, 'styles.max-width', 'auto'))"
+                   min="0"/>
+            <select :value="pullUnit($lget(elementData, 'styles.max-width', 'auto'))"
+                    @change="emitCheck(elementData, $event.target.value, 'styles.max-width')">
               <q-tooltip>
                 Select Unit
               </q-tooltip>
@@ -123,18 +107,14 @@
             <p>Min-Height</p>
           </div>
           <div class="inputBackground" style="width: 90%; display: flex; flex-direction: row; align-items: center">
-            <input
-              style="width: 100%"
-              :value="separateValues($lget(elementData, 'styles.min-height', 'auto'))"
-              @input="emitDebounce($event, 'styles.min-height')"
-              type="number"
-              :disabled="disableCheck($lget(elementData, 'styles.min-height', 'auto'))"
-              min="0"
-            />
-            <select
-              :value="pullUnit($lget(elementData, 'styles.min-height', 'auto'))"
-              @change="emitCheck(elementData, $event.target.value, 'styles.min-height')"
-            >
+            <input style="width: 100%"
+                   :value="separateValues($lget(elementData, 'styles.min-height', 'auto'))"
+                   @input="emitDebounce($event, 'styles.min-height')"
+                   type="number"
+                   :disabled="disableCheck($lget(elementData, 'styles.min-height', 'auto'))"
+                   min="0"/>
+            <select :value="pullUnit($lget(elementData, 'styles.min-height', 'auto'))"
+                    @change="emitCheck(elementData, $event.target.value, 'styles.min-height')">
               <q-tooltip>
                 Select Unit
               </q-tooltip>
@@ -150,18 +130,14 @@
             <p>Max Height</p>
           </div>
           <div class="inputBackground" style="width: 90%; display: flex; flex-direction: row; align-items: center">
-            <input
-              style="width: 100%"
-              :value="separateValues($lget(elementData, 'styles.max-height', 'auto'))"
-              @input="emitDebounce($event, 'styles.max-height')"
-              type="number"
-              :disabled="disableCheck($lget(elementData, 'styles.max-height', 'auto'))"
-              min="0"
-            />
-            <select
-              :value="pullUnit($lget(elementData, 'styles.max-height', 'auto'))"
-              @change="emitCheck(elementData, $event.target.value, 'styles.max-height')"
-            >
+            <input style="width: 100%"
+                   :value="separateValues($lget(elementData, 'styles.max-height', 'auto'))"
+                   @input="emitDebounce($event, 'styles.max-height')"
+                   type="number"
+                   :disabled="disableCheck($lget(elementData, 'styles.max-height', 'auto'))"
+                   min="0"/>
+            <select :value="pullUnit($lget(elementData, 'styles.max-height', 'auto'))"
+                    @change="emitCheck(elementData, $event.target.value, 'styles.max-height')">
               <q-tooltip>
                 Select Unit
               </q-tooltip>
@@ -188,9 +164,12 @@
 </template>
 
 <script>
+  import {lodash} from '@sparkz-community/common-client-lib';
+  const {$ldebounce} = lodash;
+
   // import MarginSelector from 'components/MarginSelector/MarginSelector';
-  import MarginPaddingSelector from 'components/MarginPaddingSelector/MarginPaddingSelector';
-  const debounce = require('lodash.debounce');
+  import MarginPaddingSelector from 'components/wpb/MarginPaddingSelector/MarginPaddingSelector';
+
 
   export default {
     name: 'dimension',
@@ -327,11 +306,14 @@
           this.$emit('stylesUpdate', changes);
         }
       },
-      emitDebounce: debounce(function($event, path){
+      emitDebounce: $ldebounce(function ($event, path) {
         let ele_val = this.$lget(this.element, path);
         if (ele_val !== $event.target.value) {
           this.elementData = Object.assign({}, this.$lset(this.elementData, path, $event.target.value + this.pullUnit(this.$lget(this.elementData, path))));
-          this.$emit('stylesUpdate', {path: path, value: $event.target.value + this.pullUnit(this.$lget(this.elementData, path))});
+          this.$emit('stylesUpdate', {
+            path: path,
+            value: $event.target.value + this.pullUnit(this.$lget(this.elementData, path)),
+          });
         }
       }, 370),
     },

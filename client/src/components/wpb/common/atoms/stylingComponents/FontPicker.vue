@@ -6,11 +6,11 @@
           <p style="padding: 0; margin: 0">Font</p>
         </div>
         <div style="width: 100%">
-          <font-picker :api-key="fontKey" @change="setFont"
+          <font-picker-gen :api-key="fontKey" @change="setFont"
                        :active-font="$lget(element, 'styles.font-family', 'Open Sans')" class="apply-font"
                        style="width: 100%;background: #F2F2F2;" :options="{}" id="fontPicker">
 
-          </font-picker>
+          </font-picker-gen>
         </div>
       </div>
     </q-card-section>
@@ -157,21 +157,21 @@
                         {slot: 'three', value: 'right'},
                         // {slot: 'four', value: '$unset'}
                       ]">
-          <template style="width: 33%" v-slot:one>
+          <template v-slot:one><!--style="width: 33%"-->
             <q-icon name="format_align_left">
               <q-tooltip anchor="bottom middle" self="top middle" :offset="[10, 10]">
                 Align Left
               </q-tooltip>
             </q-icon>
           </template>
-          <template style="width: 33%" v-slot:two>
+          <template v-slot:two><!--style="width: 33%"-->
             <q-icon name="format_align_center">
               <q-tooltip anchor="bottom middle" self="top middle" :offset="[10, 10]">
                 Align Center
               </q-tooltip>
             </q-icon>
           </template>
-          <template style="width: 33%" v-slot:three>
+          <template v-slot:three><!--style="width: 33%"-->
             <q-icon name="format_align_right">
               <q-tooltip anchor="bottom middle" self="top middle" :offset="[10, 10]">
                 Align Right
@@ -208,21 +208,21 @@
                         {slot: 'three', value: 'line-through'},
                         // {slot: 'four', value: '$unset'}
                       ]">
-          <template style="width: 33%" v-slot:one>
+          <template v-slot:one><!--style="width: 33%"-->
             <q-icon name="clear">
               <q-tooltip anchor="bottom middle" self="top middle" :offset="[10, 10]">
                 None
               </q-tooltip>
             </q-icon>
           </template>
-          <template style="width: 33%" v-slot:two>
+          <template v-slot:two><!--style="width: 33%"-->
             <q-icon name="format_underlined">
               <q-tooltip anchor="bottom middle" self="top middle" :offset="[10, 10]">
                 Underline
               </q-tooltip>
             </q-icon>
           </template>
-          <template style="width: 33%" v-slot:three>
+          <template v-slot:three><!--style="width: 33%"-->
             <q-icon name="strikethrough_s">
               <q-tooltip anchor="bottom middle" self="top middle" :offset="[10, 10]">
                 Line Through
@@ -243,15 +243,16 @@
 </template>
 
 <script>
-  import ColorPicker from './colorPicker';
-  import FontPicker from 'components/formGeneratorCustom/FontPicker';
+  import {lodash} from '@sparkz-community/common-client-lib';
+  const {$ldebounce} = lodash;
 
-  const debounce = require('lodash.debounce');
+  import ColorPicker from './colorPicker';
+  import FontPickerGen from 'components/formGeneratorCustom/FontPicker';
 
   export default {
-    name: 'font',
+    name: 'FontPicker',
     components: {
-      FontPicker,
+      FontPickerGen,
       ColorPicker,
     },
     props: {
@@ -347,7 +348,7 @@
           });
         }
       },
-      emitDebounce: debounce(function (value, path) {
+      emitDebounce: $ldebounce(function (value, path) {
         this.$emit('stylesUpdate', {
           path,
           value,

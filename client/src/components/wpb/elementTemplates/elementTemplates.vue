@@ -61,8 +61,7 @@
       </div>
       <div style="display: flex; justify-content: center">
         <q-pagination v-if="sectionTemplatesPrivatePages > 1"
-                      :value="sectionTemplatesPrivateCurrentPage"
-                      @input="sectionTemplatesPrivateHandlePageChange"
+                      v-model="sectionTemplatesPrivateCurrentPage"
                       :max="sectionTemplatesPrivatePages"
                       :max-pages="6"
                       :direction-links="true"
@@ -97,8 +96,7 @@
       </div>
       <div style="display: flex; justify-content: center">
         <q-pagination v-if="elementTemplatesPrivatePages > 1"
-                      :value="elementTemplatesPrivateCurrentPage"
-                      @input="elementTemplatesPrivateHandlePageChange"
+                      v-model="elementTemplatesPrivateCurrentPage"
                       :max="elementTemplatesPrivatePages"
                       :max-pages="6"
                       :direction-links="true"
@@ -113,11 +111,14 @@
 </template>
 
 <script>
-  import {makeFindPaginateMixin} from '@iy4u/common-client-lib';
-  import {mapGetters} from 'vuex';
+  import {useFindPaginate} from '@sparkz-community/common-client-lib';
+
+  import useWpbElements from 'stores/services/wpb-elements';
+  import useWpbSections from 'stores/services/wpb-sections';
 
   import BaseSections from './BaseSections';
-  import ImagePicker from 'components/common/atoms/stylingComponents/imagePicker';
+  import ImagePicker from '../common/atoms/stylingComponents/imagePicker';
+  import {computed, ref} from 'vue';
 
   export default {
     name: 'elementTemplates',
@@ -128,54 +129,86 @@
     props: {
       currentElement: Object,
     },
-    mixins: [
-      makeFindPaginateMixin({
-        service: 'wpb-elements',
-        name: 'baseElements',
-        qid: 'baseElements',
-        query() {
-          return {
-            baseElement: true,
-            template: true,
-            devTemplate: true,
-            isPublic: true
-          };
-        },
-        params() {
-          return {
-            paginate: false,
-          };
-        },
-      }),
-      makeFindPaginateMixin({
-        service: 'wpb-sections',
-        name: 'sectionTemplatesPrivate',
-        qid: 'sectionTemplatesPrivate',
-        query() {
-          return {
-            template: true,
-            baseSection: false,
-            devTemplate: false,
-            isPublic: false,
-            ownerId: this.userId
-          };
-        },
-      }),
-      makeFindPaginateMixin({
-        service: 'wpb-elements',
-        name: 'elementTemplatesPrivate',
-        qid: 'elementTemplatesPrivate',
-        query() {
-          return {
-            template: true,
-            baseElement: false,
-            devTemplate: false,
-            isPublic: false,
-            ownerId: this.userId
-          };
-        },
-      }),
-    ],
+    inject: ['authUser'],
+    setup() {
+      // elements
+      const wpbElements = useWpbElements();
+
+      const elementsQuery = computed(() => {
+        return {
+          baseElement: true,
+          template: true,
+          devTemplate: true,
+          isPublic: true
+        };
+      });
+      const elementsParams = computed(() => {
+        return {
+          paginate: false,
+        };
+      });
+
+      const {items: baseElements} = useFindPaginate({
+        model: wpbElements.Model,
+        qid: ref('baseElements'),
+        query: elementsQuery,
+        params: elementsParams,
+      });
+
+      const elementTemplatesQuery = computed(() => {
+        return {
+          template: true,
+          baseElement: false,
+          devTemplate: false,
+          isPublic: false,
+          ownerId: this.userId
+        };
+      });
+
+      const {
+        items: elementTemplatesPrivate,
+        currentPage: elementTemplatesPrivateCurrentPage,
+        pageCount: elementTemplatesPrivatePages,
+      } = useFindPaginate({
+        model: wpbElements.Model,
+        qid: ref('elementTemplatesPrivate'),
+        query: elementTemplatesQuery,
+      });
+
+      // sections
+      const wpbSections = useWpbSections();
+
+      const sectionsQuery = computed(() => {
+        return {
+          template: true,
+          baseSection: false,
+          devTemplate: false,
+          isPublic: false,
+          ownerId: this.userId
+        };
+      });
+
+      const {
+        items: sectionTemplatesPrivate,
+        currentPage: sectionTemplatesPrivateCurrentPage,
+        pageCount: sectionTemplatesPrivatePages
+      } = useFindPaginate({
+        model: wpbSections.Model,
+        qid: ref('sectionTemplatesPrivate'),
+        query: sectionsQuery,
+      });
+      return {
+        baseElements,
+
+        elementTemplatesPrivate,
+        elementTemplatesPrivateCurrentPage,
+        elementTemplatesPrivatePages,
+
+        sectionTemplatesPrivate,
+        sectionTemplatesPrivateCurrentPage,
+        sectionTemplatesPrivatePages,
+      };
+    },
     data() {
       return {
         imagePickerDialog: false,
@@ -183,11 +216,8 @@
       };
     },
     computed: {
-      ...mapGetters('auth', {
-        user: 'user',
-      }),
       userId() {
-        return this.user._id;
+        return this.authUser._id;
       },
     },
     methods: {
