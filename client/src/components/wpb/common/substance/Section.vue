@@ -36,6 +36,11 @@
 </template>
 
 <script>
+  import {mapWritableState} from 'pinia';
+
+  import {useWpbStore} from 'stores/useWpbStore';
+  import classesMixin from 'src/mixins/classesMixin';
+
   import TheImage from '../atoms/image';
   import pTag from '../atoms/pTag';
   import editingOptions from '../../editingOptions/editingOptions';
@@ -47,7 +52,6 @@
   import imgCarousel from '../atoms/imgCarousel';
   import Editor from '../atoms/editor';
   import contactForm from '../atoms/contactForm';
-  import classesMixin from 'src/mixins/classesMixin';
 
   export default {
     name: 'TheSection',
@@ -102,14 +106,9 @@
       },
     },
     computed: {
-      currentElement: {
-        get() {
-          return this.$store.getters.getCurrentElement;
-        },
-        set(element) {
-          this.$store.dispatch('setCurrentElement', element);
-        },
-      },
+      ...mapWritableState(useWpbStore, {
+        currentElement: 'currentElement',
+      }),
       isEditing() {
         return this.$lget(this.currentElement, '_id', false) === this.$lget(this.sectionData, '_id', true) && !this.previewing;
       },

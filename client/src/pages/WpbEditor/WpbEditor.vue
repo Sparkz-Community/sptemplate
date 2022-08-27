@@ -423,7 +423,7 @@
         id: $lget(route, 'params.page._id', route.params.page_id),
         queryWhen: computed(() => {
           console.log('should i query for page?', !$lget(route, 'params.page._id'));
-          let statePage = this.getPage(route.params.page_id);
+          let statePage = wpbPagesStore.getFromStore(route.params.page_id);
           return !$lget(route, 'params.page._id') && !statePage;
         }),
       });
@@ -450,7 +450,7 @@
         addElementDialog: false,
         deleteElementDialog: false,
         addingElement: {},
-        form: new models.api.wpbPages().clone(),
+        form: new models.api.wpbPages(),
         editing: false,
         showBorder: true,
         parentHeight: 0,
@@ -500,7 +500,7 @@
         }).observe(el.parentNode);
       }
 
-      this.$store.commit('SET_AUTOSAVE_PREFERENCES');
+      this.setAutosavePreferences();
     },
     watch: {
       pageIsPending: {
@@ -604,9 +604,6 @@
       ...mapState(useWpbStore, {
         undoRedoStatus: 'undoRedoStatus'
       }),
-      ...mapState(useWpbPagesStore, {
-        getPage: 'getFromStore',
-      }),
       ...mapState(useAuthStore, {
         accessToken: (state) => state.payload.accessToken,
       }),
@@ -657,6 +654,7 @@
         removeSections: 'remove',
       }),
       ...mapActions(useWpbStore, {
+        setAutosavePreferences: 'setAutosavePreferences',
         undoRedo: 'undoRedo',
         setCurrentDbCollection: 'setCurrentDbCollection',
         setAvailableClasses: 'setAvailableClasses',

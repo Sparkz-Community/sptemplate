@@ -47,7 +47,7 @@
         deep: true,
         async handler(newVal) {
           if (newVal && JSON.stringify(newVal) !== JSON.stringify(this.elementData)) {
-            this.elementData = new models.api.wpbElements(newVal).clone();
+            this.elementData = new models.api.wpbElements(newVal);
           }
         }
       },

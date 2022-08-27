@@ -192,7 +192,7 @@
   -webkit-text-fill-color: transparent;font-weight: 900;display: flex; align-items: center;"/>
           </div>
         </template>
-        <Font :element="elementInfo"
+        <FontPicker :element="elementInfo"
               @stylesUpdate="saveElement"/>
       </q-expansion-item>
 
@@ -268,7 +268,7 @@
 
   import General from '../atoms/stylingComponents/general';
   import Dimension from '../atoms/stylingComponents/dimension';
-  // import Font from '../atoms/stylingComponents/font';
+  import FontPicker from '../atoms/stylingComponents/FontPicker';
   import borderSettings from '../atoms/stylingComponents/borderSettings';
   import ButtonEditor from '../atoms/stylingComponents/buttonEditor';
   import classes from '../atoms/stylingComponents/classes';
@@ -302,7 +302,7 @@
       classes,
       Dimension,
       General,
-      // Font,
+      FontPicker,
       ButtonEditor,
       borderSettings,
       hyperLinkSettings,

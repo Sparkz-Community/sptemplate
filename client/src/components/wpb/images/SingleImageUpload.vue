@@ -1,6 +1,6 @@
 <template>
   <q-card :style="{height: height, width: width}">
-    <q-img style="height: 100%; width: 100%" :src="getAvatar(value, null, 'raw')">
+    <q-img style="height: 100%; width: 100%" :src="$lget(value, 'raw.file', '')">
       <div style="height: 100%; width: 100%" class="flex flex-center">
         <q-slide-transition>
           <template v-if="adding">
@@ -43,7 +43,7 @@
       value: Object,
     },
     mounted() {
-      if (this.getAvatar(this.value, null, 'raw')) {
+      if (this.$lget(this.value, 'raw.file', null)) {
         this.adding = false;
       }
     },

@@ -118,25 +118,25 @@
           $or: [
             {
               _id: {
-                $in: $lget(authUser, 'projects', []),
+                $in: $lget(authUser.value, 'projects', []),
               },
             },
             {
-              sharedAccessIds: $lget(authUser, '_id'),
+              sharedAccessIds: $lget(authUser.value, '_id'),
               accessibleBy: 'shared',
             },
           ],
         };
       });
 
-      const {items: projects} = useFindPaginate({
+      const {items: projects, error} = useFindPaginate({
         model: wpbProjectsStore.Model,
         qid: ref('projects'),
         query: projectsQuery,
         useFindOptions: {
           queryWhen: computed(() => {
-            const when1 = !!$lget(authUser, 'projects', []).length;
-            const when2 = wpbProjectsStore.findInStore(projectsQuery).data.length !== $lget(authUser, 'projects', []).length;
+            const when1 = !!$lget(authUser.value, 'projects', []).length;
+            const when2 = wpbProjectsStore.findInStore(projectsQuery).data.length !== $lget(authUser.value, 'projects', []).length;
             // console.log('should i query for projects whens', when1, when2);
             // console.log('should i query for projects ', when1 && when2);
             return when1 && when2;
@@ -144,8 +144,10 @@
         }
       });
       return {
+        projectsQuery,
         authUser,
         projects,
+        error,
       };
     },
     data() {
@@ -174,28 +176,11 @@
       ...mapState(useAuthStore, {
         isAuthenticated: 'isAuthenticated',
       }),
-      ...mapState('wpb-projects', {
-        findUserProjects: 'find',
+      ...mapState(useWpbProjectsStore, {
+        findUserProjects: 'findInStore',
       }),
       projectsClones() {
         return this.projects.map(item => item.clone());
-      },
-      projectsParams() {
-        return {
-          query: {
-            $or: [
-              {
-                _id: {
-                  $in: this.$lget(this.authUser, 'projects', []),
-                },
-              },
-              {
-                sharedAccessIds: this.$lget(this.authUser, '_id'),
-                accessibleBy: 'shared',
-              },
-            ],
-          },
-        };
       },
     },
     methods: {

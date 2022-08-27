@@ -219,7 +219,7 @@
     },
     data() {
       return {
-        form: new models.api.wpbPages().clone(),
+        form: new models.api.wpbPages(),
         parentHeight: 0,
         parentWidth: 0,
         selectedPage: {},

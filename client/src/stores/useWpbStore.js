@@ -74,6 +74,12 @@ export const useWpbStore = defineStore('wpb', {
     },
   },
   actions: {
+    setAutosavePreferences() {
+      const authStore = useAuthStore();
+      let autoSave = $lget(authStore.authUser, 'preferences.autoSave', {});
+      this.autoSave = autoSave.value;
+      this.autoSaveDebounce = autoSave.debounce;
+    },
     setCurrentElement(payload) {
       this.currentElement = payload;
     },
