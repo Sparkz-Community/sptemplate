@@ -111,6 +111,7 @@
 </template>
 
 <script>
+  import {computed, ref} from 'vue';
   import {useFindPaginate} from '@sparkz-community/common-client-lib';
 
   import useWpbElements from 'stores/services/wpb-elements';
@@ -118,7 +119,6 @@
 
   import BaseSections from './BaseSections';
   import ImagePicker from '../common/atoms/stylingComponents/imagePicker';
-  import {computed, ref} from 'vue';
 
   export default {
     name: 'elementTemplates',

@@ -37,19 +37,37 @@
 </template>
 
 <script>
-  import {makeFindMixin} from 'feathers-vuex';
+  import {computed, inject, ref} from 'vue';
+  import {useFindPaginate} from '@sparkz-community/common-client-lib';
+
+  import useWpbPagePublicationsStore from 'stores/services/wpb-page-publications';
 
   export default {
     name: 'publishing',
-    mixins: [
-      makeFindMixin({
-        service: 'wpb-page-publications',
-        name: 'publications',
-        qid: 'publications',
-      }),
-    ],
     props: {
       page: Object,
+    },
+    setup(props) {
+      const $lget = inject('$lget');
+      const wpbPagePublicationsStore = useWpbPagePublicationsStore();
+
+      const wpbPagePublicationsQuery = computed(() => {
+        return {
+          page_id: $lget(props.page, '_id'),
+          $sort: {
+            version: -1,
+          },
+        };
+      });
+
+      const {items: publications} = useFindPaginate({
+        model: wpbPagePublicationsStore.Model,
+        qid: ref('publications'),
+        query: wpbPagePublicationsQuery,
+      });
+      return {
+        publications,
+      };
     },
     data() {
       return {
@@ -63,21 +81,7 @@
         },
       };
     },
-    created() {
-    },
-    mounted() {
-    },
     computed: {
-      publicationsParams() {
-        return {
-          query: {
-            page_id: this.$lget(this.page, '_id'),
-            $sort: {
-              version: -1,
-            },
-          },
-        };
-      },
       lastVersion() {
         return this.publications.reduce((acc, curr) => {
           let currV = Number(curr.version);
@@ -95,7 +99,6 @@
         });
       },
     },
-    watch: {},
     methods: {
       startPublish() {
         this.payload = {

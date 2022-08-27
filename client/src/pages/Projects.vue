@@ -83,8 +83,13 @@
 </template>
 
 <script>
-  import {makeFindMixin} from 'feathers-vuex';
-  import {mapActions, mapGetters} from 'vuex';
+  import {computed, inject, ref} from 'vue';
+  import {mapActions, mapState} from 'pinia';
+  import {useFindPaginate} from '@sparkz-community/common-client-lib';
+
+  import useAuthStore from 'stores/store.auth';
+  import useWpbProjectsStore from 'stores/services/wpb-projects';
+
   import PagesList from 'components/wpb/pagesList/PagesList';
   import ProjectSettings from 'components/wpb/projectSettings/projectSettings';
 
@@ -103,20 +108,46 @@
       ProjectSettings,
       PagesList,
     },
-    mixins: [
-      makeFindMixin({
-        service: 'wpb-projects',
-        name: 'projects',
-        qid: 'projects',
-        queryWhen() {
-          const when1 = !!this.$lget(this.user, 'projects', []).length;
-          const when2 = this.findUserProjects(this.projectsParams).data.length !== this.$lget(this.user, 'projects', []).length;
-          // console.log('should i query for projects whens', when1, when2);
-          // console.log('should i query for projects ', when1 && when2);
-          return when1 && when2;
-        },
-      }),
-    ],
+    setup() {
+      const $lget = inject('$lget');
+      const authUser = inject('authUser');
+      const wpbProjectsStore = useWpbProjectsStore();
+
+      const projectsQuery = computed(() => {
+        return {
+          $or: [
+            {
+              _id: {
+                $in: $lget(authUser, 'projects', []),
+              },
+            },
+            {
+              sharedAccessIds: $lget(authUser, '_id'),
+              accessibleBy: 'shared',
+            },
+          ],
+        };
+      });
+
+      const {items: projects} = useFindPaginate({
+        model: wpbProjectsStore.Model,
+        qid: ref('projects'),
+        query: projectsQuery,
+        useFindOptions: {
+          queryWhen: computed(() => {
+            const when1 = !!$lget(authUser, 'projects', []).length;
+            const when2 = wpbProjectsStore.findInStore(projectsQuery).data.length !== $lget(authUser, 'projects', []).length;
+            // console.log('should i query for projects whens', when1, when2);
+            // console.log('should i query for projects ', when1 && when2);
+            return when1 && when2;
+          }),
+        }
+      });
+      return {
+        authUser,
+        projects,
+      };
+    },
     data() {
       return {
         leftDrawerOpen: true,
@@ -140,11 +171,10 @@
       },
     },
     computed: {
-      ...mapGetters('auth', {
+      ...mapState(useAuthStore, {
         isAuthenticated: 'isAuthenticated',
-        user: 'user',
       }),
-      ...mapGetters('wpb-projects', {
+      ...mapState('wpb-projects', {
         findUserProjects: 'find',
       }),
       projectsClones() {
@@ -156,11 +186,11 @@
             $or: [
               {
                 _id: {
-                  $in: this.$lget(this.user, 'projects', []),
+                  $in: this.$lget(this.authUser, 'projects', []),
                 },
               },
               {
-                sharedAccessIds: this.$lget(this.user, '_id'),
+                sharedAccessIds: this.$lget(this.authUser, '_id'),
                 accessibleBy: 'shared',
               },
             ],
@@ -169,13 +199,13 @@
       },
     },
     methods: {
-      ...mapActions('wpb-projects', {
+      ...mapActions(useWpbProjectsStore, {
         createProject: 'create',
         removeProject: 'remove',
         loadProjects: 'find',
       }),
       async newProjectCreate() {
-        this.newProject.ownerId = this.user._id;
+        this.newProject.ownerId = this.authUser._id;
         this.createProject(this.newProject)
           .then(async () => {
             this.newProject = newProjectDefault();

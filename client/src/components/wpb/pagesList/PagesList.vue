@@ -6,7 +6,8 @@
 
   <div v-else>
     <div class="q-pa-md" style="width: 100%; display: flex; justify-content: space-between; align-items: center">
-      <p style="padding: 0; margin: 0; width: 100%; font-size: 36px; text-align: left;background: -webkit-linear-gradient(#0B63F6 , #003CC5);-webkit-background-clip: text;-webkit-text-fill-color: transparent;font-weight: 300;">
+      <p
+        style="padding: 0; margin: 0; width: 100%; font-size: 36px; text-align: left;background: -webkit-linear-gradient(#0B63F6 , #003CC5);-webkit-background-clip: text;-webkit-text-fill-color: transparent;font-weight: 300;">
         Your pages: </p>
       <q-btn size="lg" icon='add' flat round @click='pageFormDio = true'/>
     </div>
@@ -131,13 +132,19 @@
 </template>
 
 <script>
-  import {mapActions, mapGetters} from 'vuex';
-  import {makeFindMixin} from 'feathers-vuex';
+  import {computed, inject, ref} from 'vue';
+  import {mapActions} from 'pinia';
+  import {useFindPaginate} from '@sparkz-community/common-client-lib';
+
+  import useWpbPagesStore from 'stores/services/wpb-pages';
+  import useProgressStore from 'stores/services/progress';
+
   import VueLottiePlayer from 'vue-lottie-player';
 
   import PageTemplateList from 'components/wpb/pageTemplateList/PageTemplateList';
 
   import {date} from 'quasar';
+
   const {formatDate} = date;
 
   export default {
@@ -149,25 +156,45 @@
       PageTemplateList,
       vLottiePlayer: VueLottiePlayer,
     },
-    mixins: [
-      makeFindMixin({
-        service: 'wpb-pages',
-        name: 'projectPages',
-        qid: 'projectPages',
-        queryWhen() {
-          const when1 = !!this.$lget(this.project, 'pages', []).length;
-          const when2 = this.progress ? this.progress.amount === 0 : true;
-          const when3 = this.findPages(this.projectPagesParams).data.length !== this.$lget(this.project, 'pages', []).length;
-          // console.log('should i query for pages whens', when1, when2, when3);
-          // console.log('should i query for pages ', when1 && when2 && when3);
-          // console.log('should i query for pages progress', this.progress, when2);
-          // console.log('pages queryWhen params', this.$route.params);
-          return when1 && when2 && when3;
-          // return false;
+    setup(props) {
+      let $lget = inject('$lget');
+      const pagesStore = useWpbPagesStore();
+      const progressStore = useProgressStore();
+
+      const progress = progressStore.getFromStore('0');
+
+      const projectPagesQuery = computed(() => {
+        return {
+          _id: {
+            $in: $lget(props.project, 'pages', []),
+          },
+        };
+      });
+
+      const {items: projectPages, isPending: isFindProjectPagesPending} = useFindPaginate({
+        model: pagesStore.Model,
+        qid: ref('projectPages'),
+        query: projectPagesQuery,
+        useFindOptions: {
+          queryWhen: computed(() => {
+            const when1 = !!$lget(props.project, 'pages', []).length;
+            const when2 = progress ? progress.amount === 0 : true;
+            const when3 = pagesStore.findInStore(projectPagesQuery).data.length !== $lget(props.project, 'pages', []).length;
+            // console.log('should i query for pages whens', when1, when2, when3);
+            // console.log('should i query for pages ', when1 && when2 && when3);
+            // console.log('should i query for pages progress', this.progress, when2);
+            // console.log('pages queryWhen params', this.$route.params);
+            return when1 && when2 && when3;
+          }),
         },
-        watch: ['project._id'],
-      }),
-    ],
+      });
+      return {
+        progress,
+
+        projectPages,
+        isFindProjectPagesPending,
+      };
+    },
     data() {
       return {
         model: 'card',
@@ -178,35 +205,13 @@
         formatDateFunc: formatDate,
       };
     },
-    watch: {},
     computed: {
-      ...mapGetters('auth', {
-        user: 'user',
-      }),
-      ...mapGetters('progress', {
-        getProgress: 'get',
-      }),
-      ...mapGetters('wpb-pages', {
-        findPages: 'find',
-      }),
-      progress() {
-        return this.getProgress('0');
-      },
       projectPagesClones() {
         return this.projectPages.map(item => item.clone());
       },
-      projectPagesParams() {
-        return {
-          query: {
-            _id: {
-              $in: this.$lget(this.project, 'pages', []),
-            },
-          },
-        };
-      },
     },
     methods: {
-      ...mapActions('wpb-pages', {
+      ...mapActions(useWpbPagesStore, {
         createPage: 'create',
         deletePage: 'remove',
       }),

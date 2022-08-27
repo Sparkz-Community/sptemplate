@@ -5,15 +5,14 @@
         <div class="flex justify-between" style="align-items: end">
           <p v-if="type === pulledValuesCol">Column Repeat</p>
           <p v-else>Row Repeat</p>
-          <q-btn @click="clearRepeat(type)" icon="close" size="sm" flat round :disabled="disableToggle || (type === pulledValuesCol && !$lget(element, 'styles.grid-template-columns') || type === pulledValuesRow && !$lget(element, 'styles.grid-template-rows'))"/>
+          <q-btn @click="clearRepeat(type)" icon="close" size="sm" flat round
+                 :disabled="disableToggle || (type === pulledValuesCol && !$lget(element, 'styles.grid-template-columns') || type === pulledValuesRow && !$lget(element, 'styles.grid-template-rows'))"/>
         </div>
         <div style="width: 90%; display: flex; flex-direction: row; align-items: center">
-          <select
-            style="font-size: 14px; height: 25px; width: 100%"
-            v-model="type.repeat"
-            @change="type === pulledValuesCol ? buildColRepeat() : buildRowRepeat()"
-            class="q-mb-md"
-          >
+          <select v-model="type.repeat"
+                  style="font-size: 14px; height: 25px; width: 100%"
+                  @change="type === pulledValuesCol ? buildColRepeat() : buildRowRepeat()"
+                  class="q-mb-md">
             <option>auto-fit</option>
             <option>auto-fill</option>
           </select>
@@ -35,17 +34,19 @@
 </template>
 
 <script>
-  import GridSizeInput from 'components/stylingComponents/gridSizeInput';
+  import GridSizeInput from 'components/wpb/stylingComponents/gridSizeInput';
 
   export default {
     name: 'gridRepeat',
-    components: {GridSizeInput},
+    components: {
+      GridSizeInput,
+    },
     props: {
       element: Object,
       disableToggle: {
         type: Boolean,
         default: false,
-      }
+      },
     },
     data() {
       return {

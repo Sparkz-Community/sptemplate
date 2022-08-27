@@ -32,8 +32,7 @@
                 </q-item>
               </q-list>
               <q-pagination v-if="pageTemplatesPages > 1"
-                            :value="pageTemplatesCurrentPage"
-                            @input="pageTemplatesHandlePageChange"
+                            v-model="pageTemplatesCurrentPage"
                             :max="pageTemplatesPages"
                             :max-pages="6"
                             :direction-links="true"
@@ -59,8 +58,7 @@
                 </q-item>
               </q-list>
               <q-pagination v-if="userPagesPages > 1"
-                            :value="userPagesCurrentPage"
-                            @input="userPagesHandlePageChange"
+                            v-model="userPagesCurrentPage"
                             :max="userPagesPages"
                             :max-pages="6"
                             :direction-links="true"
@@ -126,7 +124,7 @@
                        loop
                        width="350px"
                        height="350px"
-                       :animationData="require('../../assets/lottieAnims/WebsiteLoading.json')"/>
+                       :animationData="require('../../../assets/lottieAnims/WebsiteLoading.json')"/>
         <q-card-section style="font-size: 1.5em;
             background: -webkit-linear-gradient(#0B63F6 , #003CC5);
             -webkit-background-clip: text;
@@ -141,9 +139,14 @@
 </template>
 
 <script>
-  import {makeFindPaginateMixin} from '@iy4u/common-client-lib';
-  import {models} from 'feathers-vuex';
-  import {mapGetters} from 'vuex';
+  import {computed, inject, ref} from 'vue';
+  import {mapState} from 'pinia';
+  import {models} from 'feathers-pinia';
+  import {useFindPaginate} from '@sparkz-community/common-client-lib';
+
+  import useWpbPagesStore from 'stores/services/wpb-pages';
+  import useProgressStore from 'stores/services/progress';
+
   import VueLottiePlayer from 'vue-lottie-player';
 
   import sectionView from '../common/substance/Section';
@@ -157,39 +160,63 @@
       sectionView,
       vLottiePlayer: VueLottiePlayer,
     },
-    mixins: [
-      makeFindPaginateMixin({
-        service: 'wpb-pages',
-        name: 'userPages',
-        qid: 'userPages',
-        limit: 6,
-        query() {
-          return {
-            $or: [
-              {
-                _id: {
-                  $in: this.project.pages,
-                },
+    setup(props) {
+      let authUser = inject('authUser');
+
+      const pagesStore = useWpbPagesStore();
+
+      const userPagesQuery = computed(() => {
+        return {
+          $or: [
+            {
+              _id: {
+                $in: props.project.pages,
               },
-            ],
-          };
-        },
-      }),
-      makeFindPaginateMixin({
-        service: 'wpb-pages',
-        name: 'pageTemplates',
-        qid: 'pageTemplates',
-        limit: 6,
-        query() {
-          return {
-            ownerId: {
-              $ne: this.$store.state.auth.user._id,
             },
-            template: true,
-          };
-        },
-      }),
-    ],
+          ],
+        };
+      });
+
+      const {
+        items: userPages,
+        pageCount: userPagesPages,
+        currentPage: userPagesCurrentPage,
+      } = useFindPaginate({
+        model: pagesStore.Model,
+        qid: ref('userPages'),
+        limit: ref(6),
+        query: userPagesQuery,
+      });
+
+      const pageTemplatesQuery = computed(() => {
+        return {
+          ownerId: {
+            $ne: authUser.value._id,
+          },
+          template: true,
+        };
+      });
+
+      const {
+        items: pageTemplates,
+        pageCount: pageTemplatesPages,
+        currentPage: pageTemplatesCurrentPage,
+      } = useFindPaginate({
+        model: pagesStore.Model,
+        qid: ref('pageTemplates'),
+        limit: ref(6),
+        query: pageTemplatesQuery,
+      });
+      return {
+        userPages,
+        userPagesPages,
+        userPagesCurrentPage,
+
+        pageTemplates,
+        pageTemplatesPages,
+        pageTemplatesCurrentPage,
+      };
+    },
     data() {
       return {
         form: new models.api.wpbPages().clone(),
@@ -207,10 +234,9 @@
         blankPage: false,
       };
     },
-    watch: {},
     computed: {
-      ...mapGetters('progress', {
-        findProgress: 'find',
+      ...mapState(useProgressStore, {
+        findProgress: 'findInStore',
       }),
       progress() {
         let a = this.findProgress({query: {_id: '0'}});
@@ -287,7 +313,6 @@
         this.progressDialog = false;
         this.saving = false;
         this.$emit('close', page);
-
       },
     },
   };

@@ -78,7 +78,7 @@
             <q-btn-toggle v-model="screenSize"
                           rounded unelevated
                           toggle-color="primary"
-                          style="border: 1px solid var(--q-color-primary)"
+                          style="border: 1px solid var(--q-primary)"
                           :options="[
                             {slot: 'Mobile', value: 'mobile'},
                             {slot: 'Tablet', value: 'tablet'},
@@ -365,9 +365,17 @@
 </template>
 
 <script>
+  import {computed, inject} from 'vue';
   import {scroll} from 'quasar';
-  import {makeGetMixin, models} from 'feathers-vuex';
-  import {mapActions, mapGetters, mapState} from 'vuex';
+  import {mapActions, mapState, mapWritableState} from 'pinia';
+  import {useGet, models} from 'feathers-pinia';
+  import {useRoute} from 'vue-router';
+
+  import {useWpbStore} from 'stores/useWpbStore';
+  import useWpbPagesStore from 'stores/services/wpb-pages';
+  import useWpbSectionsStore from 'stores/services/wpb-sections';
+  import useWpbElementsStore from 'stores/services/wpb-elements';
+  import useAuthStore from 'stores/store.auth';
 
   import VueLottiePlayer from 'vue-lottie-player';
   import classesMixin from 'src/mixins/classesMixin';
@@ -402,24 +410,32 @@
       vLottiePlayer: VueLottiePlayer,
     },
     props: {
-      page: Object,
+      pageProp: Object,
+    },
+    inject: ['authUser'],
+    setup() {
+      const $lget = inject('$lget');
+      const route = useRoute();
+      const wpbPagesStore = useWpbPagesStore();
+
+      const {item: page, isPending: pageIsPending} = useGet({
+        model: wpbPagesStore.Model,
+        id: $lget(route, 'params.page._id', route.params.page_id),
+        queryWhen: computed(() => {
+          console.log('should i query for page?', !$lget(route, 'params.page._id'));
+          let statePage = this.getPage(route.params.page_id);
+          return !$lget(route, 'params.page._id') && !statePage;
+        }),
+      });
+      return {
+        page,
+        pageIsPending,
+      };
     },
     mixins: [
       classesMixin({
         nameSpace: 'form',
         service: 'wpb-pages',
-      }),
-      makeGetMixin({
-        service: 'wpb-pages',
-        name: 'makeGetPage',
-        id() {
-          return this.$lget(this.$route, 'params.page._id', this.$route.params.page_id);
-        },
-        queryWhen() {
-          console.log('should i query for page?', !this.$lget(this.$route, 'params.page._id'));
-          let statePage = this.getPage(this.$route.params.page_id);
-          return !this.$lget(this.$route, 'params.page._id') && !statePage;
-        },
       }),
     ],
     data() {
@@ -487,7 +503,7 @@
       this.$store.commit('SET_AUTOSAVE_PREFERENCES');
     },
     watch: {
-      isGetMakeGetPagePending: {
+      pageIsPending: {
         immediate: true,
         deep: true,
         handler(newVal) {
@@ -500,35 +516,35 @@
           }
         },
       },
-      makeGetPage: {
+      page: {
         immediate: true,
         deep: true,
         async handler(newVal, oldVal) {
-          // console.log('makeGetPage change', newVal);
-          if (newVal && newVal._id === this.$lget(this.page, '_id', this.$route.params.page_id)) {
+          // console.log('page change', newVal);
+          if (newVal && newVal._id === this.$lget(this.pageProp, '_id', this.$route.params.page_id)) {
             if (this.$lget(newVal, '_fastjoin.fonts', []).length !== this.$lget(oldVal, '_fastjoin.fonts', []).length) {
               this.loadFonts(this.$lget(newVal, '_fastjoin.fonts', []));
             }
             this.form = newVal.clone();
-            let payload = {project: newVal.project, user: this.user, page: newVal};
-            // console.log('makeGetPage change payload', payload);
-            await this.$store.dispatch('setCurrentDbCollection', payload);
-            // await this.$store.dispatch('setUndoRedoStatus', newVal);
+            let payload = {project: newVal.project, user: this.authUser, page: newVal};
+            // console.log('page change payload', payload);
+            await this.setCurrentDbCollection(payload);
+            // await this.setUndoRedoStatus(newVal);
             this.applyCssRules(this.$lget(newVal, '_fastjoin.css', ''));
           }
         },
       },
-      page: {
+      pageProp: {
         immediate: true,
         deep: true,
         async handler(newVal) {
           console.log('Page change', newVal);
           if (newVal && newVal._id) {
             this.form = newVal;
-            let payload = {project: newVal.project, user: this.user, page: newVal};
+            let payload = {project: newVal.project, user: this.authUser, page: newVal};
             // console.log('Page change payload', payload);
-            await this.$store.dispatch('setCurrentDbCollection', payload);
-            // await this.$store.dispatch('setUndoRedoStatus', newVal);
+            await this.setCurrentDbCollection(payload);
+            // await this.setUndoRedoStatus(newVal);
             this.applyCssRules(this.$lget(newVal, '_fastjoin.css', ''));
           }
         },
@@ -562,16 +578,16 @@
         deep: true,
         handler(newVal) {
           if (this.$lget(newVal, 'availableClasses', []).length) {
-            this.$store.dispatch('setAvailableClasses', this.$lget(newVal, 'availableClasses', []));
+            this.setAvailableClasses(this.$lget(newVal, 'availableClasses', []));
           }
         },
       },
-      user: {
+      authUser: {
         immediate: true,
         deep: true,
         handler(newVal, oldVal) {
-          if (this.$lget(newVal, 'theme.--q-color-primary') !== this.$lget(oldVal, 'theme.--q-color-primary')) {
-            this.$setCssVar('--q-color-primary', this.$lget(newVal, 'theme.--q-color-primary'));
+          if (this.$lget(newVal, 'theme.--q-primary') !== this.$lget(oldVal, 'theme.--q-primary')) {
+            this.$setCssVar('--q-primary', this.$lget(newVal, 'theme.--q-primary'));
           }
           if (this.$lget(newVal, 'preferences.autoSave')) {
             const autosavePreference = newVal.preferences.autoSave;
@@ -582,13 +598,28 @@
       },
     },
     computed: {
-      ...mapGetters('auth', {
-        user: 'user',
+      ...mapWritableState(useWpbStore, {
+        currentElement: 'currentElement',
       }),
-      ...mapGetters('wpb-pages', {
-        getPage: 'get',
+      ...mapState(useWpbStore, {
+        undoRedoStatus: 'undoRedoStatus'
       }),
-      ...mapState({undoRedoStatus: 'undoRedoStatus'}),
+      ...mapState(useWpbPagesStore, {
+        getPage: 'getFromStore',
+      }),
+      ...mapState(useAuthStore, {
+        accessToken: (state) => state.payload.accessToken,
+      }),
+      feathersAxios() {
+        return this.$axios.create({
+          baseURL: process.env.VUE_APP_FEATHERS_URL || 'http://localhost:3030',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + this.accessToken,
+          },
+        });
+      },
       screenSizeStyles() {
         if (this.screenSize === 'desktop') {
           return 'width: 100%;';
@@ -599,38 +630,10 @@
         }
       },
       userId() {
-        return this.user._id;
-      },
-      feathersAxios() {
-        return this.$axios.create({
-          baseURL: process.env.VUE_APP_FEATHERS_URL || 'http://localhost:3030',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-            Authorization: 'Bearer ' + this.$store.state.auth.accessToken,
-          },
-        });
-      },
-      currentElement: {
-        get() {
-          return this.$store.getters.getCurrentElement;
-        },
-        set(element) {
-          this.$store.dispatch('setCurrentElement', element);
-        },
+        return this.authUser._id;
       },
       isEditing() {
         return this.$lget(this.currentElement, '_id', false) === this.$lget(this.form, '_id', true);
-      },
-      axiosFeathers() {
-        return this.$axios.create({
-          baseURL: process.env.VUE_APP_FEATHERS_URL || 'http://localhost:3030',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-            Authorization: 'Bearer ' + this.$store.state.auth.accessToken,
-          },
-        });
       },
       availableClassRules() {
         let media = /@media/;
@@ -644,12 +647,24 @@
       },
     },
     methods: {
-      ...mapActions('wpb-pages', {
+      ...mapActions(useWpbPagesStore, {
         patchPage: 'patch',
+      }),
+      ...mapActions(useWpbElementsStore, {
+        removeElements: 'remove',
+      }),
+      ...mapActions(useWpbSectionsStore, {
+        removeSections: 'remove',
+      }),
+      ...mapActions(useWpbStore, {
+        undoRedo: 'undoRedo',
+        setCurrentDbCollection: 'setCurrentDbCollection',
+        setAvailableClasses: 'setAvailableClasses',
+        // setUndoRedoStatus: 'setUndoRedoStatus',
       }),
       // setTheme(event) {
       //   this.$setCssVar('--q-color-primary', event);
-      //   let newUser = this.user.clone();
+      //   let newUser = this.authUser.clone();
       //   newUser.theme['--q-color-primary'] = event;
       //   newUser.save().then(() => {
       //     this.$successNotify('Looks good!');
@@ -718,9 +733,9 @@
       },
       deleteElement() {
         if (this.addingElement.devTemplate === false) {
-          if (this.addingElement.ownerId === this.user._id) {
+          if (this.addingElement.ownerId === this.authUser._id) {
             if (this.addingElement._type) {
-              this.$store.dispatch('wpb-elements/remove', this.addingElement._id)
+              this.removeElements(this.addingElement._id)
                 .then(res => {
                   console.log('Saved', res);
                   this.deleteElementDialog = false;
@@ -739,7 +754,7 @@
                   console.log('erroring', err);
                 });
             } else {
-              this.$store.dispatch('wpb-sections/remove', this.addingElement._id)
+              this.removeSections(this.addingElement._id)
                 .then(res => {
                   console.log('Saved', res);
                   this.deleteElementDialog = false;
@@ -796,7 +811,7 @@
               console.log('this is the first', payload);
             } else {
               payload = {
-                ownerId: this.user._id,
+                ownerId: this.authUser._id,
                 action: 'duplicateTemplate',
                 templateAction: 'rootElement',
                 value: elementCopy,
@@ -939,7 +954,7 @@
         event.returnValue = '';
       },
       undoRedo(val) {
-        this.$store.dispatch('undoRedo', {type: val, page: this.form});
+        this.undoRedo({type: val, page: this.form});
       },
       markSaved() {
         this.unsavedChanges = false;
@@ -975,8 +990,7 @@
       this.currentElement = {};
       next();
     },
-    beforeDestroy() {
-
+    beforeUnmount() {
       // removes the font link tag so we don't load unnecessary styles.
       if (document.getElementById('PageFonts')) {
         document.getElementById('PageFonts').parentNode.removeChild(document.getElementById('PageFonts'));

@@ -1,32 +1,32 @@
 <template>
   <div>
-      <color :format="'rgba'" :element="element" :name="'Background'" :path="'styles.background-color'" @stylesUpdate="debounce">
-
-      </color>
-    <background-img :element="element" @stylesUpdate="debounce">
-
-    </background-img>
+    <color :format="'rgba'"
+           :element="element"
+           :name="'Background'"
+           :path="'styles.background-color'"
+           @stylesUpdate="debounce"></color>
+    <background-img :element="element" @stylesUpdate="debounce"></background-img>
   </div>
 </template>
 
 <script>
-  import Color from 'components/common/atoms/stylingComponents/backgroundColor';
-  import backgroundImg from 'components/common/atoms/stylingComponents/backgroundImg';
+  import Color from '../common/atoms/stylingComponents/backgroundColor';
+  import backgroundImg from '../common/atoms/stylingComponents/backgroundImg';
 
   export default {
     name: 'background',
     props: {
-      element: Object
+      element: Object,
     },
     components: {
       Color,
-      backgroundImg
+      backgroundImg,
     },
     methods: {
       debounce(val) {
         this.$emit('stylesUpdate', val);
-      }
-    }
+      },
+    },
   };
 </script>
 

@@ -1,9 +1,9 @@
 <template>
   <div id="draggableTree" v-bind="$attrs['div-attrs']">
-    <vue-nestable :value="value" @input="$emit('input', $event)" v-bind="$attrs['attrs']" v-on="listeners">
-      <template slot-scope="scope">
+    <vue-nestable :value="value" @input="$emit('input', $event)" v-bind="$attrs['attrs']">
+      <template v-slot="scope">
         <vue-nestable-handle
-          v-if="Object.keys($scopedSlots).includes('default') || Object.keys($scopedSlots).length === 0" v-bind="scope">
+          v-if="Object.keys($slots).includes('default') || Object.keys($slots).length === 0" v-bind="scope">
           <slot v-bind="scope">
             <q-card style="width: 100%;">
               <q-card-section class="nestable-handle q-pa-sm">
@@ -21,11 +21,11 @@
         </vue-nestable-handle>
         <template v-else>
 
-          <slot v-if="Object.keys($scopedSlots).includes('before')" name="before" v-bind="scope"></slot>
-          <vue-nestable-handle v-if="Object.keys($scopedSlots).includes('handle')" v-bind="scope">
+          <slot v-if="Object.keys($slots).includes('before')" name="before" v-bind="scope"></slot>
+          <vue-nestable-handle v-if="Object.keys($slots).includes('handle')" v-bind="scope">
             <slot name="handle" v-bind="scope"></slot>
           </vue-nestable-handle>
-          <slot v-if="Object.keys($scopedSlots).includes('after')" name="after" v-bind="scope"></slot>
+          <slot v-if="Object.keys($slots).includes('after')" name="after" v-bind="scope"></slot>
         </template>
       </template>
     </vue-nestable>
@@ -53,13 +53,6 @@
           // div-attrs defaults
           this.$lset(newVal, 'div-attrs.class', this.$lget(newVal, 'div-attrs.class', 'col-12'));
         }
-      },
-    },
-    computed: {
-      listeners() {
-        // eslint-disable-next-line no-unused-vars
-        const {input, ...listeners} = this.$listeners;
-        return listeners;
       },
     },
     methods: {

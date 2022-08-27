@@ -97,7 +97,7 @@
             </p>
             <q-icon-picker v-model="edited_item.icon"
                            :icon-set="icon_set"
-                           :pagination.sync="pagination"
+                           v-model:pagination="pagination"
                            :filter="filter"
                            animated
                            style="height: 180px;"/>

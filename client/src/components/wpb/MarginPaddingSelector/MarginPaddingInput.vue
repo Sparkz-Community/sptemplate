@@ -20,7 +20,8 @@
 </template>
 
 <script>
-  const debounce = require('lodash.debounce');
+  import {lodash} from '@sparkz-community/common-client-lib';
+  const {$ldebounce} = lodash;
 
   export default {
     name: 'MarginPaddingInput',
@@ -141,7 +142,7 @@
           } else return null;
         } else return null;
       },
-      emitDebounce: debounce(function(value){
+      emitDebounce: $ldebounce(function(value){
         this.$emit('input', value);
       }, 370),
     },

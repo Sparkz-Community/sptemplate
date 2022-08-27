@@ -68,8 +68,7 @@
       </div>
       <div style="display: flex; justify-content: center">
         <q-pagination v-if="sectionTemplatesPublicPages > 1"
-                      :value="sectionTemplatesPublicCurrentPage"
-                      @input="sectionTemplatesPublicHandlePageChange"
+                      v-model="sectionTemplatesPublicCurrentPage"
                       :max="sectionTemplatesPublicPages"
                       :max-pages="6"
                       :direction-links="true"
@@ -104,8 +103,7 @@
       </div>
       <div style="display: flex; justify-content: center">
         <q-pagination v-if="elementTemplatesPublicPages > 1"
-                      :value="elementTemplatesPublicCurrentPage"
-                      @input="elementTemplatesPublicHandlePageChange"
+                      v-model="elementTemplatesPublicCurrentPage"
                       :max="elementTemplatesPublicPages"
                       :max-pages="6"
                       :direction-links="true"
@@ -118,67 +116,107 @@
 </template>
 
 <script>
-  import {makeFindPaginateMixin} from '@iy4u/common-client-lib';
+  import {computed, ref} from 'vue';
+  import {useFindPaginate} from '@sparkz-community/common-client-lib';
+
+  import useWpbSectionsStore from 'stores/services/wpb-sections';
+  import useWpbElementsStore from 'stores/services/wpb-elements';
 
   export default {
     name: 'userTemplates',
     props: {
       currentElement: Object,
     },
-    mixins: [
-      makeFindPaginateMixin({
-        service: 'wpb-sections',
-        name: 'devSectionTemplates',
-        qid: 'devSectionTemplates',
-        query() {
-          return {
-            template: true,
-            baseSection: false,
-            devTemplate: true,
-            isPublic: true,
-          };
-        },
-      }),
-      makeFindPaginateMixin({
-        service: 'wpb-elements',
-        name: 'devElementTemplates',
-        qid: 'devElementTemplates',
-        query() {
-          return {
-            template: true,
-            baseElement: false,
-            devTemplate: true,
-            isPublic: true,
-          };
-        },
-      }),
-      makeFindPaginateMixin({
-        service: 'wpb-sections',
-        name: 'sectionTemplatesPublic',
-        qid: 'sectionTemplatesPublic',
-        query() {
-          return {
-            template: true,
-            baseSection: false,
-            devTemplate: false,
-            isPublic: true,
-          };
-        },
-      }),
-      makeFindPaginateMixin({
-        service: 'wpb-elements',
-        name: 'elementTemplatesPublic',
-        qid: 'elementTemplatesPublic',
-        query() {
-          return {
-            template: true,
-            baseElement: false,
-            devTemplate: false,
-            isPublic: true,
-          };
-        },
-      }),
-    ],
+    setup() {
+      const wpbSectionsStore = useWpbSectionsStore();
+
+      const devSectionTemplatesQuery = computed(() => {
+        return {
+          template: true,
+          baseSection: false,
+          devTemplate: true,
+          isPublic: true,
+        };
+      });
+
+      const {
+        items: devSectionTemplates,
+      } = useFindPaginate({
+        model: wpbSectionsStore.Model,
+        qid: ref('devSectionTemplates'),
+        query: devSectionTemplatesQuery,
+      });
+
+      const sectionTemplatesPublicQuery = computed(() => {
+        return {
+          template: true,
+          baseSection: false,
+          devTemplate: false,
+          isPublic: true,
+        };
+      });
+
+      const {
+        items: sectionTemplatesPublic,
+        pageCount: sectionTemplatesPublicPages,
+        currentPage: sectionTemplatesPublicCurrentPage,
+      } = useFindPaginate({
+        model: wpbSectionsStore.Model,
+        qid: ref('sectionTemplatesPublic'),
+        query: sectionTemplatesPublicQuery,
+      });
+
+      const wpbElementsStore = useWpbElementsStore();
+
+      const devElementTemplatesQuery = computed(() => {
+        return {
+          template: true,
+          baseSection: false,
+          devTemplate: true,
+          isPublic: true,
+        };
+      });
+
+      const {
+        items: devElementTemplates,
+      } = useFindPaginate({
+        model: wpbElementsStore.Model,
+        qid: ref('devElementTemplates'),
+        query: devElementTemplatesQuery,
+      });
+
+      const elementTemplatesPublicQuery = computed(() => {
+        return {
+          template: true,
+          baseElement: false,
+          devTemplate: false,
+          isPublic: true,
+        };
+      });
+
+      const {
+        items: elementTemplatesPublic,
+        pageCount: elementTemplatesPublicPages,
+        currentPage: elementTemplatesPublicCurrentPage,
+      } = useFindPaginate({
+        model: wpbElementsStore.Model,
+        qid: ref('elementTemplatesPublic'),
+        query: elementTemplatesPublicQuery,
+      });
+      return {
+        devSectionTemplates,
+
+        sectionTemplatesPublic,
+        sectionTemplatesPublicPages,
+        sectionTemplatesPublicCurrentPage,
+
+        devElementTemplates,
+
+        elementTemplatesPublic,
+        elementTemplatesPublicPages,
+        elementTemplatesPublicCurrentPage,
+      };
+    },
     data() {
       return {
         templateExpansion: '',

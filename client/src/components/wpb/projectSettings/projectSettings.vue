@@ -44,13 +44,6 @@
         removeDialog: false
       };
     },
-    created() {
-    },
-    mounted() {
-    },
-    computed: {},
-    watch: {},
-    methods: {},
   };
 </script>
 

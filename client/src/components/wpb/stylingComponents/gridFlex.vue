@@ -5,36 +5,34 @@
       <q-spinner/>
     </div>
     <div v-else style="height: 40px">
-      <q-toggle
-        :value="repeat"
-        @input="changeGridTemplate"
-        color="primary"
-      />
+      <q-toggle :value="repeat"
+                @input="changeGridTemplate"
+                color="primary"/>
     </div>
     <div id="Column&Row" v-if="!repeat">
       <div class="column" style="width: 100%">
         <div>
-          <q-btn icon="add" size="sm" @click="addColumnOrRow('column')" class="q-my-sm text-white"
-                 style="background: -webkit-linear-gradient(#0B63F6 , #003CC5)">Add Column
+          <q-btn icon="add"
+                 size="sm"
+                 @click="addColumnOrRow('column')"
+                 class="q-my-sm text-white"
+                 style="background: -webkit-linear-gradient(#0B63F6 , #003CC5)">
+            Add Column
           </q-btn>
         </div>
         <div v-for="(column,index) in columns" :key="index"
              style="width: 100%; display: flex; flex-direction: row; align-items: center"
              class="q-my-sm inputBackground">
-          <input
-            style="width: 80%;height: 25px;"
-            v-model="column.size"
-            @input="calculateColumns"
-            type="number"
-            :min="0"
-            :max="100"
-            v-if="!disableCheck($lget(column, 'unit', ''))"
-          />
-          <select
-            style="font-size: 14px; border: 0; outline: 0; height: 25px;width: 100%;"
-            v-model="column.unit"
-            @change="calculateColumns"
-          >
+          <input v-if="!disableCheck($lget(column, 'unit', ''))"
+                 v-model="column.size"
+                 style="width: 80%;height: 25px;"
+                 @input="calculateColumns"
+                 type="number"
+                 :min="0"
+                 :max="100"/>
+          <select v-model="column.unit"
+                  style="font-size: 14px; border: 0; outline: 0; height: 25px;width: 100%;"
+                  @change="calculateColumns">
             <q-tooltip>
               Select Unit
             </q-tooltip>
@@ -48,27 +46,28 @@
       <q-space/>
       <div class="column" style="width: 100%">
         <div>
-          <q-btn icon="add" size="sm" style="background: -webkit-linear-gradient(#0B63F6 , #003CC5)"
-                 @click="addColumnOrRow('row')" class="q-my-sm text-white">Add Row
+          <q-btn icon="add"
+                 size="sm"
+                 style="background: -webkit-linear-gradient(#0B63F6 , #003CC5)"
+                 @click="addColumnOrRow('row')"
+                 class="q-my-sm text-white">
+            Add Row
           </q-btn>
         </div>
-        <div v-for="(row,index) in rows" :key="index"
+        <div v-for="(row,index) in rows"
+             :key="index"
              style="width: 100%; display: flex; flex-direction: row; align-items: center"
              class="q-my-sm inputBackground">
-          <input
-            style="width: 80%;height: 25px;"
-            v-model="row.size"
-            type="number"
-            :min="0"
-            @input="calculateRows"
-            v-if="!disableCheck($lget(row, 'unit', ''))"
-            :max="100"
-          />
-          <select
-            :style="`font-size: 14px; border: 0; outline: 0; height: 25px; ${!disableCheck($lget(row, 'unit', '')) ? 'flex: 1' : ''}`"
-            v-model="row.unit"
-            @change="calculateRows"
-          >
+          <input v-if="!disableCheck($lget(row, 'unit', ''))"
+                 v-model="row.size"
+                 style="width: 80%;height: 25px;"
+                 type="number"
+                 :min="0"
+                 @input="calculateRows"
+                 :max="100"/>
+          <select v-model="row.unit"
+                  :style="`font-size: 14px; border: 0; outline: 0; height: 25px; ${!disableCheck($lget(row, 'unit', '')) ? 'flex: 1' : ''}`"
+                  @change="calculateRows">
             <q-tooltip>
               Select Unit
             </q-tooltip>
@@ -81,8 +80,9 @@
       <q-separator class="q-my-md"/>
     </div>
     <div v-else>
-      <grid-repeat :element="element" :disableToggle="disableToggle" @stylesUpdate="disableToggle = true; $emit('stylesUpdate', {path: $event.path, value: $event.value})">
-
+      <grid-repeat :element="element"
+                   :disableToggle="disableToggle"
+                   @stylesUpdate="disableToggle = true; $emit('stylesUpdate', {path: $event.path, value: $event.value})">
       </grid-repeat>
       <q-separator class="q-my-md"/>
     </div>
@@ -90,20 +90,16 @@
     <div class="column" style="width: 100%">
       <p>Grid Column Gap</p>
       <div style="width: 100%; display: flex; flex-direction: row; align-items: center" class="q-my-sm inputBackground">
-        <input
-          style="width: 100%"
-          :value="separateValues($lget(element, 'styles.grid-column-gap', '0'))"
-          @input="emitDebounce($event.target.value + pullUnit($lget(element, 'styles.grid-column-gap', '0')), 'styles.grid-column-gap')"
-          type="number"
-          :disabled="disableCheck($lget(element, 'styles.grid-column-gap', ''))"
-          min="0"
-          :max="checkMax(pullUnit($lget(element, 'styles.grid-column-gap', '%')))"
-        />
-        <select
-          style="font-size: 14px; border: 0; outline: 0; height: 25px"
-          :value="pullUnit($lget(element, 'styles.grid-column-gap', '0'))"
-          @change="emitCheck(element, $event.target.value, 'styles.grid-column-gap')"
-        >
+        <input style="width: 100%"
+               :value="separateValues($lget(element, 'styles.grid-column-gap', '0'))"
+               @input="emitDebounce($event.target.value + pullUnit($lget(element, 'styles.grid-column-gap', '0')), 'styles.grid-column-gap')"
+               type="number"
+               :disabled="disableCheck($lget(element, 'styles.grid-column-gap', ''))"
+               min="0"
+               :max="checkMax(pullUnit($lget(element, 'styles.grid-column-gap', '%')))"/>
+        <select style="font-size: 14px; border: 0; outline: 0; height: 25px"
+                :value="pullUnit($lget(element, 'styles.grid-column-gap', '0'))"
+                @change="emitCheck(element, $event.target.value, 'styles.grid-column-gap')">
           <q-tooltip>
             Select Unit
           </q-tooltip>
@@ -114,20 +110,16 @@
     <div class="column" style="width: 100%">
       <p>Grid Row Gap</p>
       <div style="width: 100%; display: flex; flex-direction: row; align-items: center" class="q-my-sm inputBackground">
-        <input
-          style="width: 100%"
-          :value="separateValues($lget(element, 'styles.grid-row-gap', '0'))"
-          @input="emitDebounce($event.target.value + pullUnit($lget(element, 'styles.grid-row-gap', '0')), 'styles.grid-row-gap')"
-          type="number"
-          :disabled="disableCheck($lget(element, 'styles.grid-row-gap', ''))"
-          min="0"
-          :max="checkMax(pullUnit($lget(element, 'styles.grid-row-gap', '%')))"
-        />
-        <select
-          style="font-size: 14px; border: 0; outline: 0; height: 25px"
-          :value="pullUnit($lget(element, 'styles.grid-row-gap', '0'))"
-          @change="emitCheck(element, $event.target.value, 'styles.grid-row-gap')"
-        >
+        <input style="width: 100%"
+               :value="separateValues($lget(element, 'styles.grid-row-gap', '0'))"
+               @input="emitDebounce($event.target.value + pullUnit($lget(element, 'styles.grid-row-gap', '0')), 'styles.grid-row-gap')"
+               type="number"
+               :disabled="disableCheck($lget(element, 'styles.grid-row-gap', ''))"
+               min="0"
+               :max="checkMax(pullUnit($lget(element, 'styles.grid-row-gap', '%')))"/>
+        <select style="font-size: 14px; border: 0; outline: 0; height: 25px"
+                :value="pullUnit($lget(element, 'styles.grid-row-gap', '0'))"
+                @change="emitCheck(element, $event.target.value, 'styles.grid-row-gap')">
           <q-tooltip>
             Select Unit
           </q-tooltip>
@@ -139,15 +131,29 @@
 </template>
 
 <script>
-  import GridRepeat from 'components/stylingComponents/gridRepeat';
+  import {lodash} from '@sparkz-community/common-client-lib';
+  const {$ldebounce} = lodash;
 
-  const debounce = require('lodash.debounce');
+  import GridRepeat from 'components/wpb/stylingComponents/gridRepeat';
 
   export default {
     name: 'gridFlex',
-    components: {GridRepeat},
+    components: {
+      GridRepeat,
+    },
     props: {
       element: Object,
+    },
+    data() {
+      return {
+        repeatUnits: ['px', 'fr', '%'],
+        gapUnits: ['$unset', 'px', 'em', 'rem', '%', 'initial', 'inherit', 'auto', 'revert', 'normal', 'unset'],
+        gridUnits: ['auto', 'fr', '%', 'px', 'initial', 'inherit', '$unset'],
+        columns: [],
+        rows: [],
+        repeat: false,
+        disableToggle: false,
+      };
     },
     mounted() {
       let reg3 = /repeat\((?<repeat>.*),\s*minmax\((?<min>.*),\s*(?<max>.*)\)\)/;
@@ -176,18 +182,6 @@
         }
       }
     },
-
-    data() {
-      return {
-        repeatUnits: ['px', 'fr', '%'],
-        gapUnits: ['$unset', 'px', 'em', 'rem', '%', 'initial', 'inherit', 'auto', 'revert', 'normal', 'unset'],
-        gridUnits: ['auto', 'fr', '%', 'px', 'initial', 'inherit', '$unset'],
-        columns: [],
-        rows: [],
-        repeat: false,
-        disableToggle: false,
-      };
-    },
     watch: {
       element: {
         immediate: true,
@@ -196,8 +190,8 @@
           if ((this.$lget(newVal, 'styles.grid-template-columns') !== this.$lget(oldVal, 'styles.grid-template-columns')) || ((this.$lget(newVal, 'styles.grid-template-rows') !== this.$lget(oldVal, 'styles.grid-template-rows')))) {
             this.disableToggle = false;
           }
-        }
-      }
+        },
+      },
     },
     methods: {
       changeGridTemplate() {
@@ -207,10 +201,10 @@
             message: 'This action will clear current settings for columns and rows.',
             ok: {
               push: true,
-              color: 'negative'
+              color: 'negative',
             },
             cancel: true,
-            persistent: true
+            persistent: true,
           }).onOk(() => {
             // if (val && (this.columns.length || this.rows.length)) {
             //   let reg3 = /repeat\((?<repeat>.*),\s*minmax\((?<min>.*),\s*(?<max>.*)\)\)/;
@@ -373,7 +367,7 @@
           this.calculateRows();
         }
       },
-      emitDebounce: debounce(function (value, path) {
+      emitDebounce: $ldebounce(function (value, path) {
         this.$emit('stylesUpdate', {
           path,
           value,
