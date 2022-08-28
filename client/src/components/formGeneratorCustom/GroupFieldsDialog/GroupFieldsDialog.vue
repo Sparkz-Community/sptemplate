@@ -1,5 +1,5 @@
 <template>
-  <transition v-bind="attrs['transition-attrs'}">
+  <transition v-bind="attrs['transition-attrs']">
     <div id="GroupFieldsDialog" v-bind="modelValue['div-attrs']">
       <slot :data="modelValue" :btnAttrs="modelValue['btn-attrs']" :toggleDialog="toggleDialog">
         <q-btn @click="dialogToggle = !dialogToggle" v-bind="modelValue['btn-attrs']"/>
