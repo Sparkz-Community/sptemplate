@@ -1,64 +1,67 @@
 <template>
-  <div class="bg-transparent full-width q-pa-sm">
-    <q-table title="Products Prices" flat :data="productPriceList" table-class="full-width self-center ">
-      <template #body-cell="props">
-        <td v-if="props.col.name === 'product'">
-          {{ $lget(products.find(product => product._id === $lget(props.row, 'product')), 'title') }}
+  <transition v-bind="attrs['transition-attrs']">
+    <div class="bg-transparent full-width q-pa-sm">
+      <q-table title="Products Prices" flat :data="productPriceList" table-class="full-width self-center ">
+        <template #body-cell="props">
+          <td v-if="props.col.name === 'product'">
+            {{ $lget(products.find(product => product._id === $lget(props.row, 'product')), 'title') }}
 
-        </td>
-        <td v-else-if="props.col.name === 'actions'">
-          <div class="row q-gutter-sm">
-            <q-btn flat color="primary" dense icon="edit" @click="edit(props.row)"/>
-            <q-btn flat color="negative" dense icon="delete" @click="remove(props.row)"/>
-          </div>
-        </td>
-        <td v-else>
-          {{ props.row[props.col.name] }}
-        </td>
+          </td>
+          <td v-else-if="props.col.name === 'actions'">
+            <div class="row q-gutter-sm">
+              <q-btn flat color="primary" dense icon="edit" @click="edit(props.row)"/>
+              <q-btn flat color="negative" dense icon="delete" @click="remove(props.row)"/>
+            </div>
+          </td>
+          <td v-else>
+            {{ props.row[props.col.name] }}
+          </td>
 
-      </template>
-      <template #no-data>
-        No price listed!
-      </template>
-      <template #top-right>
-        <q-btn v-if="options.length > 0" icon="add" label="Product Price" @click="openDialog" outline color="primary"/>
-      </template>
-    </q-table>
-    <q-dialog v-model="open" position="right">
-      <q-card style="max-width: 300px;">
-        <q-card-section>
-          <form-generator v-model="productPrice" :fields="fields" v-model:valid="valid"/>
-        </q-card-section>
-        <q-card-actions>
-          <q-btn label="Save" color="primary" @click="save"/>
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
+        </template>
+        <template #no-data>
+          No price listed!
+        </template>
+        <template #top-right>
+          <q-btn v-if="options.length > 0" icon="add" label="Product Price" @click="openDialog" outline
+                 color="primary"/>
+        </template>
+      </q-table>
+      <q-dialog v-model="open" position="right">
+        <q-card style="max-width: 300px;">
+          <q-card-section>
+            <form-generator v-model="productPrice" :fields="fields" v-model:valid="valid"/>
+          </q-card-section>
+          <q-card-actions>
+            <q-btn label="Save" color="primary" @click="save"/>
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
 
-    <q-dialog v-model="openRemove" persistent position="right">
-      <q-card>
-        <q-card-section class="row items-center">
-          <q-avatar icon="delete" color="primary" text-color="white"/>
-          <div class="q-ml-sm">
-            You are about to delete the product list for the
-            {{ $lget(products.find(product => product._id === $lget(productPriceToRemove, 'product')), 'title') }}
-            product
-          </div>
-        </q-card-section>
+      <q-dialog v-model="openRemove" persistent position="right">
+        <q-card>
+          <q-card-section class="row items-center">
+            <q-avatar icon="delete" color="primary" text-color="white"/>
+            <div class="q-ml-sm">
+              You are about to delete the product list for the
+              {{ $lget(products.find(product => product._id === $lget(productPriceToRemove, 'product')), 'title') }}
+              product
+            </div>
+          </q-card-section>
 
-        <q-card-actions align="right">
-          <q-btn flat label="Cancel" color="primary" @click="cancelRemove"/>
-          <q-btn label="Go Ahead" color="primary" v-close-popup @click="confirmRemove"/>
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
-  </div>
-
+          <q-card-actions align="right">
+            <q-btn flat label="Cancel" color="primary" @click="cancelRemove"/>
+            <q-btn label="Go Ahead" color="primary" v-close-popup @click="confirmRemove"/>
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
+    </div>
+  </transition>
 </template>
 
 <script>
   import {useFindPaginate} from '@sparkz-community/common-client-lib';
   import useProducts from 'stores/services/products';
+  import {computed, ref} from 'vue';
 
   export default {
     name: 'price-list-select',
@@ -66,27 +69,31 @@
     setup() {
       const productsStore = useProducts;
 
-      useFindPaginate({
-        limit: 12,
+      const query = computed(() => {
+        return {};
+      });
+
+      const params = computed(() => {
+        return {
+          debounce: 500,
+        };
+      });
+
+      const {items: products} = useFindPaginate({
+        limit: ref(12),
         model: productsStore.Model,
-        qid: 'products',
-        query() {
-          return {};
-        },
-        params() {
-          return {
-            debounce: 500,
-          };
-        },
+        qid: ref('products'),
+        query: query,
+        params: params,
       });
 
       return {
         productsStore,
-        useFindPaginate,
+        products,
       };
     },
     props: {
-      'model-value': {
+      modelValue: {
         type: Array,
         default() {
           return [
@@ -104,7 +111,6 @@
     emits: [
       'update:model-value',
     ],
-    mixins: [],
     data() {
       return {
         productPrice: {
@@ -120,11 +126,10 @@
       };
     },
     watch: {
-      'model-value': {
+      modelValue: {
         immediate: true,
         deep: true,
         handler(newVal) {
-
           this.productPriceList = newVal.map(productPrice => {
             const {product, price} = productPrice;
             return {product, price, actions: product};
@@ -142,7 +147,10 @@
       },
     },
     computed: {
-
+      attrs() {
+        let newVal = {...this.$attrs};
+        return newVal;
+      },
       fields() {
         return [
           {
@@ -227,7 +235,9 @@
         this.openRemove = false;
       },
       confirmRemove() {
-        this.productPriceList = this.productPriceList.filter(item => item['product'] !== this.productPriceToRemove['product']);
+        this.productPriceList = this.productPriceList.filter(item => {
+          return item['product'] !== this.productPriceToRemove['product'];
+        });
         this.productPriceToRemove = undefined;
         this.openRemove = false;
       },
