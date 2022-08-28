@@ -237,7 +237,7 @@
       },
       confirmRemove() {
         this.accountQtyList = this.accountQtyList.filter(item => item['id'] !== this.accountQtyToRemove['id']);
-        console.log(this.accountQtyToRemove);
+        // console.log(this.accountQtyToRemove);
         this.accountQtyToRemove = undefined;
         this.openRemove = false;
       },

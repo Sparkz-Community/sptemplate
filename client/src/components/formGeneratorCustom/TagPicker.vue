@@ -184,9 +184,10 @@
           .then(res => {
             loading.value = false;
             options.value = Array.from(new Set(flattenArray(res.data.map(a => a.tags))));
+            // eslint-disable-next-line no-unused-vars
           }).catch(err => {
             loading.value = false;
-            console.log('error loading tags', err.message);
+            // console.log('error loading tags', err.message);
           });
       }
 

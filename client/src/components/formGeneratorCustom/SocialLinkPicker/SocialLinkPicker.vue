@@ -97,7 +97,7 @@
             //     item.icon = 'fas fa-icons';
             //   }
             // });
-            console.log('this is form data: ', newValue);
+            // console.log('this is form data: ', newValue);
             this.listFormData = newValArr;
             if (!this.listFormData.length) this.listFormData = [{}];
           }
@@ -108,7 +108,7 @@
         deep: true,
         handler(newVal) {
           if (newVal && JSON.stringify(newVal) !== JSON.stringify(this.oldVal)) {
-            console.log(newVal);
+            // console.log(newVal);
             let emitVal = newVal.filter(item => Object.keys(item).length);
             this.$emit('update:model-value', emitVal);
             this.oldVal = this.$lcloneDeep(newVal);
@@ -392,7 +392,7 @@
           ]);
         }
 
-        console.log(formData._type, fields);
+        // console.log(formData._type, fields);
         return fields;
       },
     },

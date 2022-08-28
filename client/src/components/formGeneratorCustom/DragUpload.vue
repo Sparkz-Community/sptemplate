@@ -167,28 +167,29 @@
         this.files = [];
       },
       handleStart() {
-        console.log('started uploading');
+        // console.log('started uploading');
       },
       handleUploading(info) {
-        console.log('files uploading', info.files, info.xhr);
+        // console.log('files uploading', info.files, info.xhr);
       },
       handleFinish() {
-        console.log('finished uploading');
+        // console.log('finished uploading');
       },
       handleUploaded(info) {
-        console.log('files uploaded', info.files, info.xhr);
+        // console.log('files uploaded', info.files, info.xhr);
       },
       handleAdded(files) {
-        console.log('files added', files);
+        // console.log('files added', files);
       },
       handleRejected(rejected) {
-        console.log('files rejected', rejected);
+        // console.log('files rejected', rejected);
       },
+      // eslint-disable-next-line no-unused-vars
       handleFailed(info) {
-        console.log('upload failed', info.files, info.xhr);
+        // console.log('upload failed', info.files, info.xhr);
       },
       formFields(files) {
-        console.log('files', files);
+        // console.log('files', files);
         if (files) {
           files.forEach(a => {
             a.storage = this.storage;
@@ -205,7 +206,7 @@
           this.files.push(f);
         });
         setTimeout(() => {
-          console.log('emitting files', this.files);
+          // console.log('emitting files', this.files);
           // this.$emit('update:model-value', this.files)
         }, 200);
       },
@@ -218,7 +219,7 @@
       },
       handleInput() {
         this.filePending = false;
-        console.log('drag upload >> handling input', this.files);
+        // console.log('drag upload >> handling input', this.files);
         if (!this.uploadFile) {
           let pass = this.files && typeof this.files !== 'undefined';
           if (pass) this.$emit('update:model-value', this.files);
@@ -243,7 +244,7 @@
         let formData = new FormData();
         this.files.forEach((f, i) => {
           let name = this.$lget(this.nameInputs, [i, 'name'], f.name);
-          console.log('file', f);
+          // console.log('file', f);
           formData.append('name', name);
           formData.append('storage', this.storage);
           formData.append('file', f);
@@ -267,14 +268,14 @@
             headers: headers,
           })
             .then(res => {
-              console.log('got res', res);
+              // console.log('got res', res);
               let val = res.data;
               if (this.multiple && !Array.isArray(val)) val = [res.data];
-              console.log('emit update:model-value', val);
+              // console.log('emit update:model-value', val);
               this.$emit('update:model-value', val);
             })
             .catch(err => {
-              console.log('error uploading file', err);
+              // console.log('error uploading file', err);
               this.$errNotify('Error uploading file ' + err.message);
             });
           // fetch('https://httpbin.org/post', {
