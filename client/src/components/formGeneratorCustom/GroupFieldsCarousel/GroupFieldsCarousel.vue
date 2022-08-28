@@ -1,7 +1,9 @@
 <template>
-  <div id="GroupFieldsCarousel">
-    <pre v-text="attrs"/>
-  </div>
+  <transition v-bind="attrs['transition-attrs']">
+    <div id="GroupFieldsCarousel">
+      <pre v-text="attrs"/>
+    </div>
+  </transition>
 </template>
 
 <script>
