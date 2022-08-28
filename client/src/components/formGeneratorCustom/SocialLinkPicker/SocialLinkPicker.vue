@@ -1,63 +1,65 @@
 <template>
-  <div id="SocialLinkPicker" v-bind="$attrs['div-attrs']">
-    <q-card>
-      <q-card-section>
-        <label class="text-weight-bold">Social Links:</label>
+  <transition v-bind="attrs['transition-attrs']">
+    <div id="SocialLinkPicker" v-bind="attrs['div-attrs']">
+      <q-card>
+        <q-card-section>
+          <label class="text-weight-bold">Social Links:</label>
 
-        <template v-for="(formData, index) in listFormData" :key="index">
-          <transition appear
-                      enter-active-class="animated backInLeft"
-                      leave-active-class="animated backOutRight">
-            <q-card :class="{'q-mt-sm': index !== 0}">
-              <q-card-section>
-                <div style="width: 100%; display: flex; align-items: center;">
-                  <p class="q-ma-none">Social Link {{ index + 1 }}:</p>
-                  <q-space></q-space>
+          <template v-for="(formData, index) in listFormData" :key="index">
+            <transition appear
+                        enter-active-class="animated backInLeft"
+                        leave-active-class="animated backOutRight">
+              <q-card :class="{'q-mt-sm': index !== 0}">
+                <q-card-section>
+                  <div style="width: 100%; display: flex; align-items: center;">
+                    <p class="q-ma-none">Social Link {{ index + 1 }}:</p>
+                    <q-space></q-space>
 
-                  <q-btn flat rounded dense @click="listFormData.splice(index, 1)">
-                    <q-icon name="close"></q-icon>
-                  </q-btn>
-                </div>
+                    <q-btn flat rounded dense @click="listFormData.splice(index, 1)">
+                      <q-icon name="close"></q-icon>
+                    </q-btn>
+                  </div>
 
-                <form-generator v-model="listFormData[index]"
-                                :fields="getFields(listFormData[index])"
-                                useQform
-                                v-model:valid="valid"
-                                @update:model-value="handleInput">
-                  <template v-slot:default="{data, btnAttrs, toggleDialog}">
-                    <q-btn :icon="$lget(data, 'icon', $lget(btnAttrs, 'icon'))"
-                           @click="toggleDialog"
-                           :style="{color: $lget(data, 'color')}"
-                           v-bind="btnAttrs"/>
-                  </template>
-                  <template v-slot:option="scope">
-                    <q-item v-if="!('model-value' || []).map(item => item.name).includes(scope.opt['model-value']) ||
-                                scope.opt['model-value'] === ''"
-                            v-bind="scope.itemProps"
-                            v-on="scope.itemEvents">
-                      <q-item-section>
-                        <q-item-label>{{ scope.opt.label }}</q-item-label>
-                      </q-item-section>
-                    </q-item>
-                  </template>
-                </form-generator>
-              </q-card-section>
-            </q-card>
-          </transition>
-        </template>
+                  <form-generator v-model="listFormData[index]"
+                                  :fields="getFields(listFormData[index])"
+                                  useQform
+                                  v-model:valid="valid"
+                                  @update:model-value="handleInput">
+                    <template v-slot:default="{data, btnAttrs, toggleDialog}">
+                      <q-btn :icon="$lget(data, 'icon', $lget(btnAttrs, 'icon'))"
+                             @click="toggleDialog"
+                             :style="{color: $lget(data, 'color')}"
+                             v-bind="btnAttrs"/>
+                    </template>
+                    <template v-slot:option="scope">
+                      <q-item v-if="!(modelValue || []).map(item => item.name).includes(scope.opt.modelValue) ||
+                                scope.opt.modelValue === ''"
+                              v-bind="scope.itemProps"
+                              v-on="scope.itemEvents">
+                        <q-item-section>
+                          <q-item-label>{{ scope.opt.label }}</q-item-label>
+                        </q-item-section>
+                      </q-item>
+                    </template>
+                  </form-generator>
+                </q-card-section>
+              </q-card>
+            </transition>
+          </template>
 
-        <div class="q-mt-sm" style="width: 100%; display: flex;">
-          <!--          v-if="listFormData.length < 3"-->
-          <q-space></q-space>
+          <div class="q-mt-sm" style="width: 100%; display: flex;">
+            <!--          v-if="listFormData.length < 3"-->
+            <q-space></q-space>
 
-          <q-btn v-bind="$attrs['add-btn-attrs']" @click="listFormData.push({})">
-            <q-icon name="add"></q-icon>
-            Social Link
-          </q-btn>
-        </div>
-      </q-card-section>
-    </q-card>
-  </div>
+            <q-btn v-bind="attrs['add-btn-attrs']" @click="listFormData.push({})">
+              <q-icon name="add"></q-icon>
+              Social Link
+            </q-btn>
+          </div>
+        </q-card-section>
+      </q-card>
+    </div>
+  </transition>
 </template>
 
 <script>
@@ -65,7 +67,7 @@
     name: 'SocialLinkPicker',
     inheritAttrs: false,
     props: {
-      'model-value': {
+      modelValue: {
         type: Array,
         required: true,
       },
@@ -82,7 +84,7 @@
       };
     },
     watch: {
-      'model-value': {
+      modelValue: {
         deep: true,
         immediate: true,
         handler(newValue) {
@@ -113,19 +115,6 @@
           }
         },
       },
-      $attrs: {
-        immediate: true,
-        deep: true,
-        handler(newVal) {
-          //add-btn-attrs logic
-          // if (this.listFormData.map(item => {
-          //
-          // }))
-
-          //div-attrs defaults
-          this.$lset(newVal, 'div-attrs.class', this.$lget(newVal, 'div-attrs.class', 'col-12'));
-        },
-      },
       // valid: {
       //   immediate: true,
       //   handler(newValue) {
@@ -134,6 +123,21 @@
       //     }
       //   },
       // },
+    },
+    computed: {
+      attrs() {
+        let newVal = {...this.$attrs};
+
+        //add-btn-attrs logic
+        // if (this.listFormData.map(item => {
+        //
+        // }))
+
+        //div-attrs defaults
+        this.$lset(newVal, 'div-attrs.class', this.$lget(newVal, 'div-attrs.class', 'col-12'));
+
+        return newVal;
+      },
     },
     methods: {
       handleInput(data) {
