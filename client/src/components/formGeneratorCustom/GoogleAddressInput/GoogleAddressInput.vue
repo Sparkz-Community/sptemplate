@@ -1,6 +1,6 @@
 <template>
   <transition v-bind="attrs['transition-attrs']">
-    <div id="GoogleAddressInput" v-bind="$attrs['div-attrs']">
+    <div id="GoogleAddressInput" v-bind="attrs['div-attrs']">
       <q-card>
         <q-card-section>
           <p v-if="label" class="text-h3">{{ label }}:</p>
@@ -10,7 +10,7 @@
               <div class="row q-col-gutter-md">
                 <div class="col-12 col-sm-8">
                   <places-auto-complete :model-value="newEditedAddress"
-                                        @update:model-value="newEditedAddress = { ...'model-value', ...$event }"
+                                        @update:model-value="newEditedAddress = { ...modelValue, ...$event }"
                                         @error="searchInput = ''"
                                         :path="path">
                   </places-auto-complete>
@@ -50,7 +50,7 @@
       PlacesAutoCompleteBox,
     },
     props: {
-      'model-value': {
+      modelValue: {
         type: Object,
         required: false,
         default: function () {
@@ -104,30 +104,31 @@
         newEditedAddress: {},
       };
     },
-    watch: {
-      $attrs: {
-        immediate: true,
-        deep: true,
-        handler(newVal) {
-          // attrs defaults
-          // this.$lset(newVal, 'attrs.filled', this.$lget(newVal, 'attrs.filled', true));
+    computed: {
+      attrs() {
+        let newVal = {...this.$attrs};
+        // attrs defaults
+        // this.$lset(newVal, 'attrs.filled', this.$lget(newVal, 'attrs.filled', true));
 
-          // div-attrs defaults
-          this.$lset(newVal, 'div-attrs.class', this.$lget(newVal, 'div-attrs.class', 'col-12 col-sm-6'));
-        },
+        // div-attrs defaults
+        this.$lset(newVal, 'div-attrs.class', this.$lget(newVal, 'div-attrs.class', 'col-12 col-sm-6'));
+
+        return newVal;
       },
+    },
+    watch: {
       newEditedAddress: {
         deep: true,
         // eslint-disable-next-line no-unused-vars
         handler(newVal, oldVal) {
           // console.log('Old: ', oldVal,'New: ', newVal);
-          if (JSON.stringify(this['model-value']) !== JSON.stringify(newVal)) {
+          if (JSON.stringify(this.modelValue) !== JSON.stringify(newVal)) {
             this.$emit('update:model-value', newVal);
             this.selectedSuggestion = null;
           }
         },
       },
-      'model-value': {
+      modelValue: {
         deep: true,
         immediate: true,
         // eslint-disable-next-line no-unused-vars
