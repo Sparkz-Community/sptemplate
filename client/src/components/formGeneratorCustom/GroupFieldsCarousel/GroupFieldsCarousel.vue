@@ -1,6 +1,6 @@
 <template>
   <div id="GroupFieldsCarousel">
-    <pre v-text="$attrs"/>
+    <pre v-text="attrs"/>
   </div>
 </template>
 
@@ -8,6 +8,12 @@
   export default {
     name: 'GroupFieldsCarousel',
     inheritAttrs: false,
+    computed: {
+      attrs() {
+        let newVal = {...this.$attrs};
+        return newVal;
+      },
+    },
   };
 </script>
 
