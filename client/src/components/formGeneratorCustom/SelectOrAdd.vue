@@ -1,97 +1,106 @@
 <template>
-  <div style="width: 100%;">
-    <select-input :path="path" v-bind="$attrs" :slots="inbuiltSlots">
-      <template #before-options>
-        <q-linear-progress v-if="loading" query :color="$q.dark.mode?'accent':'primary'" class="q-mt-none" reverse/>
-        <q-space v-else/>
-      </template>
-      <template #option="scope">
-        <slot name="option" v-bind="scope">
-          <q-item class="q-my-sm" clickable v-ripple v-bind="scope.itemProps" v-on="scope.itemEvents">
-            <q-item-section avatar v-if="$lget(scope,['opt',$lget(serviceToAddOptionsMapping,'avatar','avatar')])">
-              <q-avatar color="primary" text-color="white">
-                <q-img :src="$lget(scope,['opt',$lget(serviceToAddOptionsMapping,'avatar','avatar')])"/>
-              </q-avatar>
-            </q-item-section>
+  <transition v-bind="['transition-attrs']">
+    <div style="width: 100%;">
+      <select-input :path="path" v-bind="attrs" :slots="inbuiltSlots">
+        <template #before-options>
+          <q-linear-progress v-if="loading" query :color="$q.dark.mode?'accent':'primary'" class="q-mt-none" reverse/>
+          <q-space v-else/>
+        </template>
+        <template #option="scope">
+          <slot name="option" v-bind="scope">
+            <q-item class="q-my-sm" clickable v-ripple v-bind="scope.itemProps" v-on="scope.itemEvents">
+              <q-item-section avatar v-if="$lget(scope,['opt',$lget(serviceToAddOptionsMapping,'avatar','avatar')])">
+                <q-avatar color="primary" text-color="white">
+                  <q-img :src="$lget(scope,['opt',$lget(serviceToAddOptionsMapping,'avatar','avatar')])"/>
+                </q-avatar>
+              </q-item-section>
 
-            <q-item-section>
-              <q-item-label>{{
-                  $lget(scope, ['opt', $lget(serviceToAddOptionsMapping, 'label', 'label')])
-                }}
-              </q-item-label>
-              <q-item-label caption lines="1">
-                {{ $lget(scope, ['opt', $lget(serviceToAddOptionsMapping, 'description', 'description')]) }}
-              </q-item-label>
-            </q-item-section>
+              <q-item-section>
+                <q-item-label>
+                  {{ $lget(scope, ['opt', $lget(serviceToAddOptionsMapping, 'label', 'label')]) }}
+                </q-item-label>
+                <q-item-label caption lines="1">
+                  {{ $lget(scope, ['opt', $lget(serviceToAddOptionsMapping, 'description', 'description')]) }}
+                </q-item-label>
+              </q-item-section>
 
-            <q-item-section side>
-              <q-btn color="primary" dense icon="edit" flat @click.stop="edit($lget(scope,'opt'))"/>
-              <q-btn color="primary" dense icon="fas fa-trash" flat @click.stop="remove($lget(scope,'opt'))"/>
-            </q-item-section>
-          </q-item>
-        </slot>
-      </template>
-      <template #after-options>
-        <div class="row q-pa-md justify-between">
-          <q-btn color="primary" icon="add" label="New" @click="openAddForm = true"/>
-          <div v-if="showPaginationControls" class="row items-center q-gutter-sm">
-            <span class="text-caption">Rows per page: </span>
-            <q-select input-class="text-caption" dense outlined :model-value="pagination.rowsPerPage"
-                      @update:model-value="changeRowsPerPage($event)" :options="pagination.rowsPerPageOptions"/>
-            <q-btn v-if="showPaginationControls" dense flat color="primary" icon="fas fa-chevron-left"
-                   @click="decrementPage"/>
-            <q-btn v-if="showPaginationControls" dense flat color=primary icon="fas fa-chevron-right"
-                   @click="incrementPage"/>
+              <q-item-section side>
+                <q-btn color="primary" dense icon="edit" flat @click.stop="edit($lget(scope,'opt'))"/>
+                <q-btn color="primary" dense icon="fas fa-trash" flat @click.stop="remove($lget(scope,'opt'))"/>
+              </q-item-section>
+            </q-item>
+          </slot>
+        </template>
+        <template #after-options>
+          <div class="row q-pa-md justify-between">
+            <q-btn color="primary" icon="add" label="New" @click="openAddForm = true"/>
+            <div v-if="showPaginationControls" class="row items-center q-gutter-sm">
+              <span class="text-caption">Rows per page: </span>
+              <q-select input-class="text-caption"
+                        dense outlined
+                        :model-value="pagination.rowsPerPage"
+                        @update:model-value="changeRowsPerPage($event)"
+                        :options="pagination.rowsPerPageOptions"/>
+              <q-btn v-if="showPaginationControls"
+                     dense
+                     flat
+                     color="primary"
+                     icon="fas fa-chevron-left"
+                     @click="decrementPage"/>
+              <q-btn v-if="showPaginationControls"
+                     dense
+                     flat
+                     color=primary
+                     icon="fas fa-chevron-right"
+                     @click="incrementPage"/>
+            </div>
           </div>
-        </div>
-      </template>
-      <template #no-option>
-        <div class="row q-pa-md justify-between items-center">
-          <q-btn color="primary" icon="add" label="New" @click="openAddForm = true"/>
+        </template>
+        <template #no-option>
+          <div class="row q-pa-md justify-between items-center">
+            <q-btn color="primary" icon="add" label="New" @click="openAddForm = true"/>
 
-          <span class="text-caption text-primary">
-             No {{ path }} results
-         </span>
+            <span class="text-caption text-primary">
+              No {{ path }} results
+            </span>
 
-        </div>
-      </template>
+          </div>
+        </template>
 
-      <template v-for="(_, slot) of $slots" v-slot:[slot]="scope">
-        <slot :name="slot" v-bind="scope"/>
-      </template>
-    </select-input>
+        <template v-for="(_, slot) of $slots" v-slot:[slot]="scope">
+          <slot :name="slot" v-bind="scope"/>
+        </template>
+      </select-input>
 
-    <q-dialog v-model="openAddForm" persistent>
-      <q-card style="min-width: 300px">
-        <q-card-section>
-          <div class="text-h6">Add new {{ path }}</div>
-        </q-card-section>
+      <q-dialog v-model="openAddForm" persistent>
+        <q-card style="min-width: 300px">
+          <q-card-section>
+            <div class="text-h6">Add new {{ path }}</div>
+          </q-card-section>
 
-        <q-card-section class="q-pt-none">
-          <form-generator
-            v-model="formData"
-            :fields="serviceToAddFields"
-            useQform
-            v-model:valid="valid"
-            class="flex justify-center"
-          />
-        </q-card-section>
+          <q-card-section class="q-pt-none">
+            <form-generator v-model="formData"
+                            :fields="serviceToAddFields"
+                            useQform
+                            v-model:valid="valid"
+                            class="flex justify-center"/>
+          </q-card-section>
 
-        <q-card-actions align="right">
-          <q-btn flat label="Cancel" :color="$q.dark.mode ? 'orange' : 'primary'" @click="clear"/>
-          <q-btn label="Save" color="primary" :loading="sending" @click="send" :disable="!valid|| sending"/>
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
+          <q-card-actions align="right">
+            <q-btn flat label="Cancel" :color="$q.dark.mode ? 'orange' : 'primary'" @click="clear"/>
+            <q-btn label="Save" color="primary" :loading="sending" @click="send" :disable="!valid|| sending"/>
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
 
-  </div>
+    </div>
+  </transition>
 </template>
 
 <script>
   import SelectInput
     from '@sparkz-community/form-gen-client-lib/src/components/common/atoms/SelectInput/SelectInput.vue';
   import isEmpty from '@sparkz-community/common-client-lib/src/utils/isEmpty.js';
-  import {BaseModel} from 'feathers-pinia';
 
   export default {
     name: 'SelectOrAdd',
@@ -104,7 +113,6 @@
         type: String,
       },
       model: {
-        type: BaseModel,
         required: true,
       },
       serviceToAdd: {
@@ -146,8 +154,12 @@
       };
     },
     computed: {
+      attrs() {
+        let newVal = {...this.$attrs};
+        return newVal;
+      },
       showPaginationControls() {
-        const optionsLength = this.$lget(this.$attrs, ['attrs', 'options'], []).length;
+        const optionsLength = this.$lget(this.attrs, ['attrs', 'options'], []).length;
         return optionsLength && this.pagination.rowsPerPage <= optionsLength;
       },
     },
