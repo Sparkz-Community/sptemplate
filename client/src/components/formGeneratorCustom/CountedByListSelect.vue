@@ -1,96 +1,81 @@
 <template>
-  <div class="bg-transparent full-width q-pa-sm">
-    <q-table title="Counted By" flat :data="accountQtyList" table-class="full-width self-center ">
-      <template #header-cell="props">
+  <transition v-bind="attrs['transition-attrs']">
+    <div class="bg-transparent full-width q-pa-sm">
+      <q-table title="Counted By" flat :data="accountQtyList" table-class="full-width self-center ">
+        <template #header-cell="props">
 
-        <q-th v-if="props.col.name==='id'" :props="props">
-          account
-        </q-th>
-        <q-th v-else :props="props">
-          {{ props.col.name }}
-        </q-th>
+          <q-th v-if="props.col.name==='id'" :props="props">
+            account
+          </q-th>
+          <q-th v-else :props="props">
+            {{ props.col.name }}
+          </q-th>
 
-      </template>
-      <template #body-cell="props">
-        <td v-if="props.col.name === 'id'">
-          {{ $lget(accounts.find(account => account._id === $lget(props.row, 'id')), 'name') }}
+        </template>
+        <template #body-cell="props">
+          <td v-if="props.col.name === 'id'">
+            {{ $lget(accounts.find(account => account._id === $lget(props.row, 'id')), 'name') }}
 
-        </td>
-        <td v-else-if="props.col.name === 'actions'">
-          <div class="row q-gutter-sm">
-            <q-btn flat color="primary" dense icon="edit" @click="edit(props.row)"/>
-            <q-btn flat color="negative" dense icon="delete" @click="remove(props.row)"/>
-          </div>
-        </td>
-        <td v-else>
-          {{ props.row[props.col.name] }}
-        </td>
+          </td>
+          <td v-else-if="props.col.name === 'actions'">
+            <div class="row q-gutter-sm">
+              <q-btn flat color="primary" dense icon="edit" @click="edit(props.row)"/>
+              <q-btn flat color="negative" dense icon="delete" @click="remove(props.row)"/>
+            </div>
+          </td>
+          <td v-else>
+            {{ props.row[props.col.name] }}
+          </td>
 
-      </template>
-      <template #no-data>
-        <div/>
-      </template>
-      <template #top-right>
-        <q-btn v-if="options.length > 0" icon="add" @click="openDialog" outline color="primary"/>
-      </template>
-    </q-table>
-    <q-dialog v-model="open" position="right">
-      <q-card style="max-width: 300px;">
-        <q-card-section>
-          <form-generator v-model="accountQty" :fields="fields" v-model:valid="valid"/>
-        </q-card-section>
-        <q-card-actions>
-          <q-btn label="Save" color="primary" @click="save"/>
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
+        </template>
+        <template #no-data>
+          <div/>
+        </template>
+        <template #top-right>
+          <q-btn v-if="options.length > 0" icon="add" @click="openDialog" outline color="primary"/>
+        </template>
+      </q-table>
+      <q-dialog v-model="open" position="right">
+        <q-card style="max-width: 300px;">
+          <q-card-section>
+            <form-generator v-model="accountQty" :fields="fields" v-model:valid="valid"/>
+          </q-card-section>
+          <q-card-actions>
+            <q-btn label="Save" color="primary" @click="save"/>
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
 
-    <q-dialog v-model="openRemove" persistent position="right">
-      <q-card>
-        <q-card-section class="row items-center">
-          <q-avatar icon="delete" color="primary" text-color="white"/>
-          <div class="q-ml-sm">
-            You are about to delete the count tally for
-            {{ $lget(accounts.find(account => account._id === $lget(accountQtyToRemove, 'id')), 'name') }}
-          </div>
-        </q-card-section>
+      <q-dialog v-model="openRemove" persistent position="right">
+        <q-card>
+          <q-card-section class="row items-center">
+            <q-avatar icon="delete" color="primary" text-color="white"/>
+            <div class="q-ml-sm">
+              You are about to delete the count tally for
+              {{ $lget(accounts.find(account => account._id === $lget(accountQtyToRemove, 'id')), 'name') }}
+            </div>
+          </q-card-section>
 
-        <q-card-actions align="right">
-          <q-btn flat label="Cancel" color="primary" @click="cancelRemove"/>
-          <q-btn label="Go Ahead" color="primary" v-close-popup @click="confirmRemove"/>
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
-  </div>
-
+          <q-card-actions align="right">
+            <q-btn flat label="Cancel" color="primary" @click="cancelRemove"/>
+            <q-btn label="Go Ahead" color="primary" v-close-popup @click="confirmRemove"/>
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
+    </div>
+  </transition>
 </template>
 
 <script>
   import { useFindPaginate } from '@sparkz-community/common-client-lib';
   import useAccounts from 'stores/services/accounts';
+  import { computed, ref } from 'vue';
 
   export default {
     name: 'counted-by-list-select',
     inheritAttrs: false,
-    setup() {
-      const accountsStore = useAccounts();
-
-      useFindPaginate({
-        limit: 12,
-        model: accountsStore.Model,
-        qid: 'accounts',
-        query() {
-          return {};
-        },
-        params() {
-          return {
-            debounce: 500,
-          };
-        },
-      });
-    },
     props: {
-      'model-value': {
+      modelValue: {
         type: Array,
         default() {
           return [
@@ -105,10 +90,30 @@
         },
       },
     },
+    setup() {
+      const accountsStore = useAccounts();
+
+      const query = computed(() => {
+        return {};
+      });
+
+      const params = computed(() => {
+        return {
+          debounce: 500,
+        };
+      });
+
+      useFindPaginate({
+        limit: ref(12),
+        model: accountsStore.Model,
+        qid: ref('accounts'),
+        query: query,
+        params: params,
+      });
+    },
     emits: [
       'update:model-value',
     ],
-    mixins: [],
     data() {
       return {
         accountQty: {
@@ -124,11 +129,10 @@
       };
     },
     watch: {
-      'model-value': {
+      modelValue: {
         immediate: true,
         deep: true,
         handler(newVal) {
-
           this.accountQtyList = newVal.map(accountQty => {
             const {id, quantity} = accountQty;
             return {id, quantity, actions: id};
@@ -146,6 +150,10 @@
       },
     },
     computed: {
+      attrs() {
+        let newVal = {...this.$attrs};
+        return newVal;
+      },
       fields() {
         return [
           {
