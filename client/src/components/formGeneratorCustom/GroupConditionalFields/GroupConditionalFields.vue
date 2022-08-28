@@ -1,8 +1,8 @@
 <template>
-  <div id="GroupConditionalFields" v-bind="$attrs['div-attrs']">
+  <div id="GroupConditionalFields" v-bind="attrs['div-attrs']">
     <form-generator v-model="formData"
                     :fields="filteredFormFields"
-                    v-bind="$attrs['attrs']">
+                    v-bind="attrs['attrs']">
       <template v-for="slot in slots"
                 v-slot:[slot]="slotProps">
         <slot :name="slot" v-bind="slotProps"></slot>
@@ -16,7 +16,7 @@
     name: 'GroupConditionalFields',
     inheritAttrs: false,
     props: {
-      'model-value': {
+      modelValue: {
         type: Object,
       },
       path: {
@@ -46,15 +46,15 @@
       };
     },
     watch: {
-      'model-value': {
+      modelValue: {
         immediate: true,
         deep: true,
         handler(newVal) {
           if (newVal) {
-            let arr = this.$lcloneDeep(this.templateFormFields),
-                spliceIdx,
-                conditionsArr = Array.from(this.conditions(newVal)),
-                objsInConditions = Array.from(conditionsArr);
+            let arr, spliceIdx, conditionsArr, objsInConditions;
+            arr = this.$lcloneDeep(this.templateFormFields);
+            conditionsArr = Array.from(this.conditions(newVal));
+            objsInConditions = Array.from(conditionsArr);
             //consider refining if for changing template form fields.
             if (conditionsArr.some(item => typeof item === 'object')) {
               this.conditions(newVal).forEach(item => {
@@ -96,25 +96,23 @@
           }
         },
       },
-      $attrs: {
-        immediate: true,
-        deep: true,
-        handler(newVal) {
-          if (newVal) {
-            // div-attrs defaults
-            this.$lset(newVal, 'div-attrs.class', this.$lget(newVal, 'div-attrs.class', 'col-12'));
-            /*This $lset is hiding a bigger problem. Our changing the filteredFormFields in the previous watcher
-            causes an error to occur with the styles of the component, and throws the following errors:
-            Firefox: Uncaught (in promise) TypeError: c is null
-              (note: Above error mentions QForm.js, a function called getValidationComponents, and validate)
-            Google: Uncaught (in promise) TypeError: Cannot read properties of null (reading 'validate')
-              (note: Above error mentions QTree.js and validate)*/
-            console.log('this is $attrs: ', newVal);
-          }
-        }
-      }
     },
-    computed: {},
+    computed: {
+      attrs() {
+        let newVal = { ...this.$attrs };
+        // div-attrs defaults
+        this.$lset(newVal, 'div-attrs.class', this.$lget(newVal, 'div-attrs.class', 'col-12'));
+        /*This $lset is hiding a bigger problem. Our changing the filteredFormFields in the previous watcher
+        causes an error to occur with the styles of the component, and throws the following errors:
+        Firefox: Uncaught (in promise) TypeError: c is null
+          (note: Above error mentions QForm.js, a function called getValidationComponents, and validate)
+        Google: Uncaught (in promise) TypeError: Cannot read properties of null (reading 'validate')
+          (note: Above error mentions QTree.js and validate)*/
+        // console.log('this is $attrs: ', newVal);
+
+        return newVal;
+      },
+    },
     methods: {
       changeFun(changeData, key, newVal, oldVal) {
         let val = newVal;
