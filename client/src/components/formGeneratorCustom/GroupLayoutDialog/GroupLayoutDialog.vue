@@ -1,9 +1,9 @@
 <template>
-  <div id="GroupLayoutDialog" v-bind="$attrs['div-attrs']">
-    <slot :data="'model-value'" :btnAttrs="$attrs['btn-attrs']" :toggleDialog="toggleDialog">
-      <q-btn @click="dialogToggle = !dialogToggle" v-bind="$attrs['btn-attrs']"/>
+  <div id="GroupLayoutDialog" v-bind="attrs['div-attrs']">
+    <slot :data="modelValue" :btnAttrs="attrs['btn-attrs']" :toggleDialog="toggleDialog">
+      <q-btn @click="dialogToggle = !dialogToggle" v-bind="attrs['btn-attrs']"/>
     </slot>
-    <q-dialog id="group-layout-dialog" v-model="dialogToggle" v-bind="$attrs['dialog-attrs']">
+    <q-dialog id="group-layout-dialog" v-model="dialogToggle" v-bind="attrs['dialog-attrs']">
       <q-layout view="Lhh LpR Lff" container :class="$q.dark.mode ? 'bg-dark' : 'bg-white'">
         <q-header class="bg-primary">
           <q-toolbar>
@@ -18,7 +18,7 @@
           <q-page class="q-pa-sm">
             <form-generator v-model="formData"
                             :fields="templateFormFields"
-                            v-bind="$attrs['attrs']">
+                            v-bind="attrs['attrs']">
               <template v-for="slot in slots"
                         v-slot:[slot]="slotProps">
                 <slot :name="slot" v-bind="slotProps"></slot>
@@ -43,7 +43,7 @@
     name: 'GroupLayoutDialog',
     inheritAttrs: false,
     props: {
-      'model-value': {
+      modelValue: {
         type: Object,
       },
       path: {
@@ -75,7 +75,7 @@
       };
     },
     watch: {
-      'model-value': {
+      modelValue: {
         deep: true,
         immediate: true,
         // eslint-disable-next-line no-unused-vars
@@ -87,22 +87,22 @@
           }
         },
       },
-      $attrs: {
-        immediate: true,
-        deep: true,
-        handler(newVal) {
-          // attrs defaults
-          // this.$lset(newVal, 'attrs.label', this.$lget(newVal, 'attrs.label', 'label'));
+    },
+    computed: {
+      attrs() {
+        let newVal = {...this.$attrs};
+        // attrs defaults
+        // this.$lset(newVal, 'attrs.label', this.$lget(newVal, 'attrs.label', 'label'));
 
-          // btn-attrs defaults
-          this.$lset(newVal, 'btn-attrs.label', this.$lget(newVal, 'btn-attrs.label', 'label'));
+        // btn-attrs defaults
+        this.$lset(newVal, 'btn-attrs.label', this.$lget(newVal, 'btn-attrs.label', 'label'));
 
-          // div-attrs defaults
-          this.$lset(newVal, 'div-attrs.class', this.$lget(newVal, 'div-attrs.class', 'col-12 col-sm-6'));
-        },
+        // div-attrs defaults
+        this.$lset(newVal, 'div-attrs.class', this.$lget(newVal, 'div-attrs.class', 'col-12 col-sm-6'));
+
+        return newVal;
       },
     },
-    computed: {},
     methods: {
       toggleDialog() {
         this.dialogToggle = !this.dialogToggle;
