@@ -1,26 +1,28 @@
 <template>
-  <div :id="`font-picker${pickerSuffix}`" class="font-picker" :title="state.errorText">
-    <button class="dropdown-button" type="button"
-            :class="{expanded: state.expanded}"
-            @click="toggleExpanded"
-            @keypress="toggleExpanded">
-      <p class="dropdown-font-name">{{ state.activeFont }}</p>
-      <p class="dropdown-icon" :class="state.loadingStatus"></p>
-    </button>
-    <ul v-if="state.loadingStatus === 'finished' && fontPicker.getFonts()"
-        :class="{expanded: state.expanded}"
-        @scroll="onScroll">
-      <li v-for="font in fontPicker.getFonts()" :key="font.family">
-        <button type="button"
-                :class="`font-${snakeCase(font.family)}${pickerSuffix}
+  <transition v-bind="attrs['transition-attrs']">
+    <div :id="`font-picker${pickerSuffix}`" class="font-picker" :title="state.errorText">
+      <button class="dropdown-button" type="button"
+              :class="{expanded: state.expanded}"
+              @click="toggleExpanded"
+              @keypress="toggleExpanded">
+        <p class="dropdown-font-name">{{ state.activeFont }}</p>
+        <p class="dropdown-icon" :class="state.loadingStatus"></p>
+      </button>
+      <ul v-if="state.loadingStatus === 'finished' && fontPicker.getFonts()"
+          :class="{expanded: state.expanded}"
+          @scroll="onScroll">
+        <li v-for="font in fontPicker.getFonts()" :key="font.family">
+          <button type="button"
+                  :class="`font-${snakeCase(font.family)}${pickerSuffix}
                   ${font.family === state.activeFont ? 'active-font' : ''}`"
-                @click="itemClick(font)"
-                @keypress="itemClick(font)">
-          {{ font.family }}
-        </button>
-      </li>
-    </ul>
-  </div>
+                  @click="itemClick(font)"
+                  @keypress="itemClick(font)">
+            {{ font.family }}
+          </button>
+        </li>
+      </ul>
+    </div>
+  </transition>
 </template>
 
 <script>
@@ -89,6 +91,12 @@
       //     this.setActiveFont(this.activeFont);
       //   }
       // },
+    },
+    computed: {
+      attrs() {
+        let newVal = {...this.$attrs};
+        return newVal;
+      },
     },
     methods: {
       /**
