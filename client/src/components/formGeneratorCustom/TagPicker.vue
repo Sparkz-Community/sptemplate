@@ -84,6 +84,8 @@
 </template>
 
 <script>
+  import {ref, toRef} from 'vue';
+
   const flattenArray = (arr) => {
     return arr.reduce(function (flat, toFlatten) {
       return flat.concat(Array.isArray(toFlatten) ? flattenArray(toFlatten) : toFlatten);
@@ -137,16 +139,65 @@
         type: String,
         default: 'mdi-tag',
       },
-      serviceIn: {
-        type: String,
+      storeIn: {
         required: true,
-        //service you are adding tags to
+        // Store you are adding tags to
       },
       tagPath: {
         type: String,
         default: 'tags',
       },
       modelValue: [String, Array],
+    },
+    setup(props) {
+      const storeIn = toRef(props, 'storeIn');
+      const tagPath = toRef(props, 'tagPath');
+
+      const loading = ref(false);
+      const options = ref([]);
+      const limit = ref(15);
+      const skip = ref(0);
+      const total = ref(0);
+
+      function computeSkip() {
+        let finalSkip = typeof skip.value === 'number' ? skip.value : 0;
+        let finalLimit = typeof limit.value === 'number' ? limit.value : 0;
+        return finalSkip * finalLimit;
+      }
+
+      async function loadTags(text) {
+        loading.value = true;
+        let query = {
+          $limit: limit.value,
+          $skip: computeSkip,
+          $select: ref(['_id', 'tags']),
+        };
+        if (text && typeof text === 'string' && text.length) {
+          query[tagPath.value] = {$in: text};
+        } else {
+          query[tagPath.value] = {$nin: [[], null]};
+        }
+        // query.$select = [tagPath.value];
+        await storeIn.value.servicePath.dispatch(`${storeIn.value.servicePath}/find`, {
+          query: query,
+        })
+          .then(res => {
+            loading.value = false;
+            options.value = Array.from(new Set(flattenArray(res.data.map(a => a.tags))));
+          }).catch(err => {
+            loading.value = false;
+            console.log('error loading tags', err.message);
+          });
+      }
+
+      return {
+        loadTags,
+        loading,
+        options,
+        limit,
+        skip,
+        total,
+      };
     },
     emits: [
       'update:model-value',
@@ -156,13 +207,8 @@
     },
     data() {
       return {
-        loading: false,
-        options: [],
         selected: null,
         searchInput: '',
-        limit: 15,
-        skip: 0,
-        total: 0,
       };
     },
     watch: {
@@ -197,11 +243,6 @@
           } else return this.options;
         } else return [];
       },
-      computeSkip() {
-        let skip = typeof this.skip === 'number' ? this.skip : 0;
-        let limit = typeof this.limit === 'number' ? this.limit : 0;
-        return skip * limit;
-      },
     },
     methods: {
       isSelected(tag) {
@@ -235,30 +276,6 @@
           this.skip = i;
           this.loadTags(this.searchInput ? this.searchInput : false);
         }
-      },
-      async loadTags(text) {
-        this.loading = true;
-        let query = {
-          $limit: this.limit,
-          $skip: this.computeSkip,
-          $select: ['_id', 'tags'],
-        };
-        if (text && typeof text === 'string' && text.length) {
-          query[this.tagPath] = {$in: text};
-        } else {
-          query[this.tagPath] = {$nin: [[], null]};
-        }
-        // query.$select = [this.tagPath];
-        await this.$store.dispatch(`${this.serviceIn}/find`, {
-          query: query,
-        })
-          .then(res => {
-            this.loading = false;
-            this.options = Array.from(new Set(flattenArray(res.data.map(a => a.tags))));
-          }).catch(err => {
-            this.loading = false;
-            console.log('error loading tags', err.message);
-          });
       },
     },
   };

@@ -110,6 +110,13 @@
         default: 's3',
       },
     },
+    setup() {
+      const fileUploaderStore = useFileUploader();
+
+      return {
+        fileUploaderStore,
+      };
+    },
     emits: [
       // 'update:model-value',
     ],
@@ -142,14 +149,14 @@
         return process.env.VUE_APP_FEATHERS_URL || 'http://localhost:3030';
       },
       deepColor() {
-        return this.$store.getters.deepColor;
+        return this.fileUploaderStore.getters.deepColor;
       },
       uploadDisabled() {
         return this.files.length === 0;
       },
     },
     methods: {
-      ...mapActions(useFileUploader, {
+      ...mapActions(this.fileUploaderStore, {
         uploadFiles: 'create',
       }),
       getPreviewURL(file) {
@@ -250,7 +257,7 @@
           let headers = {
             'content-type': 'application/x-www-form-urlencoded',
           };
-          let token = this.$lget(this.$store, 'state.auth.accessToken');
+          let token = this.$lget(this.fileUploaderStore, 'state.auth.accessToken');
           if (token) headers.Authorization = 'Bearer ' + token;
           else headers['x-api-key'] = this.$lget(this.attrs, 'api-key');
           this.$axios({
