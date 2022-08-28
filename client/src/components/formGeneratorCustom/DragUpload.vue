@@ -1,5 +1,5 @@
 <template>
-  <transition v-bind="attrs['transtition-attrs']">
+  <transition v-bind="attrs['transition-attrs']">
     <div @drop.prevent="addFile"
          @dragover.prevent
          @click="$refs.filePick.pickFiles()"
