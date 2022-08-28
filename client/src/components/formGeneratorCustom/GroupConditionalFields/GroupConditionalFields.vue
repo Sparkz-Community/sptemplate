@@ -1,14 +1,16 @@
 <template>
-  <div id="GroupConditionalFields" v-bind="attrs['div-attrs']">
-    <form-generator v-model="formData"
-                    :fields="filteredFormFields"
-                    v-bind="attrs['attrs']">
-      <template v-for="slot in slots"
-                v-slot:[slot]="slotProps">
-        <slot :name="slot" v-bind="slotProps"></slot>
-      </template>
-    </form-generator>
-  </div>
+  <transition v-bind="attrs['transition-attrs']">
+    <div id="GroupConditionalFields" v-bind="attrs['div-attrs']">
+      <form-generator v-model="formData"
+                      :fields="filteredFormFields"
+                      v-bind="attrs['attrs']">
+        <template v-for="slot in slots"
+                  v-slot:[slot]="slotProps">
+          <slot :name="slot" v-bind="slotProps"></slot>
+        </template>
+      </form-generator>
+    </div>
+  </transition>
 </template>
 
 <script>
