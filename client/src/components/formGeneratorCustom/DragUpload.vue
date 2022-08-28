@@ -1,82 +1,85 @@
 <template>
-  <div @drop.prevent="addFile"
-       @dragover.prevent
-       @click="$refs.filePick.pickFiles()"
-       :style="'max-width: 100%; ' + $lget($attrs, 'div-attrs.style', '')">
-    <div :class="`drop_zone bg-${$lget($attrs, 'color', 'primary')}`">
-      <div class="drag_cover text-primary bg-background">
-        <div class="row justify-center" style="width: 100%">
-          <q-icon size="40px" name="mdi-cloud-upload"/>
-        </div>
-        <div class="row justify-center text-center" style="width: 100%">
-          <div class="text-xs text-mb-xs text-weight-light">{{ $lget($attrs, 'attrs.label', 'Drop it like its hot') }}
+  <transition v-bind="attrs['transtition-attrs']">
+    <div @drop.prevent="addFile"
+         @dragover.prevent
+         @click="$refs.filePick.pickFiles()"
+         :style="'max-width: 100%; ' + $lget(attrs, 'div-attrs.style', '')">
+      <div :class="`drop_zone bg-${$lget(attrs, 'color', 'primary')}`">
+        <div class="drag_cover text-primary bg-background">
+          <div class="row justify-center" style="width: 100%">
+            <q-icon size="40px" name="mdi-cloud-upload"/>
           </div>
+          <div class="row justify-center text-center" style="width: 100%">
+            <div class="text-xs text-mb-xs text-weight-light">
+              {{ $lget(attrs, 'attrs.label', 'Drop it like its hot') }}
+            </div>
+          </div>
+          <q-file ref="filePick"
+                  dense
+                  prepend-icon="mdi-video-plus"
+                  :multiple="multiple"
+                  :model-value="files"
+                  bgcolor="transparent"
+                  placeholder="Choose File"
+                  @update:model-value="setPending">
+          </q-file>
+          <!--        <q-uploader-->
+          <!--          @start="handleStart"-->
+          <!--          @uploading="handleUploading"-->
+          <!--          @finish="handleFinish"-->
+          <!--          @uploaded="handleUploaded"-->
+          <!--          @added="handleAdded"-->
+          <!--          @rejected="handleRejected"-->
+          <!--          @failed="handleFailed"-->
+          <!--          :form-fields="formFields"-->
+          <!--          :url="uploadUrl"-->
+          <!--          prepend-icon="mdi-video-plus"-->
+          <!--          :multiple="multiple"-->
+          <!--          class="bg-transparent"-->
+          <!--          label="Choose File"></q-uploader>-->
+          <!--      <button :disabled="uploadDisabled" @click="upload">Upload</button>-->
         </div>
-        <q-file ref="filePick"
-                dense
-                prepend-icon="mdi-video-plus"
-                :multiple="multiple"
-                :model-value="files"
-                bgcolor="transparent"
-                placeholder="Choose File"
-                @update:model-value="setPending">
-        </q-file>
-        <!--        <q-uploader-->
-        <!--          @start="handleStart"-->
-        <!--          @uploading="handleUploading"-->
-        <!--          @finish="handleFinish"-->
-        <!--          @uploaded="handleUploaded"-->
-        <!--          @added="handleAdded"-->
-        <!--          @rejected="handleRejected"-->
-        <!--          @failed="handleFailed"-->
-        <!--          :form-fields="formFields"-->
-        <!--          :url="uploadUrl"-->
-        <!--          prepend-icon="mdi-video-plus"-->
-        <!--          :multiple="multiple"-->
-        <!--          class="bg-transparent"-->
-        <!--          label="Choose File"></q-uploader>-->
-        <!--      <button :disabled="uploadDisabled" @click="upload">Upload</button>-->
       </div>
-    </div>
 
-    <q-dialog v-model="filePending" persistent>
-      <q-card class="q-pa-md" style="max-width: 100vw">
-        <div class="text-sm text-mb-lg text-weight-medium">Confirm and name
-          {{ files && files.length ? files.length : '' }} file {{ files && files.length === 1 ? '' : 's' }}
-        </div>
-        <div :class="`row ${ files && files.length === 1 ? 'justify-center' : ''} q-px-md no-wrap`"
-             style="width: 100%; overflow-x: scroll">
-          <div class="q-mx-xs" v-for="(file, i) in files" :key="`file-${i}`">
-            <q-input clearable
-                     @clear="nameInputs[i] = ''"
-                     outlined
-                     class="q-mb-sm"
-                     dense
-                     label="Name File"
-                     hide-bottom-space
-                     v-model="nameInputs[i].name">
-            </q-input>
-            <div class="row justify-center">
-              <div style="border-radius: 2px; box-shadow: 0 0 4px rgba(0,0,0,.3); height: 130px; width: 100px">
-                <iframe :src="getPreviewURL(file)" height="130px" width="100px" frameborder="0"></iframe>
+      <q-dialog v-model="filePending" persistent>
+        <q-card class="q-pa-md" style="max-width: 100vw">
+          <div class="text-sm text-mb-lg text-weight-medium">Confirm and name
+            {{ files && files.length ? files.length : '' }} file {{ files && files.length === 1 ? '' : 's' }}
+          </div>
+          <div :class="`row ${ files && files.length === 1 ? 'justify-center' : ''} q-px-md no-wrap`"
+               style="width: 100%; overflow-x: scroll">
+            <div class="q-mx-xs" v-for="(file, i) in files" :key="`file-${i}`">
+              <q-input clearable
+                       @clear="nameInputs[i] = ''"
+                       outlined
+                       class="q-mb-sm"
+                       dense
+                       label="Name File"
+                       hide-bottom-space
+                       v-model="nameInputs[i].name">
+              </q-input>
+              <div class="row justify-center">
+                <div style="border-radius: 2px; box-shadow: 0 0 4px rgba(0,0,0,.3); height: 130px; width: 100px">
+                  <iframe :src="getPreviewURL(file)" height="130px" width="100px" frameborder="0"></iframe>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        <div class="row justify-end">
-          <q-btn class="q-mx-xs" size="sm" label="cancel" flat color="negative" @click="clearAll"/>
-          <q-btn flat
-                 icon="mdi-upload"
-                 class="q-mx-xs"
-                 size="sm"
-                 label="upload"
-                 push
-                 color="positive"
-                 @click="handleInput"/>
-        </div>
-      </q-card>
-    </q-dialog>
-  </div>
+          <div class="row justify-end">
+            <q-btn class="q-mx-xs" size="sm" label="cancel" flat color="negative" @click="clearAll"/>
+            <q-btn flat
+                   icon="mdi-upload"
+                   class="q-mx-xs"
+                   size="sm"
+                   label="upload"
+                   push
+                   color="positive"
+                   @click="handleInput"/>
+          </div>
+        </q-card>
+      </q-dialog>
+    </div>
+  </transition>
 </template>
 
 <script>
@@ -87,7 +90,7 @@
     name: 'DragUpload',
     inheritAttrs: false,
     props: {
-      'model-value': [String, Array, Object],
+      modelValue: [String, Array, Object],
       multiple: {
         type: Boolean,
         default: true,
@@ -120,7 +123,7 @@
       };
     },
     watch: {
-      'model-value': {
+      modelValue: {
         handler(newVal) {
           if (newVal && typeof newVal !== 'undefined') {
             if (Array.isArray(newVal)) {
@@ -131,6 +134,10 @@
       },
     },
     computed: {
+      attrs() {
+        let newVal = {...this.$attrs};
+        return newVal;
+      },
       uploadUrl() {
         return process.env.VUE_APP_FEATHERS_URL || 'http://localhost:3030';
       },
@@ -185,7 +192,8 @@
       addFile(e) {
         let droppedFiles = e.dataTransfer.files;
         if (!droppedFiles) return;
-        // this tip, convert FileList to array, credit: https://www.smashingmagazine.com/2018/01/drag-drop-file-uploader-vanilla-js/
+        // this tip, convert FileList to array
+        // credit: https://www.smashingmagazine.com/2018/01/drag-drop-file-uploader-vanilla-js/
         ([...droppedFiles]).forEach(f => {
           this.files.push(f);
         });
@@ -214,7 +222,7 @@
       removeFile(file) {
         if (this.multiple) {
           this.files = this.files.filter(f => {
-            return f != file;
+            return f !== file;
           });
         } else this.files = null;
       },
@@ -244,7 +252,7 @@
           };
           let token = this.$lget(this.$store, 'state.auth.accessToken');
           if (token) headers.Authorization = 'Bearer ' + token;
-          else headers['x-api-key'] = this.$lget(this.$attrs, 'api-key');
+          else headers['x-api-key'] = this.$lget(this.attrs, 'api-key');
           this.$axios({
             method: 'post',
             url: `${this.uploadUrl}/file-uploader`,
