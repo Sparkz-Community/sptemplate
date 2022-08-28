@@ -1,41 +1,43 @@
 <template>
-  <div id="GroupLayoutDialog" v-bind="attrs['div-attrs']">
-    <slot :data="modelValue" :btnAttrs="attrs['btn-attrs']" :toggleDialog="toggleDialog">
-      <q-btn @click="dialogToggle = !dialogToggle" v-bind="attrs['btn-attrs']"/>
-    </slot>
-    <q-dialog id="group-layout-dialog" v-model="dialogToggle" v-bind="attrs['dialog-attrs']">
-      <q-layout view="Lhh LpR Lff" container :class="$q.dark.mode ? 'bg-dark' : 'bg-white'">
-        <q-header class="bg-primary">
-          <q-toolbar>
-            <q-toolbar-title class="text-uppercase" style="font-weight: 700;">
-              {{ label }}
-            </q-toolbar-title>
-            <q-btn flat v-close-popup round dense icon="close"/>
-          </q-toolbar>
-        </q-header>
+  <transition v-bind="attrs['transition-attrs']">
+    <div id="GroupLayoutDialog" v-bind="attrs['div-attrs']">
+      <slot :data="modelValue" :btnAttrs="attrs['btn-attrs']" :toggleDialog="toggleDialog">
+        <q-btn @click="dialogToggle = !dialogToggle" v-bind="attrs['btn-attrs']"/>
+      </slot>
+      <q-dialog id="group-layout-dialog" v-model="dialogToggle" v-bind="attrs['dialog-attrs']">
+        <q-layout view="Lhh LpR Lff" container :class="$q.dark.mode ? 'bg-dark' : 'bg-white'">
+          <q-header class="bg-primary">
+            <q-toolbar>
+              <q-toolbar-title class="text-uppercase" style="font-weight: 700;">
+                {{ label }}
+              </q-toolbar-title>
+              <q-btn flat v-close-popup round dense icon="close"/>
+            </q-toolbar>
+          </q-header>
 
-        <q-page-container>
-          <q-page class="q-pa-sm">
-            <form-generator v-model="formData"
-                            :fields="templateFormFields"
-                            v-bind="attrs['attrs']">
-              <template v-for="slot in slots"
-                        v-slot:[slot]="slotProps">
-                <slot :name="slot" v-bind="slotProps"></slot>
-              </template>
-            </form-generator>
-          </q-page>
-        </q-page-container>
+          <q-page-container>
+            <q-page class="q-pa-sm">
+              <form-generator v-model="formData"
+                              :fields="templateFormFields"
+                              v-bind="attrs['attrs']">
+                <template v-for="slot in slots"
+                          v-slot:[slot]="slotProps">
+                  <slot :name="slot" v-bind="slotProps"></slot>
+                </template>
+              </form-generator>
+            </q-page>
+          </q-page-container>
 
-        <q-footer :class="$q.dark.mode ? 'bg-dark' : 'bg-white'" bordered>
-          <q-toolbar>
-            <q-space/>
-            <q-btn v-close-popup label="Save" color="primary" @click="updateForm"/>
-          </q-toolbar>
-        </q-footer>
-      </q-layout>
-    </q-dialog>
-  </div>
+          <q-footer :class="$q.dark.mode ? 'bg-dark' : 'bg-white'" bordered>
+            <q-toolbar>
+              <q-space/>
+              <q-btn v-close-popup label="Save" color="primary" @click="updateForm"/>
+            </q-toolbar>
+          </q-footer>
+        </q-layout>
+      </q-dialog>
+    </div>
+  </transition>
 </template>
 
 <script>
