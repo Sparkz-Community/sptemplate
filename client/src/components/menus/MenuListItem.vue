@@ -66,6 +66,11 @@
         default: '',
       },
     },
+    emits: [
+      'expansionItemClick',
+      'itemExpanded',
+      'itemCollapsed',
+    ],
     data: function () {
       return {};
     },
