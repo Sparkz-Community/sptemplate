@@ -7,9 +7,7 @@
                     :bg-color="$lget(chat, 'sender') === $lget(activeAccount, 'participant') ? 'primary' : $q.dark.mode ? 'grey-9' : 'accent'">
       <q-spinner v-if="isDeleting" size="1.5em"/>
       <template v-else>
-        <div v-for="(text, index) in isDeleting ? [] : [$lget(chat, 'text')]" :key="index">
-          {{text}}
-        </div>
+        <div v-for="(text, index) in isDeleting ? [] : [$lget(chat, 'text')]" :key="index" v-html="text"></div>
       </template>
 
       <template v-slot:name>
@@ -115,7 +113,7 @@
         return date.formatDate(this.$lget(this.chat, 'createdAt'), 'h:mm A');
       },
       editedTag() {
-        if (this.$lget(this.chat, 'createdAt') !== this.$lget(this.chat, 'updatedAt') && !this.isDeleting) return '- (edited)';
+        if (this.$lget(this.chat, 'createdAt').toString() !== this.$lget(this.chat, 'updatedAt').toString() && !this.isDeleting) return '- (edited)';
         return '';
       },
     },
