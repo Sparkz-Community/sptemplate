@@ -35,6 +35,8 @@ module.exports = configure(function (ctx) {
       'spCommonLib',
       'spFormGenLib',
       'spRolesLib',
+      'plugins/defaults',
+      'plugins/treePath',
     ],
 
     // https://v2.quasar.dev/quasar-cli-webpack/quasar-config-js#Property%3A-css
