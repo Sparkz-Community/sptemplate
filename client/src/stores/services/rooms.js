@@ -2,7 +2,8 @@ import feathersClient from '../../api/feathers-client';
 import { defineStore, BaseModel } from 'feathers-pinia';
 
 // eslint-disable-next-line no-undef
-const {get, set} = require('lodash');
+const {lodash} = require('@sparkz-community/common-client-lib');
+const {$lget, $lset} = lodash;
 
 export class Rooms extends BaseModel {
   constructor(data, options) {
@@ -23,17 +24,17 @@ export class Rooms extends BaseModel {
   }
 
   static setupInstance(data, { models }) {
-    if (get(data, '_fastjoin.participants', []).length) {
-      set(data, '_fastjoin.participants', get(data, '_fastjoin.participants', []).map(participant => new models.api.Participants(participant)));
+    if ($lget(data, '_fastjoin.participants', []).length) {
+      $lset(data, '_fastjoin.participants', $lget(data, '_fastjoin.participants', []).map(participant => new models.api.Participants(participant)));
     }
 
-    let createdAt = get(data, 'createdAt');
+    let createdAt = $lget(data, 'createdAt');
     if (typeof createdAt === 'string') {
-      set(data, 'createdAt', new Date(createdAt));
+      $lset(data, 'createdAt', new Date(createdAt));
     }
-    let updatedAt = get(data, 'updatedAt');
+    let updatedAt = $lget(data, 'updatedAt');
     if (typeof updatedAt === 'string') {
-      set(data, 'updatedAt', new Date(updatedAt));
+      $lset(data, 'updatedAt', new Date(updatedAt));
     }
     return data;
   }
