@@ -37,7 +37,9 @@ module.exports = configure(function (ctx) {
       'spRolesLib',
       'plugins/defaults',
       'plugins/treePath',
+      // 'plugins/vueSanitize',
       // 'plugins/sanitize',
+      'plugins/sanitize-original',
     ],
 
     // https://v2.quasar.dev/quasar-cli-webpack/quasar-config-js#Property%3A-css
