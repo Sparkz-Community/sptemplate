@@ -36,7 +36,8 @@
              :key="index">
           <chat-room-item :model-value="{room}"
                           :current-room="currentRoom"
-                          @select-room="selectRoom"></chat-room-item>
+                          @select-room="selectRoom"
+                          @refresh-rooms="roomsListRefresh()"></chat-room-item>
         </div>
       </q-expansion-item>
 
@@ -83,7 +84,8 @@
              :key="index">
           <chat-room-item :model-value="{room}"
                           :current-room="currentRoom"
-                          @select-room="selectRoom"></chat-room-item>
+                          @select-room="selectRoom"
+                          @refresh-rooms="roomsListRefresh()"></chat-room-item>
         </div>
       </q-expansion-item>
     </q-list>
@@ -156,7 +158,7 @@
         };
       });
 
-      const {items: roomsList} = useFindPaginate({
+      const {items: roomsList, find: roomsListRefresh} = useFindPaginate({
         limit: ref(20),
         model: Rooms,
         qid: ref('roomsList'),
@@ -168,6 +170,8 @@
 
       return {
         roomsList,
+        roomsListRefresh,
+
         activeAccount,
       };
     },
@@ -301,6 +305,7 @@
               this.newRoom = new models.api.Rooms();
               this.createDMDialog = false;
               this.roomBeingCreated = false;
+              this.roomsListRefresh();
             })
             .catch(err => {
               this.$q.notify({
@@ -407,6 +412,7 @@
               this.newRoom = new models.api.Rooms();
               this.createRoomDialog = false;
               this.roomBeingCreated = false;
+              this.roomsListRefresh();
             })
             .catch(err => {
               this.$q.notify({
