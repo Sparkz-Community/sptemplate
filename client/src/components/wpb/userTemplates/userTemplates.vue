@@ -11,7 +11,7 @@
         <q-card v-for="(devTemplateSection, index) in devSectionTemplates"
                 :key="index"
                 class="col-12 col-md-6 bg-secondaryGradient"
-                style="height: 100px; display: flex; justify-content: center; align-items: center; width: 100%; color: white"
+                style="height: 100px; display: flex; justify-content: center; align-items: center; width: 100%;"
                 @click="$emit('addElementDialog', devTemplateSection)">
           <q-card-section class="column"
                           style="margin: 0; padding: 0; width: 100%; display: flex; justify-content: center; align-items: center">
@@ -33,7 +33,7 @@
         <q-card v-for="(devTemplateElement, index) in devElementTemplates"
                 :key="index"
                 class="col-12 col-md-6 bg-secondaryGradient"
-                style="height: 90px; display: flex; justify-content: center; align-items: center; width: 100%; color: white"
+                style="height: 90px; display: flex; justify-content: center; align-items: center; width: 100%;"
                 @click="$emit('addElementDialog', devTemplateElement)">
           <q-card-section class="column"
                           style="margin: 0; padding: 0; width: 100%; display: flex; justify-content: center; align-items: center">
@@ -54,7 +54,7 @@
         <q-card v-for="(section, index) in sectionTemplatesPublic"
                 :key="index"
                 class="col-12 col-md-6 bg-secondaryGradient"
-                style="width: 100%; color: white"
+                style="width: 100%;"
                 @click="$emit('addElementDialog', section)">
           <q-card-section style="margin: 0; padding: 0; width: 100%; display: flex; justify-content: flex-end">
             <q-btn icon="close" @click.stop="$emit('deleteElement', section)" flat round/>
@@ -89,7 +89,7 @@
         <q-card v-for="(element, index) in elementTemplatesPublic"
                 :key="index"
                 class="col-12 col-md-6 bg-secondaryGradient"
-                style="width: 100%; color: white"
+                style="width: 100%;"
                 @click="$emit('addElementDialog', element)">
           <q-card-section style="margin: 0; padding: 0; width: 100%; display: flex; justify-content: flex-end">
             <q-btn icon="close" @click.stop="$emit('deleteElement', element)" flat round/>

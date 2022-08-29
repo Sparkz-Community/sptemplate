@@ -18,7 +18,7 @@
               container
               style="position: relative"
               :style="`height: ${parentHeight}px; width: ${parentWidth}px;`">
-      <q-header v-if="!previewing" bordered class="bg-white text-secondary">
+      <q-header v-if="!previewing" bordered class="bg-transparent text-secondary">
         <q-toolbar style="display: grid; grid-template-columns: 1fr 1fr 1fr;">
           <div style="display: flex; justify-content: flex-start; align-items: center;">
             <div style="font-size: 1.5rem; margin-right: 12px;">
@@ -163,12 +163,10 @@
                 bordered
                 show-if-above
                 content-class="bg-grey-1">
-        <q-toolbar class="bg-white text-primary">
+        <q-toolbar>
           <div class="q-ma-xs" style="max-width: 265px;">
             <q-btn-toggle v-model="panel"
                           no-caps
-                          toggle-color="white"
-                          color="white"
                           spread
                           text-color="secondary"
                           :options="[
