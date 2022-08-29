@@ -19,18 +19,18 @@
            @click.stop="saveSettingsDio = !saveSettingsDio">
       <q-tooltip v-if="!saveSettingsDio" content-style="font-size:10pt">Save Settings</q-tooltip>
     </q-btn>
-    <q-menu v-model="saveSettingsDio" @input="$emit('saveSettingsDio', $event)" anchor="top middle" self="bottom middle"
+    <q-menu v-model="saveSettingsDio" @update:modelValue="$emit('saveSettingsDio', $event)" anchor="top middle" self="bottom middle"
             :offset="[0,3]">
       <div class="q-pa-xs flex column flex-center">
         <div style="display: flex; justify-content: center; align-items: center">
           <div style="color: var(--q-secondary); font-weight: bolder">
             AutoSave
           </div>
-          <q-toggle v-model="autoSave" @input="toggleAutoSave" color="secondary" class="self-center"></q-toggle>
+          <q-toggle v-model="autoSave" @update:modelValue="toggleAutoSave" color="secondary" class="self-center"></q-toggle>
 
         </div>
         <q-btn-toggle v-model="dbounce"
-                      @input="changeDebounce"
+                      @update:modelValue="changeDebounce"
                       dense
                       rounded
                       no-caps

@@ -56,7 +56,7 @@
         immediate: true,
         handler(newVal, oldVal) {
           if (newVal && newVal !== oldVal) {
-            this.$emit('input', this.numberValue + newVal);
+            this.$emit('update:modelValue', this.numberValue + newVal);
           }
         },
       },
@@ -108,7 +108,7 @@
         } else return null;
       },
       emitDebounce: $ldebounce(function (value) {
-        this.$emit('input', value);
+        this.$emit('update:modelValue', value);
       }, 370),
     },
   };

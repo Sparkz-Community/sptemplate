@@ -1,11 +1,11 @@
 <template>
   <q-card :style="{height: height, width: width}">
-    <q-img style="height: 100%; width: 100%" :src="$lget(value, 'raw.file', '')">
+    <q-img style="height: 100%; width: 100%" :src="$lget(modelValue, 'raw.file', '')">
       <div style="height: 100%; width: 100%" class="flex flex-center">
         <q-slide-transition>
           <template v-if="adding">
-            <image-uploader path="raw" storage="s3" :value="{raw: value.raw}" :attrs="imageUploadAttrs"
-                            @input="handleImage"/>
+            <image-uploader path="raw" storage="s3" :modelValue="{raw: modelValue.raw}" :attrs="imageUploadAttrs"
+                            @update:modelValue="handleImage"/>
           </template>
         </q-slide-transition>
         <template v-if="adding">
@@ -40,10 +40,10 @@
         type: String,
         default: '100%',
       },
-      value: Object,
+      modelValue: Object,
     },
     mounted() {
-      if (this.$lget(this.value, 'raw.file', null)) {
+      if (this.$lget(this.modelValue, 'raw.file', null)) {
         this.adding = false;
       }
     },
@@ -71,7 +71,7 @@
     methods: {
       removeImage() {
         this.imgResult = null;
-        this.$emit('input', null);
+        this.$emit('update:modelValue', null);
       },
       handleImage(val) {
         this.imgResult = val;
@@ -79,7 +79,7 @@
         let payload = val;
         if (Array.isArray(val)) payload = val[0];
         console.log('emitting input', payload);
-        this.$emit('input', payload);
+        this.$emit('update:modelValue', payload);
         this.adding = false;
       },
     },

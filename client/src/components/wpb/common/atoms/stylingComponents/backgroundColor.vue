@@ -14,10 +14,10 @@
          v-if="changeColor">
       <q-select :options="options"
                 v-model="selectedOption"
-                @input="startEmit($event, 'select')"
+                @update:modelValue="startEmit($event, 'select')"
                 outlined
                 class="q-my-sm"/>
-      <ColorPicker :value="$lget(element, path, defaultColor)"
+      <ColorPicker :modelValue="$lget(element, path, defaultColor)"
                    @colorPicker="startEmit($event, 'hex')"/>
     </div>
   </q-card>

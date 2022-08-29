@@ -9,7 +9,7 @@
                 :rounded="rounded"
                 :outlined="outlined"
                 filled
-                @input="classChange(true)"
+                @update:modelValue="classChange(true)"
                 @clear="classChange([])"
                 :behavior="behavior"
                 style="width: 100%"

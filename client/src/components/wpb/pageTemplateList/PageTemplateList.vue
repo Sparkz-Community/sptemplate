@@ -68,7 +68,7 @@
             </div>
           </q-card-section>
           <q-card-section>
-            <div>Start from scratch <span><q-checkbox v-model="blankPage" @input="$event ? selectedPage = {} : false"/></span>
+            <div>Start from scratch <span><q-checkbox v-model="blankPage" @update:modelValue="$event ? selectedPage = {} : false"/></span>
             </div>
           </q-card-section>
           <q-card-section>

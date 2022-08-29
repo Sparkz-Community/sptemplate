@@ -3,7 +3,7 @@
     <q-card-section class="cardSection">
       <p style="color: #404040; font-weight: bold">Opacity</p>
       <div class="q-pa-sm">
-        <q-slider :value="$lget(element, 'styles.opacity', 1.0)"
+        <q-slider :modelValue="$lget(element, 'styles.opacity', 1.0)"
                   @change="$emit('stylesUpdate', { path: 'styles.opacity', value: $event })"
                   :min="0"
                   :max="1"
@@ -232,8 +232,9 @@
             </div>
           </div>
           <div class="column" style="width: 80%; margin: 10px auto 10px auto;">
-            <q-color v-model="shadowOptions.color" format-model="rgba"
-                     @input="debounce({ path: 'styles.box-shadow', value: '' }, true)"/>
+            <q-color v-model="shadowOptions.color"
+                     format-model="rgba"
+                     @update:modelValue="debounce({ path: 'styles.box-shadow', value: '' }, true)"/>
           </div>
         </div>
       </div>

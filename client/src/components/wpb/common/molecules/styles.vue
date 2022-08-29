@@ -132,7 +132,7 @@
         <classes :cssRules="cssRules"
                  :element="elementInfo"
                  @stylesUpdate="saveElement"
-                 :value="elementClasses"/>
+                 :modelValue="elementClasses"/>
       </q-expansion-item>
 
       <q-separator/>
@@ -384,6 +384,9 @@
       ...mapActions(useWpbPages, {
         patchPage: 'patch',
       }),
+      ...mapActions(useWpbStore, {
+        addToSaveQueue: 'addToSaveQueue',
+      }),
       clearStyles() {
         let order = this.currentElement.styles.order;
         console.log('saved order', order);
@@ -453,7 +456,7 @@
           };
         }, this);
         if (changes.length) {
-          this.$store.dispatch('addToSaveQueue', {
+          this.addToSaveQueue({
             changes,
             pageId: this.$route.params.page_id,
             meta: {

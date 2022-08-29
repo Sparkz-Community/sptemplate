@@ -22,11 +22,11 @@
         <p v-if="type === pulledValuesCol">Column Minimum Size</p>
         <p v-else>Row Minimum Size</p>
         <grid-size-input v-model="type.min"
-                         @input="type === pulledValuesCol ? buildColRepeat() : buildRowRepeat()"></grid-size-input>
+                         @update:modelValue="type === pulledValuesCol ? buildColRepeat() : buildRowRepeat()"></grid-size-input>
         <p v-if="type === pulledValuesCol">Column Maximum Size</p>
         <p v-else>Row Maximum Size</p>
         <grid-size-input v-model="type.max"
-                         @input="type === pulledValuesCol ? buildColRepeat() : buildRowRepeat()"></grid-size-input>
+                         @update:modelValue="type === pulledValuesCol ? buildColRepeat() : buildRowRepeat()"></grid-size-input>
       </div>
       <q-separator v-if="type === pulledValuesCol" class="q-my-md"/>
     </div>

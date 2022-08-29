@@ -27,7 +27,7 @@
                        class="q-mb-sm q-mr-sm"
                        @click="allBorderColor = false"></q-btn>
               </div>
-              <ColorPicker :value="$lget(element, 'styles.border-top', '0 0 0').split(' ')[2]"
+              <ColorPicker :modelValue="$lget(element, 'styles.border-top', '0 0 0').split(' ')[2]"
                            @colorPicker="setColor = $event"/>
             </div>
           </transition>

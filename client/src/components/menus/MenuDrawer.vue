@@ -1,8 +1,8 @@
 <template>
   <q-drawer ref="drawer"
             :mini="miniState"
-            :value="value"
-            @input="$emit('input', $event)"
+            :model-value="value"
+            @update:model-value="$emit('update:modelValue', $event)"
             :side="side"
             bordered
             @on-layout="handleLayout"

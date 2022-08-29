@@ -57,7 +57,7 @@
           </q-item-section>
           <q-item-section side>
             <q-toggle :value="$q.dark.mode"
-                      @input="handleDarkModeToggle"
+                      @update:modelValue="handleDarkModeToggle"
                       icon="brightness_medium"/>
           </q-item-section>
         </q-item>

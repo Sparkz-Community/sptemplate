@@ -1,6 +1,6 @@
 <template>
   <div>
-    <q-color :value="value"
+    <q-color :modelValue="value"
              @change="$emit('colorPicker', $event)"
              :format-model="format"
              class="my-picker"/>
@@ -12,7 +12,7 @@
     name: 'colorPicker',
     props: {
       format: String,
-      value: String,
+      modelValue: String,
     },
     // mounted() {
     //   console.log('color picker value', this.value.value);

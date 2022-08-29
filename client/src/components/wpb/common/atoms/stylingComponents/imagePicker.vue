@@ -31,9 +31,9 @@
         <q-tab-panel name="upload">
           <div class="text-h6">Upload</div>
           <single-image-upload style="height: 250px; width: 100%"
-                               :value="{raw}"
+                               :modelValue="{raw}"
                                add-label="Upload Image"
-                               @input="setImage('uploader', $event)"
+                               @update:modelValue="setImage('uploader', $event)"
                                height="100%"
                                width="100%"
           />

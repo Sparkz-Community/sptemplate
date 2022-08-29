@@ -21,9 +21,9 @@
 </template>
 
 <script>
-  import FontManager from 'font-picker';
+  import {FontManager} from 'font-picker';
   export default {
-    name: 'FontPicker',
+    name: 'FontPickerGen',
     props: ['activeFont', 'apiKey', 'options'],
     data() {
       return {

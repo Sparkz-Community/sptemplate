@@ -68,7 +68,7 @@
 <!--                  <q-btn round color="negative" icon="close" class="q-mb-sm q-mr-sm" @click="pickTheme = false"></q-btn>-->
 <!--                </div>-->
 <!--                <div>-->
-<!--                  <color-picker :value="$getCssVar('&#45;&#45;q-color-primary')"-->
+<!--                  <color-picker :modelValue="$getCssVar('&#45;&#45;q-color-primary')"-->
 <!--                                @colorPicker="pickedColor = $event"/>-->
 <!--                </div>-->
 <!--              </div>-->
@@ -157,8 +157,8 @@
       </q-header>
 
 
-      <q-drawer :value="drawerOpen && !previewing"
-                @input="drawerOpen = !drawerOpen"
+      <q-drawer :modelValue="drawerOpen && !previewing"
+                @update:modelValue="drawerOpen = !drawerOpen"
                 side="right"
                 bordered
                 show-if-above

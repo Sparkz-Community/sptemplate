@@ -9,8 +9,8 @@
     <q-card-section>
       <SingleImageUpload style="height: 200px"
                          :addLabel="computedImgUrl ? 'Change' : 'Add'"
-                         :value="{large: {file: computedImgUrl}}"
-                         @input="emitImg"/>
+                         :modelValue="{large: {file: computedImgUrl}}"
+                         @update:modelValue="emitImg"/>
     </q-card-section>
     <q-card-section class="cardSection">
       <p style="font-size: 21px; color: #404040">Background Settings</p>

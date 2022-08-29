@@ -3,7 +3,7 @@
     <q-expansion-item switch-toggle-side
                       default-opened
                       :value="templateExpansion === 'devTemplateSection'"
-                      @input="templateExpansion === 'devTemplateSection' ? templateExpansion = null : templateExpansion = 'devTemplateSection'"
+                      @update:modelValue="templateExpansion === 'devTemplateSection' ? templateExpansion = null : templateExpansion = 'devTemplateSection'"
                       expand-separator
                       label="Default Section Templates">
       <div class="q-ma-sm row"
@@ -25,7 +25,7 @@
     <q-expansion-item switch-toggle-side
                       default-opened
                       :value="templateExpansion === 'devTemplateElement'"
-                      @input="templateExpansion === 'devTemplateElement' ? templateExpansion = null : templateExpansion = 'devTemplateElement'"
+                      @update:modelValue="templateExpansion === 'devTemplateElement' ? templateExpansion = null : templateExpansion = 'devTemplateElement'"
                       expand-separator
                       label="Default Element Templates">
       <div class="q-ma-sm row"
@@ -47,7 +47,7 @@
     <q-expansion-item switch-toggle-side
                       expand-separator
                       :value="templateExpansion === 'section'"
-                      @input="templateExpansion === 'section' ? templateExpansion = null : templateExpansion = 'section'"
+                      @update:modelValue="templateExpansion === 'section' ? templateExpansion = null : templateExpansion = 'section'"
                       label="Section Templates">
       <div class="q-ma-sm row"
            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); grid-column-gap: 7px; grid-row-gap: 10px; justify-items: center; align-items: center;">
@@ -81,8 +81,8 @@
 
     <q-expansion-item switch-toggle-side
                       expand-separator
-                      :value="templateExpansion === 'element'"
-                      @input="templateExpansion === 'element' ? templateExpansion = null : templateExpansion = 'element'"
+                      :model-value="templateExpansion === 'element'"
+                      @update:modelValue="templateExpansion === 'element' ? templateExpansion = null : templateExpansion = 'element'"
                       label="Element Templates">
       <div class="q-ma-sm row"
            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); grid-column-gap: 7px; grid-row-gap: 10px;">

@@ -2,7 +2,7 @@
   <div :id="elementData._id" :style="{order: elementData.styles.order}" @click.stop="currentElement = elementData"
        :class="[...$lget(elementData, '_fastjoin.classes', []).map(cl => cl.name.replace('.', '')), !isEditing ? showBorder ? 'inactive': '' : 'editing']">
     <q-input :input-style="elementData.styles"
-             @input="elementUpdate({path: 'content', value: $event})"
+             @update:modelValue="elementUpdate({path: 'content', value: $event})"
              :placeholder="attrs.placeholder"
              type="textarea"
              autogrow

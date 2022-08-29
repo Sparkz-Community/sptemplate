@@ -22,7 +22,7 @@
                 <q-btn round color="positive" icon="check" class="q-mb-sm q-mr-sm" @click="updateBorder()"></q-btn>
                 <q-btn round color="negative" icon="close" class="q-mb-sm q-mr-sm" @click="changeColor = false"></q-btn>
               </div>
-              <ColorPicker :value="elementBorderProperties.split(' ')[2]"
+              <ColorPicker :modelValue="elementBorderProperties.split(' ')[2]"
                            @colorPicker="setColor = $event"/>
             </div>
           </transition>

@@ -9,9 +9,9 @@
                      :type="imageData._type"
                      :parent="$lget(treePath, [0])" @jumpToParent="currentElement = $event"/>
     <single-image-upload v-show="isEditing && hovering"
-                         :value="imageData"
+                         :modelValue="imageData"
                          add-label="Change Image"
-                         @input="imageUpdate"
+                         @update:modelValue="imageUpdate"
                          height="100%"
                          width="100%"/>
 

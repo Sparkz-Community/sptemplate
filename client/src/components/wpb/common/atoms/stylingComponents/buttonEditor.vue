@@ -37,64 +37,64 @@
           <q-toggle color="green"
                     label="Flat"
                     left-label
-                    :value="$lget(elementData, 'attrs.flat')"
-                    @input="$emit('stylesUpdate', {path: 'attrs.flat', value: $event})"/>
+                    :modelValue="$lget(elementData, 'attrs.flat')"
+                    @update:modelValue="$emit('stylesUpdate', {path: 'attrs.flat', value: $event})"/>
         </div>
         <div class="col-12 col-md-6">
           <q-toggle color="green"
                     label="Outline"
                     left-label
-                    :value="$lget(elementData, 'attrs.outline', false)"
-                    @input="$emit('stylesUpdate', {path: 'attrs.outline', value: $event})"/>
+                    :modelValue="$lget(elementData, 'attrs.outline', false)"
+                    @update:modelValue="$emit('stylesUpdate', {path: 'attrs.outline', value: $event})"/>
         </div>
         <div class="col-12 col-md-6">
           <q-toggle color="green"
                     label="Unelevated"
                     left-label
-                    :value="$lget(elementData, 'attrs.unelevated', false)"
-                    @input="$emit('stylesUpdate', {path: 'attrs.unelevated', value: $event})"/>
+                    :modelValue="$lget(elementData, 'attrs.unelevated', false)"
+                    @update:modelValue="$emit('stylesUpdate', {path: 'attrs.unelevated', value: $event})"/>
         </div>
         <div class="col-12 col-md-6">
           <q-toggle color="green"
                     label="Rounded"
                     left-label
-                    :value="$lget(elementData, 'attrs.rounded', false)"
-                    @input="$emit('stylesUpdate', {path: 'attrs.rounded', value: $event})"/>
+                    :modelValue="$lget(elementData, 'attrs.rounded', false)"
+                    @update:modelValue="$emit('stylesUpdate', {path: 'attrs.rounded', value: $event})"/>
         </div>
         <div class="col-12 col-md-6">
           <q-toggle color="green"
                     label="Round"
                     left-label
-                    :value="$lget(elementData, 'attrs.round', false)"
-                    @input="$emit('stylesUpdate', {path: 'attrs.round', value: $event})"/>
+                    :modelValue="$lget(elementData, 'attrs.round', false)"
+                    @update:modelValue="$emit('stylesUpdate', {path: 'attrs.round', value: $event})"/>
         </div>
         <div class="col-12 col-md-6">
           <q-toggle color="green"
                     label="Push"
                     left-label
-                    :value="$lget(elementData, 'attrs.push', false)"
-                    @input="$emit('stylesUpdate', {path: 'attrs.push', value: $event})"/>
+                    :modelValue="$lget(elementData, 'attrs.push', false)"
+                    @update:modelValue="$emit('stylesUpdate', {path: 'attrs.push', value: $event})"/>
         </div>
         <div class="col-12 col-md-6">
           <q-toggle color="green"
                     label="Dense"
                     left-label
-                    :value="$lget(elementData, 'attrs.dense', false)"
-                    @input="$emit('stylesUpdate', {path: 'attrs.dense', value: $event})"/>
+                    :modelValue="$lget(elementData, 'attrs.dense', false)"
+                    @update:modelValue="$emit('stylesUpdate', {path: 'attrs.dense', value: $event})"/>
         </div>
         <div class="col-12 col-md-6">
           <q-toggle color="green"
                     label="Stack"
                     left-label
-                    :value="$lget(elementData, 'attrs.stack', false)"
-                    @input="$emit('stylesUpdate', {path: 'attrs.stack', value: $event})"/>
+                    :modelValue="$lget(elementData, 'attrs.stack', false)"
+                    @update:modelValue="$emit('stylesUpdate', {path: 'attrs.stack', value: $event})"/>
         </div>
         <div class="col-12 col-md-6">
           <q-toggle color="green"
                     label="Glossy"
                     left-label
-                    :value="$lget(elementData, 'attrs.glossy', false)"
-                    @input="$emit('stylesUpdate', {path: 'attrs.glossy', value: $event})"/>
+                    :modelValue="$lget(elementData, 'attrs.glossy', false)"
+                    @update:modelValue="$emit('stylesUpdate', {path: 'attrs.glossy', value: $event})"/>
         </div>
       </div>
     </div>

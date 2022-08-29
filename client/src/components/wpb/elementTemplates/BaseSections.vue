@@ -2,7 +2,7 @@
   <q-expansion-item switch-toggle-side
                     default-opened
                     :value="expand === 'baseSection'"
-                    @input="expand === 'baseSection' ? setExpand(null) : setExpand('baseSection')"
+                    @update:modelValue="expand === 'baseSection' ? setExpand(null) : setExpand('baseSection')"
                     expand-separator
                     label="Base Sections">
     <div class="q-ma-sm row"

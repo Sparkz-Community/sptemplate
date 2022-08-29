@@ -5,8 +5,8 @@
       <q-spinner/>
     </div>
     <div v-else style="height: 40px">
-      <q-toggle :value="repeat"
-                @input="changeGridTemplate"
+      <q-toggle :modelValue="repeat"
+                @update:modelValue="changeGridTemplate"
                 color="primary"/>
     </div>
     <div id="Column&Row" v-if="!repeat">

@@ -236,7 +236,7 @@
             let avatar_key = f.name;
             this.newImages.push({[avatar_key]: f.file});
           });
-          this.$emit('input', this.newImages);
+          this.$emit('update:modelValue', this.newImages);
           load();
         } else {
           Promise.all(file.map(f => {
@@ -268,7 +268,7 @@
             .then((res) => {
               console.log('promise.all res', res);
               console.log('newImages', this.newImages);
-              this.$emit('input', this.newImages);
+              this.$emit('update:modelValue', this.newImages);
               load();
             })
             .catch(err => {

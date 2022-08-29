@@ -9,7 +9,7 @@
     <q-expansion-item switch-toggle-side
                       default-opened
                       :value="templateExpansion === 'baseElement'"
-                      @input="templateExpansion === 'baseElement' ? templateExpansion = null : templateExpansion = 'baseElement'"
+                      @update:modelValue="templateExpansion === 'baseElement' ? templateExpansion = null : templateExpansion = 'baseElement'"
                       expand-separator
                       label="Base Elements">
       <div class="q-ma-sm row"
@@ -40,7 +40,7 @@
     <q-expansion-item switch-toggle-side
                       expand-separator
                       :value="templateExpansion === 'sectionPrivate'"
-                      @input="templateExpansion === 'sectionPrivate' ? templateExpansion = null : templateExpansion = 'sectionPrivate'"
+                      @update:modelValue="templateExpansion === 'sectionPrivate' ? templateExpansion = null : templateExpansion = 'sectionPrivate'"
                       label="Your Base Section">
       <div class="q-ma-sm row"
            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); grid-column-gap: 7px; grid-row-gap: 10px; justify-items: center; align-items: center;">
@@ -75,7 +75,7 @@
     <q-expansion-item switch-toggle-side
                       expand-separator
                       :value="templateExpansion === 'elementPrivate'"
-                      @input="templateExpansion === 'elementPrivate' ? templateExpansion = null : templateExpansion = 'elementPrivate'"
+                      @update:modelValue="templateExpansion === 'elementPrivate' ? templateExpansion = null : templateExpansion = 'elementPrivate'"
                       label="Your Base Elements">
       <div class="q-ma-sm"
            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); grid-column-gap: 7px; grid-row-gap: 10px;">
@@ -111,7 +111,7 @@
 </template>
 
 <script>
-  import {computed, ref} from 'vue';
+  import {computed, inject, ref} from 'vue';
   import {useFindPaginate} from '@sparkz-community/common-client-lib';
 
   import useWpbElements from 'stores/services/wpb-elements';
@@ -129,8 +129,8 @@
     props: {
       currentElement: Object,
     },
-    inject: ['authUser'],
     setup() {
+      const authUser = inject('authUser');
       // elements
       const wpbElements = useWpbElements();
 
@@ -161,7 +161,7 @@
           baseElement: false,
           devTemplate: false,
           isPublic: false,
-          ownerId: this.userId
+          ownerId: authUser.value._id
         };
       });
 
@@ -184,7 +184,7 @@
           baseSection: false,
           devTemplate: false,
           isPublic: false,
-          ownerId: this.userId
+          ownerId: authUser.value._id
         };
       });
 
@@ -214,11 +214,6 @@
         imagePickerDialog: false,
         templateExpansion: '',
       };
-    },
-    computed: {
-      userId() {
-        return this.authUser._id;
-      },
     },
     methods: {
       addImage(val) {

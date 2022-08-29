@@ -27,7 +27,7 @@
            :class="itemOptionValue === styleName ? 'col-6' : 'col-12'">
         <p v-if="itemOptionValue === styleName">{{ itemTitle(index) }}</p>
         <margin-padding-input v-model="item.value"
-                              @input="saveItem(item, index, ...arguments)"
+                              @update:modelValue="saveItem(item, index, ...arguments)"
                               :item="item"
                               :listLength="items.length"
                               :listIndex="index"

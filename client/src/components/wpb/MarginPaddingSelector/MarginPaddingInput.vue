@@ -7,7 +7,7 @@
            style="flex: 1"
            type="number"
            min="0"
-           :max="checkMax(pullUnit(value))"/>
+           :max="checkMax(pullUnit(modelValue))"/>
     <select v-model="unitValue"
             :style="`font-size: 14px; border: 0; outline: 0; height: 25px; ${units_only.includes(unitValue) ? 'flex: 1': ''}`">
       <q-tooltip>
@@ -26,7 +26,7 @@
   export default {
     name: 'MarginPaddingInput',
     props: {
-      value: {
+      modelValue: {
         type: String,
         required: true,
       },
@@ -58,7 +58,7 @@
       };
     },
     watch: {
-      value: {
+      modelValue: {
         immediate: true,
         handler(newVal, oldVal) {
           if (newVal && newVal !== oldVal) {
@@ -80,9 +80,9 @@
         handler(newVal, oldVal) {
           if (newVal && newVal !== oldVal) {
             if (this.units_only.includes(this.unitValue)) {
-              this.$emit('input', this.unitValue);
+              this.$emit('update:modelValue', this.unitValue);
             } else {
-              this.$emit('input', this.numberValue + newVal);
+              this.$emit('update:modelValue', this.numberValue + newVal);
             }
           }
         },
@@ -143,7 +143,7 @@
         } else return null;
       },
       emitDebounce: $ldebounce(function(value){
-        this.$emit('input', value);
+        this.$emit('update:modelValue', value);
       }, 370),
     },
   };

@@ -20,7 +20,7 @@
   export default {
     name: 'MarginInput',
     props: {
-      value: {
+      modelValue: {
         type: String,
         required: true
       },
@@ -51,7 +51,7 @@
       };
     },
     watch: {
-      value: {
+      modelValue: {
         immediate: true,
         handler(newVal, oldVal) {
           if (newVal && newVal !== oldVal) {
@@ -64,7 +64,7 @@
         immediate: true,
         handler(newVal, oldVal) {
           if (newVal && newVal !== oldVal) {
-            this.$emit('input', newVal + this.unitValue);
+            this.$emit('update:modelValue', newVal + this.unitValue);
           }
         }
       },
@@ -72,7 +72,7 @@
         immediate: true,
         handler(newVal, oldVal) {
           if (newVal && newVal !== oldVal) {
-            this.$emit('input', this.numberValue + newVal);
+            this.$emit('update:modelValue', this.numberValue + newVal);
           }
         }
       },

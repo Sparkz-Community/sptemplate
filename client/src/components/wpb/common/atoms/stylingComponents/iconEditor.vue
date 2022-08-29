@@ -2,8 +2,8 @@
   <div class="q-pa-md">
     <div class="column q-my-sm">
       <p style="margin: 0">Icon Name: </p>
-      <icon-picker :value="$lget(element, 'attrs.name', '')"
-                   @input="debounce({path: 'attrs.name', value: $event})"
+      <icon-picker :modelValue="$lget(element, 'attrs.name', '')"
+                   @update:modelValue="debounce({path: 'attrs.name', value: $event})"
                    path="attrs.name"
                    :q-field-attrs="{
                      label: '',

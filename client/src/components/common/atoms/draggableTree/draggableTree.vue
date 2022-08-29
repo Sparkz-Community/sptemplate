@@ -1,6 +1,6 @@
 <template>
   <div id="draggableTree" v-bind="$attrs['div-attrs']">
-    <vue-nestable :value="value" @input="$emit('input', $event)" v-bind="$attrs['attrs']">
+    <vue-nestable :value="modelValue" @input="$emit('update:modelValue', $event)" v-bind="$attrs['attrs']">
       <template v-slot="scope">
         <vue-nestable-handle
           v-if="Object.keys($slots).includes('default') || Object.keys($slots).length === 0" v-bind="scope">
@@ -37,7 +37,7 @@
     name: 'draggableTree',
     inheritAttrs: false,
     props: {
-      value: {
+      modelValue: {
         type: Array,
         required: true,
       },

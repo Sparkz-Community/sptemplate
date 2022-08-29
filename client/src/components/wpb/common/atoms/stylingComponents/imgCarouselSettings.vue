@@ -13,8 +13,8 @@
           <q-toggle color="green"
                     label="Autoplay?"
                     left-label
-                    :value="$lget(elementData, 'attrs.autoplaySwitch', false)"
-                    @input="$emit('stylesUpdate', {path: 'attrs.autoplaySwitch', value: $event})"/>
+                    :modelValue="$lget(elementData, 'attrs.autoplaySwitch', false)"
+                    @update:modelValue="$emit('stylesUpdate', {path: 'attrs.autoplaySwitch', value: $event})"/>
         </div>
       </div>
     </div>
@@ -49,50 +49,50 @@
           <q-toggle color="green"
                     label="Swipeable"
                     left-label
-                    :value="$lget(elementData, 'attrs.swipeable')"
-                    @input="$emit('stylesUpdate', {path: 'attrs.swipeable', value: $event})"/>
+                    :modelValue="$lget(elementData, 'attrs.swipeable')"
+                    @update:modelValue="$emit('stylesUpdate', {path: 'attrs.swipeable', value: $event})"/>
         </div>
         <div class="col-12 col-md-6">
           <q-toggle color="green"
                     label="Animated"
                     left-label
-                    :value="$lget(elementData, 'attrs.animated', false)"
-                    @input="$emit('stylesUpdate', {path: 'attrs.animated', value: $event})"/>
+                    :modelValue="$lget(elementData, 'attrs.animated', false)"
+                    @update:modelValue="$emit('stylesUpdate', {path: 'attrs.animated', value: $event})"/>
         </div>
         <div class="col-12 col-md-6">
           <q-toggle color="green"
                     label="Fullscreen"
                     left-label
-                    :value="$lget(elementData, 'attrs.fullscreen', false)"
-                    @input="$emit('stylesUpdate', {path: 'attrs.fullscreen', value: $event})"/>
+                    :modelValue="$lget(elementData, 'attrs.fullscreen', false)"
+                    @update:modelValue="$emit('stylesUpdate', {path: 'attrs.fullscreen', value: $event})"/>
         </div>
         <div class="col-12 col-md-6">
           <q-toggle color="green"
                     label="Thumbnails"
                     left-label
-                    :value="$lget(elementData, 'attrs.thumbnails', false)"
-                    @input="$emit('stylesUpdate', {path: 'attrs.thumbnails', value: $event})"/>
+                    :modelValue="$lget(elementData, 'attrs.thumbnails', false)"
+                    @update:modelValue="$emit('stylesUpdate', {path: 'attrs.thumbnails', value: $event})"/>
         </div>
         <div class="col-12 col-md-6">
           <q-toggle color="green"
                     label="Navigation"
                     left-label
-                    :value="$lget(elementData, 'attrs.navigation', false)"
-                    @input="$emit('stylesUpdate', {path: 'attrs.navigation', value: $event})"/>
+                    :modelValue="$lget(elementData, 'attrs.navigation', false)"
+                    @update:modelValue="$emit('stylesUpdate', {path: 'attrs.navigation', value: $event})"/>
         </div>
         <div class="col-12 col-md-6">
           <q-toggle color="green"
                     label="Infinite"
                     left-label
-                    :value="$lget(elementData, 'attrs.infinite', false)"
-                    @input="$emit('stylesUpdate', {path: 'attrs.infinite', value: $event})"/>
+                    :modelValue="$lget(elementData, 'attrs.infinite', false)"
+                    @update:modelValue="$emit('stylesUpdate', {path: 'attrs.infinite', value: $event})"/>
         </div>
         <div class="col-12 col-md-6">
           <q-toggle color="green"
                     label="Arrows"
                     left-label
-                    :value="$lget(elementData, 'attrs.arrows', false)"
-                    @input="$emit('stylesUpdate', {path: 'attrs.arrows', value: $event})"/>
+                    :modelValue="$lget(elementData, 'attrs.arrows', false)"
+                    @update:modelValue="$emit('stylesUpdate', {path: 'attrs.arrows', value: $event})"/>
         </div>
       </div>
     </div>
@@ -143,9 +143,9 @@
         <q-card-section>
           <p>Upload Image </p>
           <single-image-upload style="height: 250px; width: 250px"
-                               :value="{raw}"
+                               :modelValue="{raw}"
                                add-label="Upload Image"
-                               @input="setImage('uploader', $event)"/>
+                               @update:modelValue="setImage('uploader', $event)"/>
         </q-card-section>
         <q-card-section>
           <p>------- Or -------</p>
@@ -176,9 +176,9 @@
         <q-card-section>
           <p>Upload Image </p>
           <single-image-upload style="height: 250px; width: 250px"
-                               :value="{raw}"
+                               :modelValue="{raw}"
                                add-label="Upload Image"
-                               @input="editImage('uploader', $event)"
+                               @update:modelValue="editImage('uploader', $event)"
           />
         </q-card-section>
         <q-card-section>

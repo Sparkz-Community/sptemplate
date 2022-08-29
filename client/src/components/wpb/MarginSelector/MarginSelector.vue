@@ -2,7 +2,7 @@
   <div id="MarginSelector">
     <div style="display: flex; align-items: center;">
       <p style="color: #404040; font-weight: bold">{{ isMarginMode ? 'Margin' : 'Separate Margins' }}</p>
-      <q-checkbox v-model="isMarginMode" @input="$emit('update:marginMode', $event)"></q-checkbox>
+      <q-checkbox v-model="isMarginMode" @update:modelValue="$emit('update:marginMode', $event)"></q-checkbox>
     </div>
     <div class="row q-col-gutter-md">
       <div v-for="(margin, index) in margins"

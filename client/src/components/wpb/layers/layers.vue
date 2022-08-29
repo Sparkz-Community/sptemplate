@@ -68,7 +68,7 @@
               Save as Public?
             </p>
             <q-toggle v-model="isPublic"
-                      @input="devTemplate && !$event ? devTemplate = $event : false"/>
+                      @update:modelValue="devTemplate && !$event ? devTemplate = $event : false"/>
           </div>
           <div
             style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; width: 50%">
@@ -83,7 +83,7 @@
               Save as Dev Template?
             </p>
             <q-toggle v-model="devTemplate"
-                      @input="$event ? isPublic = $event : false"/>
+                      @update:modelValue="$event ? isPublic = $event : false"/>
           </div>
         </q-card-section>
         <q-card-section>

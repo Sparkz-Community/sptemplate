@@ -3,20 +3,20 @@
     <q-field :value="value"
              v-bind="$attrs['q-field-attrs']"
              @focus="$refs['search'].focus()"
-             @clear="$emit('input', undefined)">
+             @clear="$emit('update:modelValue', undefined)">
       <template v-slot:control>
         <div class="q-mt-md full-width">
           <q-select v-model="icon_set" v-bind="$attrs['icon-set-attrs']"/>
           <q-input v-model="filter" ref="search" v-bind="$attrs['search-attrs']"/>
           <!--        <p class="q-ma-none" style="font-size: 1.1rem;">-->
           <!--          <b class="q-mr-sm">Selected:</b>-->
-          <!--          <q-chip v-if="value" removable :icon="value" @remove="$emit('input', undefined)">-->
+          <!--          <q-chip v-if="value" removable :icon="value" @remove="$emit('update:modelValue', undefined)">-->
           <!--            {{ value }}-->
           <!--          </q-chip>-->
           <!--        </p>-->
           <!--        <q-separator class="q-my-lg"></q-separator>-->
-          <q-icon-picker :value="value"
-                         @input="$emit('input', $event)"
+          <q-icon-picker :value="modelValue"
+                         @input="$emit('update:modelValue', $event)"
                          :icon-set="icon_set"
                          v-model:pagination="pagination"
                          :filter="filter"
@@ -37,7 +37,7 @@
     name: 'IconPicker',
     inheritAttrs: false,
     props: {
-      value: {
+      modelValue: {
         type: String,
       },
       path: {

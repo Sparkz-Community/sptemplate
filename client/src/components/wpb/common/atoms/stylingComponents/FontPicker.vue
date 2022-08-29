@@ -6,10 +6,12 @@
           <p style="padding: 0; margin: 0">Font</p>
         </div>
         <div style="width: 100%">
-          <font-picker-gen :api-key="fontKey" @change="setFont"
-                       :active-font="$lget(element, 'styles.font-family', 'Open Sans')" class="apply-font"
-                       style="width: 100%;background: #F2F2F2;" :options="{}" id="fontPicker">
-
+          <font-picker-gen :api-key="fontKey"
+                           @change="setFont"
+                           :active-font="$lget(element, 'styles.font-family', 'Open Sans')"
+                           class="apply-font"
+                           style="width: 100%; background: #F2F2F2;"
+                           :options="{}">
           </font-picker-gen>
         </div>
       </div>
@@ -120,7 +122,7 @@
                      borderless
                      style="padding: 0; margin: 0"
                      dense
-                     :value="$lget(element, 'styles.color', '#000000')"
+                     :modelValue="$lget(element, 'styles.color', '#000000')"
                      readonly>
               <template v-slot:append>
                 <q-btn size="xs"
@@ -133,7 +135,7 @@
         </div>
       </div>
       <q-card-section v-if="colorDialog">
-        <ColorPicker :value="$lget(element, 'styles.color', 'rgba( 0, 0, 0, 1)')"
+        <ColorPicker :modelValue="$lget(element, 'styles.color', 'rgba( 0, 0, 0, 1)')"
                      @colorPicker="$emit('stylesUpdate', { path: 'styles.color', value: $event })"/>
       </q-card-section>
     </q-card-section>
@@ -141,15 +143,16 @@
       <div class="q-pa-sm" style="width: 100%">
         <div class="flex justify-between">
           <p class="q-mb-sm" style="padding: 0; margin: 0">Text Align</p>
-          <q-btn icon="clear" size="xs" @click="$emit('stylesUpdate', { path: 'styles.text-align', value: '$unset' })" round flat>
+          <q-btn icon="clear" size="xs" @click="$emit('stylesUpdate', { path: 'styles.text-align', value: '$unset' })"
+                 round flat>
             <q-tooltip anchor="bottom middle" self="top middle" :offset="[10, 10]">Clear</q-tooltip>
           </q-btn>
         </div>
         <q-btn-toggle spread
                       dense
                       flat
-                      :value="$lget(element, 'styles.text-align', 'left')"
-                      @input="$emit('stylesUpdate', { path: 'styles.text-align', value: $event })"
+                      :modelValue="$lget(element, 'styles.text-align', 'left')"
+                      @update:modelValue="$emit('stylesUpdate', { path: 'styles.text-align', value: $event })"
                       style="background-color: #F2F2F2;"
                       :options="[
                         {slot: 'one', value: 'left'},
@@ -178,13 +181,13 @@
               </q-tooltip>
             </q-icon>
           </template>
-<!--          <template v-slot:four>-->
-<!--            <q-icon name="clear" class="text-red">-->
-<!--              <q-tooltip anchor="bottom middle" self="top middle" :offset="[10, 10]">-->
-<!--                Clear-->
-<!--              </q-tooltip>-->
-<!--            </q-icon>-->
-<!--          </template>-->
+          <!--          <template v-slot:four>-->
+          <!--            <q-icon name="clear" class="text-red">-->
+          <!--              <q-tooltip anchor="bottom middle" self="top middle" :offset="[10, 10]">-->
+          <!--                Clear-->
+          <!--              </q-tooltip>-->
+          <!--            </q-icon>-->
+          <!--          </template>-->
         </q-btn-toggle>
       </div>
     </q-card-section>
@@ -192,15 +195,16 @@
       <div class="q-pa-sm" style="width: 100%">
         <div class="flex justify-between">
           <p class="q-mb-sm" style="padding: 0; margin: 0">Text Decoration</p>
-          <q-btn icon="clear" size="xs" @click="$emit('stylesUpdate', { path: 'styles.text-decoration', value: '$unset' })" round flat>
+          <q-btn icon="clear" size="xs"
+                 @click="$emit('stylesUpdate', { path: 'styles.text-decoration', value: '$unset' })" round flat>
             <q-tooltip anchor="bottom middle" self="top middle" :offset="[10, 10]">Clear</q-tooltip>
           </q-btn>
         </div>
         <q-btn-toggle spread
                       dense
                       flat
-                      :value="$lget(element, 'styles.text-decoration', 'none')"
-                      @input="$emit('stylesUpdate', { path: 'styles.text-decoration', value: $event})"
+                      :modelValue="$lget(element, 'styles.text-decoration', 'none')"
+                      @update:modelValue="$emit('stylesUpdate', { path: 'styles.text-decoration', value: $event})"
                       style="background-color: #F2F2F2"
                       :options="[
                         {slot: 'one', value: 'none'},
@@ -229,13 +233,13 @@
               </q-tooltip>
             </q-icon>
           </template>
-<!--          <template v-slot:four>-->
-<!--            <q-icon name="clear" class="text-red">-->
-<!--              <q-tooltip anchor="bottom middle" self="top middle" :offset="[10, 10]">-->
-<!--                Clear-->
-<!--              </q-tooltip>-->
-<!--            </q-icon>-->
-<!--          </template>-->
+          <!--          <template v-slot:four>-->
+          <!--            <q-icon name="clear" class="text-red">-->
+          <!--              <q-tooltip anchor="bottom middle" self="top middle" :offset="[10, 10]">-->
+          <!--                Clear-->
+          <!--              </q-tooltip>-->
+          <!--            </q-icon>-->
+          <!--          </template>-->
         </q-btn-toggle>
       </div>
     </q-card-section>
@@ -244,10 +248,11 @@
 
 <script>
   import {lodash} from '@sparkz-community/common-client-lib';
+
   const {$ldebounce} = lodash;
 
   import ColorPicker from './colorPicker';
-  import FontPickerGen from 'components/formGeneratorCustom/FontPicker';
+  import FontPickerGen from 'components/formGeneratorCustom/FontPickerGen';
 
   export default {
     name: 'FontPicker',
