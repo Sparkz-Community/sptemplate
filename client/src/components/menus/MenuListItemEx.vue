@@ -85,6 +85,11 @@
         default: 'sm',
       },
     },
+    emits: [
+      'expansionItemClick',
+      'itemExpanded',
+      'itemCollapsed',
+    ],
     data: function () {
       return {
         expanded: false,

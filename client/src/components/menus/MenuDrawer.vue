@@ -1,7 +1,7 @@
 <template>
   <q-drawer ref="drawer"
             :mini="miniState"
-            :model-value="value"
+            :model-value="modelValue"
             @update:model-value="$emit('update:modelValue', $event)"
             :side="side"
             bordered
@@ -33,7 +33,7 @@
     name: 'MenuDrawer',
     components: {},
     props: {
-      value: {
+      modelValue: {
         type: Boolean,
         default: true,
       },
@@ -50,6 +50,10 @@
         default: 'left',
       },
     },
+    emits: [
+      'update:modelValue',
+      'update:mini',
+    ],
     data: function () {
       return {
         miniState: this.mini,
