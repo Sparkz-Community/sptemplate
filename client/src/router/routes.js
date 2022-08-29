@@ -12,6 +12,19 @@ export default function ({store, ssrContext}) {
           component: () => import('pages/IndexPage.vue')
         },
         {
+          path: 'my-account/:id?',
+          name: 'my-account',
+          meta: {requiresAuth: true},
+          // beforeEnter(to, from, next) {
+          //   if (!store.getters['auth/user']) {
+          //     next({name: 'home'});
+          //   } else {
+          //     next();
+          //   }
+          // },
+          component: () => import('pages/profile/AccountProfile/AccountProfile'),
+        },
+        {
           path: 'notifications',
           name: 'notifications',
           // meta: {requiresAuth: true},
