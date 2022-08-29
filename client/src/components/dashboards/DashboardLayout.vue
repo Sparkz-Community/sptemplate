@@ -7,7 +7,7 @@
         <q-toolbar class="col-8 q-pa-lg text-primary">
 
           <q-toolbar-title>
-            <slot name="page-toolbar" v-bind="activeLink">
+            <slot name="page-toolbar" :activeLink="activeLink">
               <span class="text-h4">
                 {{ pageTitle }}
               </span>
@@ -51,8 +51,7 @@
                  v-for="link in dashboardSideMenuLinks"
                  @active="clicked"
                  v-bind="link"
-                 :key="link.title"
-               />
+                 :key="link.title"/>
 
            </q-list>
          </q-scroll-area>
@@ -73,8 +72,10 @@
   import DashboardMenuItem from './components/DashboardMenuItem';
 
   export default {
-    name: 'dashboard-layout',
-    components: {DashboardMenuItem},
+    name: 'DashboardLayout',
+    components: {
+      DashboardMenuItem,
+    },
     props: {
       dashboardSideMenuLinks: {
         type: Array,
@@ -93,7 +94,7 @@
       },
     },
     emits: [
-      'click-links',
+      'clicked-link',
     ],
     data() {
       return {
@@ -121,7 +122,7 @@
     methods: {
       clicked(link) {
         this.$emit('clicked-link', link);
-        console.log(this.$q.screen);
+        // console.log(this.$q.screen);
         if (this.$q.screen.sm || this.$q.screen.xs) {
           this.drawer = false;
         }

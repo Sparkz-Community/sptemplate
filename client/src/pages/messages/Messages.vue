@@ -509,6 +509,7 @@
         itemsCount: messagesTotal,
         pagination: messagesPagination,
         currentPage: messagesCurrentPage,
+        isPending: isFindMessagesPending,
       } = useFindPaginate({
         model: messagesStore.Model,
         qid: ref('messages'),
@@ -523,6 +524,7 @@
         messagesTotal,
         messagesPagination,
         messagesCurrentPage,
+        isFindMessagesPending,
         linkQuery,
         filter,
         searchBoxQuery,
