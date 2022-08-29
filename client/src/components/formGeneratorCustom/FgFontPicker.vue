@@ -23,7 +23,7 @@
 <script>
   import {FontManager} from 'font-picker';
   export default {
-    name: 'FontPickerGen',
+    name: 'FgFontPicker',
     props: ['activeFont', 'apiKey', 'options'],
     data() {
       return {

@@ -6,13 +6,13 @@
           <p style="padding: 0; margin: 0">Font</p>
         </div>
         <div style="width: 100%">
-          <font-picker-gen :api-key="fontKey"
+          <fg-font-picker :api-key="fontKey"
                            @change="setFont"
                            :active-font="$lget(element, 'styles.font-family', 'Open Sans')"
                            class="apply-font"
                            style="width: 100%; background: #F2F2F2;"
                            :options="{}">
-          </font-picker-gen>
+          </fg-font-picker>
         </div>
       </div>
     </q-card-section>
@@ -252,12 +252,12 @@
   const {$ldebounce} = lodash;
 
   import ColorPicker from './colorPicker';
-  import FontPickerGen from 'components/formGeneratorCustom/FontPickerGen';
+  import FgFontPicker from 'components/formGeneratorCustom/FgFontPicker';
 
   export default {
     name: 'FontPicker',
     components: {
-      FontPickerGen,
+      FgFontPicker,
       ColorPicker,
     },
     props: {
