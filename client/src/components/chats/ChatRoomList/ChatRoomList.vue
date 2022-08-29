@@ -266,7 +266,7 @@
           this.newRoom = new models.api.Rooms();
           this.createDMDialog = false;
           this.roomBeingCreated = false;
-        } else if (!Object.keys(this.newRoom.participants.map(item => item)).includes('owner')) {
+        } else if (this.newRoom.participants.includes(undefined)) {
           //consider changing if condition to (this.newRoom.participants.includes(undefined))
           this.$q.notify({
             type: 'negative',
@@ -373,7 +373,7 @@
           this.newRoom = new models.api.Rooms();
           this.createRoomDialog = false;
           this.roomBeingCreated = false;
-        } else if (!Object.keys(this.newRoom.participants.map(item => item)).includes('owner')) {
+        } else if (this.newRoom.participants.includes(undefined)) {
           //consider changing if condition to (this.newRoom.participants.includes(undefined))
           this.$q.notify({
             type: 'negative',

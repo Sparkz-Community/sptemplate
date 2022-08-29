@@ -25,7 +25,11 @@ export class Rooms extends BaseModel {
 
   static setupInstance(data, { models }) {
     if ($lget(data, '_fastjoin.participants', []).length) {
-      $lset(data, '_fastjoin.participants', $lget(data, '_fastjoin.participants', []).map(participant => new models.api.Participants(participant)));
+      $lset(data, '_fastjoin.participants', $lget(data, '_fastjoin.participants', []).map(participant => {
+        let model = new models.api.Participants(participant);
+        model.addToStore();
+        return model;
+      }));
     }
 
     let createdAt = $lget(data, 'createdAt');

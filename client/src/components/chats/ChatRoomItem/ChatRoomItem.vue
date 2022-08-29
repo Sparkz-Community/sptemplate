@@ -176,7 +176,8 @@
         return this.room.chats.filter((chat) => this.$lget(this.myParticipant, 'unseenChats', []).includes(chat)).length;
       },
       dmAccount() {
-        const dmParticipant = Object.assign({}, ...this.room._fastjoin.participants.filter(i => i._id !== this.activeAccount.participant));
+        const roomParticipants = this.$lget(this.room, '_fastjoin.participants', []);
+        const dmParticipant = Object.assign({}, ...roomParticipants.filter(i => i._id !== this.activeAccount.participant));
         return this.$lget(dmParticipant, '_fastjoin.owner');
       },
       participantAccountIDs() {
@@ -332,7 +333,7 @@
       },
       participantNames(room) {
         let names = [];
-        room._fastjoin.participants.forEach(p => {
+        this.$lget(room, '_fastjoin.participants', []).forEach(p => {
           if (p._id !== this.activeAccount.participant) {
             names.push(p._fastjoin.owner.name);
           }
