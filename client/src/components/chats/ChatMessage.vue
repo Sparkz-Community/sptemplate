@@ -209,6 +209,8 @@
                 },
               ],
             });
+
+            this.$emit('refresh-chats');
           })
           .catch(err => {
             this.isDeleting = false;

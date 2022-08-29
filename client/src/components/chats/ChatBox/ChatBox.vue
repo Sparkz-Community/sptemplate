@@ -7,7 +7,7 @@
                      content-active-style="padding: 24px;"
                      bar-style="width: 0"
                      :thumb-style="{width: 0}">
-        <h3 v-if="!chatsClone.length"
+        <h3 v-if="!chatsList.length"
             :class="['absolute-center', !$q.dark.mode ? 'text-primary' : '']"
             style="margin: 0; text-align: center;">
           No Messages
@@ -206,15 +206,14 @@
       myParticipant() {
         return this.getParticipant(this.$lget(this.activeAccount, 'participant', ''));
       },
-      chatsClone() {
-        return this.chatsList.map(item => item.clone());
-      },
       groupedChats() {
         let newArr = [];
-        this.chatsClone.forEach((element) => {
+        this.chatsList.forEach((element) => {
           const jsDate = new Date(this.$lget(element, 'createdAt'));
           const exactDate = new Date(jsDate.getFullYear(), jsDate.getMonth(), jsDate.getDate());
-          newArr.push(Object.assign(element, {groupDate: date.formatDate(exactDate, 'MMM DD, YYYY')}));
+          if (element) {
+            newArr.push(Object.assign(element, {groupDate: date.formatDate(exactDate, 'MMM DD, YYYY')}));
+          }
         });
         return this.$lgroupBy(newArr, 'groupDate');
       },
