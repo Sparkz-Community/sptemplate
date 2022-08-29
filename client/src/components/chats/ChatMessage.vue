@@ -89,6 +89,9 @@
         required: true,
       }
     },
+    emits: [
+      'refresh-chats',
+    ],
     inject: [
       'activeAccount',
     ],
@@ -164,6 +167,8 @@
                 },
               ],
             });
+
+            this.$emit('refresh-chats');
           })
           .catch(err => {
             this.isEditing = false;

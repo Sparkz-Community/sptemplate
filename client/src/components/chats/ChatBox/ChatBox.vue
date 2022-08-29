@@ -19,7 +19,8 @@
           <div v-for="(chat, idx) in chatsArrays.slice().reverse()"
                :key="idx">
             <chat-message :toolbar="toolbar"
-                          :model-value="{chat}">
+                          :model-value="{chat}"
+                          @refresh-chats="refreshChats">
               <template v-slot:newBadge>
                 <q-badge v-if="$lget(myParticipant, 'unseenChats', []).includes(chat._id)" class="q-ml-sm">
                   <q-intersection @visibility="addToSeen($event, chat)">new!</q-intersection>
