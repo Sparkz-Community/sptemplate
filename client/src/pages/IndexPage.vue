@@ -10,6 +10,7 @@
                   :max-pages="6"
                   direction-links
                   boundary-links></q-pagination>
+<!--    <form-generator v-model="formData" :fields="fields"></form-generator>-->
   </q-page>
 </template>
 
@@ -84,6 +85,102 @@
         pageCount,
         toPage,
       };
+    },
+    data() {
+      return {
+        formData: {},
+      };
+    },
+    computed: {
+      fields() {
+        return [
+          {
+            fieldType: 'GoogleAddressInput',
+            path: 'google',
+            attrs: {},
+          },
+          // {
+          //   fieldType: 'GroupConditionalFields',
+          //   path: 'conditionals',
+          // },
+          // {
+          //   fieldType: 'GroupFieldsCarousel',
+          //   path: 'carousel',
+          //   attrs: {},
+          // },
+          // {
+          //   fieldType: 'GroupFieldsDialog',
+          //   path: 'dialog',
+          //   attrs: {},
+          // },
+          // {
+          //   fieldType: 'GroupFieldsExpansion',
+          //   path: 'expansion',
+          //   attrs: {},
+          // },
+          // {
+          //   fieldType: 'GroupLayoutDialog',
+          //   path: 'layoutDialog',
+          //   attrs: {},
+          // },
+          // {
+          //   fieldType: 'PlacesAutoComplete',
+          //   path: 'places',
+          //   attrs: {},
+          // },
+          // {
+          //   fieldType: 'PlacesAutoCompleteBox',
+          //   path: 'placesBox',
+          //   attrs: {},
+          // },
+          // {
+          //   fieldType: 'SocialLinkPicker',
+          //   path: 'social',
+          //   attrs: {},
+          // },
+          // {
+          //   fieldType: 'CountedByListSelect',
+          //   path: 'counted',
+          //   attrs: {},
+          // },
+          // {
+          //   fieldType: 'DragUpload',
+          //   path: 'drag',
+          //   attrs: {},
+          // },
+          // {
+          //   fieldType: 'FontPicker',
+          //   path: 'fontPick',
+          //   attrs: {
+          //     apiKey: 'https://fonts.googleapis.com/css2',
+          //     defaultFamily: 'Open Sans',
+          //     options: {
+          //       pickerId: 'testPicker',
+          //     },
+          //   },
+          // },
+          // {
+          //   fieldType: 'IconPicker',
+          //   path: 'iconPick',
+          //   attrs: {},
+          // },
+          // {
+          //   fieldType: 'PriceListSelect',
+          //   path: 'price',
+          //   attrs: {},
+          // },
+          // {
+          //   fieldType: 'SelectOrAdd',
+          //   path: 'selectOrAdd',
+          //   attrs: {},
+          // },
+          // {
+          //   fieldType: 'TagPicker',
+          //   path: 'tag',
+          //   attrs: {},
+          // },
+        ];
+      },
     },
   });
 </script>

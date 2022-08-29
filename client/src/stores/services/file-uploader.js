@@ -1,27 +1,37 @@
 import feathersClient from '../../api/feathers-client';
-import { defineStore, BaseModel } from 'feathers-pinia';
+import {defineStore, BaseModel} from 'feathers-pinia';
 
-
-export class Products  extends BaseModel {
+export class FileUploader extends BaseModel {
   constructor(data, options) {
     super(data, options);
   }
 
   // Define default properties here
-  static instanceDefaults() {
+  static instanceDefaults(/*data, {models, store}*/) {
     return {
-      title: undefined,
-      description: undefined,
-      priceBooks: [],
+      name: undefined,
+      file: undefined,
+      originalName: undefined,
+      type: undefined,
+      info: {
+        name: undefined,
+        size: undefined,
+        type: undefined,
+        lastModifiedDate: undefined,
+      },
+      user: undefined,
+      fileId: undefined,
+      storage: undefined,
+      uploadChannel: undefined,
     };
   }
 }
 
-const servicePath = 'products';
+const servicePath = 'file-uploader';
 const useStore = defineStore({
-  Model: Products,
+  Model: FileUploader,
   servicePath,
-  clients: { api: feathersClient },
+  clients: {api: feathersClient},
   idField: '_id',
   state() {
     return {};
