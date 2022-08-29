@@ -17,6 +17,18 @@ export default function ({store, ssrContext}) {
           // meta: {requiresAuth: true},
           component: () => import ('pages/notifications/Notifications.vue'),
         },
+        {
+          path: 'balanced-sheets',
+          name: 'balanced-sheets',
+          meta: {requiresAuth: true},
+          component: () => import('pages/qbReports/BalancedSheets/BalancedSheets')
+        },
+        {
+          path: 'profit-and-loss',
+          name: 'profit-and-loss',
+          meta: {requiresAuth: true},
+          component: () => import('pages/qbReports/ProfitAndLoss/ProfitAndLoss')
+        },
 
         ...commonRoutes({store, ssrContext}),
       ],
