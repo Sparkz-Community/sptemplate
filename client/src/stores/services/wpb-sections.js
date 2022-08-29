@@ -2,44 +2,31 @@ import feathersClient from '../../api/feathers-client';
 import { defineStore, BaseModel } from 'feathers-pinia';
 
 // eslint-disable-next-line no-undef
-const {lodash} = require('@sparkz-community/common-client-lib');
-const {$lget, $lset} = lodash;
 
-export class ReferLinks extends BaseModel {
+export class wpbSections extends BaseModel {
   constructor(data, options) {
     super(data, options);
   }
 
   // Define default properties here
-  static instanceDefaults() {
+  static instanceDefaults () {
     return {
-      subjectId: undefined,
-      subjectName: '',
-      usedFor: '',
-      interactionCount: 0,
-      routeName: '',
-      form: undefined,
-      createdBy: undefined,
-      updatedBy: undefined,
+      active: true,
+      parent: undefined,
+      styles: {},
+      classes: [],
+      children: [],
+      elements: [],
+      template: false,
+      baseSection: false,
+      page: undefined
     };
-  }
-
-  static setupInstance(data) {
-    let createdAt = $lget(data, 'createdAt');
-    if (typeof createdAt === 'string') {
-      $lset(data, 'createdAt', new Date(createdAt));
-    }
-    let updatedAt = $lget(data, 'updatedAt');
-    if (typeof updatedAt === 'string') {
-      $lset(data, 'updatedAt', new Date(updatedAt));
-    }
-    return data;
   }
 }
 
-const servicePath = 'refer-links';
+const servicePath = 'wpb-sections';
 const useStore = defineStore({
-  Model: ReferLinks,
+  Model: wpbSections,
   servicePath,
   clients: { api: feathersClient },
   idField: '_id',

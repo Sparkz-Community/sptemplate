@@ -11,7 +11,7 @@ export class Participants extends BaseModel {
   }
 
   // Define default properties here
-  static instanceDefaults(/*data, {models, store}*/) {
+  static instanceDefaults() {
     return {
       owner: undefined,
       participantEvents: [],

@@ -11,7 +11,7 @@ export class Forms extends BaseModel {
   }
 
   // Define default properties here
-  static instanceDefaults(/*data, {models, store}*/) {
+  static instanceDefaults() {
     return {
       title: '',
       fields: [],

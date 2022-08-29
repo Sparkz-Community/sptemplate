@@ -1,11 +1,8 @@
 import feathersClient from '../../api/feathers-client';
 import { defineStore, BaseModel } from 'feathers-pinia';
 
-// eslint-disable-next-line no-undef
-const {lodash} = require('@sparkz-community/common-client-lib');
-const {$lget, $lset} = lodash;
 
-export class ReferLinks extends BaseModel {
+export class Cards extends BaseModel {
   constructor(data, options) {
     super(data, options);
   }
@@ -13,33 +10,25 @@ export class ReferLinks extends BaseModel {
   // Define default properties here
   static instanceDefaults() {
     return {
-      subjectId: undefined,
-      subjectName: '',
-      usedFor: '',
-      interactionCount: 0,
-      routeName: '',
-      form: undefined,
+      name: undefined,
+      description: undefined,
+      order: 0,
+      priority: undefined,
+      category: undefined,
+      tags: [],
+      parent: undefined,
+      children: [],
+      boards:[],
+      comments: [],
       createdBy: undefined,
       updatedBy: undefined,
     };
   }
-
-  static setupInstance(data) {
-    let createdAt = $lget(data, 'createdAt');
-    if (typeof createdAt === 'string') {
-      $lset(data, 'createdAt', new Date(createdAt));
-    }
-    let updatedAt = $lget(data, 'updatedAt');
-    if (typeof updatedAt === 'string') {
-      $lset(data, 'updatedAt', new Date(updatedAt));
-    }
-    return data;
-  }
 }
 
-const servicePath = 'refer-links';
+const servicePath = 'cards';
 const useStore = defineStore({
-  Model: ReferLinks,
+   Model: Cards,
   servicePath,
   clients: { api: feathersClient },
   idField: '_id',

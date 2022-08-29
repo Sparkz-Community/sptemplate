@@ -11,7 +11,7 @@ export class Rooms extends BaseModel {
   }
 
   // Define default properties here
-  static instanceDefaults(/*data, {models, store}*/) {
+  static instanceDefaults() {
     return {
       name: undefined,
       streamGroups: [],
