@@ -16,8 +16,8 @@
           <div class="date-line-line q-mb-md q-mt-lg" :style="{...dateCssVars}">
             <span class="date-line-text">{{ groupDate }}</span>
           </div>
-          <div v-for="(chat, index) in chatsArrays.slice().reverse()"
-               :key="index">
+          <div v-for="(chat, idx) in chatsArrays.slice().reverse()"
+               :key="idx">
             <chat-message :toolbar="toolbar"
                           :model-value="{chat}">
               <template v-slot:newBadge>
@@ -54,13 +54,13 @@
                   },
                 }"
                 :toolbar="[...toolbar, ['upload', 'fullscreen', 'viewsource']]"/>
-      <q-linear-progress v-if="chatsLoading" size="xs" rounded indeterminate color="secondary"/>
+      <q-linear-progress v-if="isCreatePending" size="xs" rounded indeterminate color="secondary"/>
       <q-bar :class="$q.dark.mode ? 'bg-dark' : 'bg-white'" style="border-top: 1px solid rgba(0, 0, 0, 0.12);">
         <p class="no-margin" style="font-size: 0.7em; opacity: 0.6">
           shift + return to add a new line
         </p>
         <q-space/>
-        <q-btn :disable="chatsLoading" dense flat icon="send" color="blue" @click="addChat"/>
+        <q-btn :disable="isCreatePending" dense flat icon="send" color="blue" @click="addChat"/>
       </q-bar>
     </q-card>
   </div>
@@ -125,6 +125,7 @@
         total: chatsListTotal,
         currentPage: chatsListCurrentPage,
         isPending: isChatsListPending,
+        find: refreshChats
       } = useFindPaginate({
         limit: ref(20),
         model: Chats,
@@ -139,6 +140,7 @@
         chatsListTotal,
         chatsListCurrentPage,
         isChatsListPending,
+        refreshChats,
 
         room,
         activeAccount,
@@ -189,7 +191,7 @@
     // },
     computed: {
       ...mapState(useChats, {
-        chatsLoading: 'isLoading',
+        isCreatePending: 'isCreatePending',
       }),
       ...mapState(useParticipants, {
         getParticipant: 'getFromStore',
@@ -197,7 +199,7 @@
 
       dateCssVars() {
         return {
-          '--date-bg-color': this.$q.dark.mode ? 'var(--q-color-dark)' : 'white',
+          '--date-bg-color': this.$q.dark.mode ? 'var(--q-dark)' : 'white',
         };
       },
       myParticipant() {
@@ -207,13 +209,13 @@
         return this.chatsList.map(item => item.clone());
       },
       groupedChats() {
+        let newArr = [];
         this.chatsClone.forEach((element) => {
           const jsDate = new Date(this.$lget(element, 'createdAt'));
           const exactDate = new Date(jsDate.getFullYear(), jsDate.getMonth(), jsDate.getDate());
-          // console.log('exactDate', exactDate);
-          element.groupDate = date.formatDate(exactDate, 'MMM DD, YYYY');
+          newArr.push(Object.assign(element, {groupDate: date.formatDate(exactDate, 'MMM DD, YYYY')}));
         });
-        return this.$lgroupBy(this.chatsClone, 'groupDate');
+        return this.$lgroupBy(newArr, 'groupDate');
       },
     },
     methods: {
@@ -270,14 +272,17 @@
         input.click();
       },
       addChat() {
-        if (!this.chatsLoading) {
+        if (!this.isCreatePending) {
           if (this.$lget(this.newChat, 'text', '') !== '') {
             this.$lset(this.newChat, 'sender', this.activeAccount.participant);
             this.$lset(this.newChat, 'room', this.room._id);
 
+            this.newChat.addToStore();
+
             this.newChat.create()
               .then(() => {
                 this.newChat = new models.api.Chats();
+                this.refreshChats();
               })
               .catch(err => {
                 this.$q.notify({
