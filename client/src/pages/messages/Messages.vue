@@ -119,9 +119,9 @@
         <!--       <pre> {{ linkQuery }}</pre>-->
         <table-template flat
                         square
-                        v-bind="$attrs"
+                        v-bind="attrs"
                         row-key="_id"
-                        :data="messages"
+                        :rows="messages"
                         :selection="messages.length > 0 ? 'multiple':'single'"
                         v-model:selected="selected"
                         :visible-columns="visibleColumns"
@@ -635,7 +635,7 @@
           if (newVal !== 'trash') {
             this.linkQuery = {
               _id: {
-                $in: this.$lget(this.activeAccount, [newVal], []),
+                $in: this.$lget(this.activeAccount, newVal, []),
               },
             };
           } else {
@@ -713,6 +713,10 @@
     },
 
     computed: {
+      attrs() {
+        let newVal = {...this.$attrs};
+        return newVal;
+      },
       columnsToShowFirst() {
         if (this.link === 'outbox') {
           return ['to', 'subject', 'body'];
