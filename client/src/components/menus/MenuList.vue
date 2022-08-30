@@ -48,6 +48,11 @@
         default: 'expand',
       },
     },
+    emits: [
+      'expansionItemClick',
+      'itemExpanded',
+      'itemCollapsed',
+    ],
     data() {
       return {};
     },

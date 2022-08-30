@@ -56,8 +56,8 @@
             <q-item-label>Dark Mode</q-item-label>
           </q-item-section>
           <q-item-section side>
-            <q-toggle :value="$q.dark.mode"
-                      @input="handleDarkModeToggle"
+            <q-toggle :model-value="$q.dark.mode"
+                      @update:model-value="handleDarkModeToggle"
                       icon="brightness_medium"/>
           </q-item-section>
         </q-item>
@@ -132,6 +132,11 @@
         type: Boolean,
       },
     },
+    emits: [
+      'update:mini',
+      'update:autoExpand',
+      'close',
+    ],
     data() {
       return {
         dark: false,
