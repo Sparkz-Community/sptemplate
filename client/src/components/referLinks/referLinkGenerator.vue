@@ -234,7 +234,7 @@
       transition: all 150ms ease-out;
 
       &:hover {
-        background-color: var(--q-color-primary);
+        background-color: var(--q-primary);
         color: white;
       }
     }
