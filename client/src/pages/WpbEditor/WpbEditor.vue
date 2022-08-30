@@ -16,8 +16,8 @@
               ref="WpbEditor"
               view="hHr Lpr fff"
               container
-              style="position: relative"
-              :style="`height: ${parentHeight}px; width: ${parentWidth}px;`">
+              :class="$q.fullscreen.isActive && !$q.dark.isActive ? 'bg-white' : ''"
+              :style="`position: relative; height: ${parentHeight}px; width: ${parentWidth}px;`">
       <q-header v-if="!previewing" bordered class="bg-transparent text-secondary">
         <q-toolbar style="display: grid; grid-template-columns: 1fr 1fr 1fr;">
           <div style="display: flex; justify-content: flex-start; align-items: center;">
@@ -161,8 +161,7 @@
                 @update:modelValue="drawerOpen = !drawerOpen"
                 side="right"
                 bordered
-                show-if-above
-                content-class="bg-grey-1">
+                show-if-above>
         <q-toolbar>
           <div class="q-ma-xs" style="max-width: 265px;">
             <q-btn-toggle v-model="panel"
