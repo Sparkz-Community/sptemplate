@@ -27,13 +27,11 @@
         </q-toolbar>
       </q-header>
 
-      <q-drawer
-        v-model="drawer"
-        show-if-above
-        :width="300"
-        :breakpoint="1028"
-        :content-class="$q.dark.mode ? 'bg-black-7':'bg-grey-3'"
-      >
+      <q-drawer v-model="drawer"
+                show-if-above
+                :width="300"
+                :breakpoint="1028"
+                :content-class="$q.dark.mode ? 'bg-black-7':'bg-grey-3'">
         <q-scroll-area class="fit">
           <q-list>
             <q-item class="q-py-md">
