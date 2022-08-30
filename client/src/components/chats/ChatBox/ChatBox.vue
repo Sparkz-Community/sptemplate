@@ -123,7 +123,7 @@
 
       const {
         items: chatsList,
-        total: chatsListTotal,
+        itemsCount: chatsListTotal,
         currentPage: chatsListCurrentPage,
         isPending: isChatsListPending,
         find: refreshChats
