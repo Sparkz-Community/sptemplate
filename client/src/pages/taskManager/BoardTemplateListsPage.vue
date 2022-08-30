@@ -133,11 +133,10 @@
                 ...crd,
               },
             });
-            let crdAdded;
 
             if (total) {
 
-              crdAdded = await data[0].save({
+              await data[0].save({
                 data: {
                   $addToSet: {
                     boards: {
@@ -148,7 +147,7 @@
                 },
               });
             } else {
-              crdAdded = await new models.api.Cards({
+              await new models.api.Cards({
                 ...crd,
                 boards: [{
                   id: boardId,
@@ -157,10 +156,20 @@
               }).save();
             }
 
-            console.log(`Added ${crdAdded}`);
           }
         } catch (err) {
-          console.log({err});
+          $q.notify({
+            type: 'negative',
+            message: err.message,
+            timeout: 30000,
+            actions: [
+              {
+                icon: 'close', color: 'white', handler: () => {
+                  /* ... */
+                },
+              },
+            ],
+          });
         }
 
       };
@@ -174,7 +183,6 @@
       if (keepCards.value) {
         await addCardsInSequence(savedBoard._id);
       }
-      console.log({savedBoard});
       creatingBoard.value = false;
       await $router.push({name: 'board', params: {id: $lget(savedBoard, '_id')}});
       open_create_board.value = false;
@@ -197,10 +205,7 @@
 
   function getCardPayload(list) {
     return index => {
-      return list.cards.find(card => {
-        console.log({list});
-        return card.order === (index);
-      });
+      return list.cards.find(card => card.order === (index));
     };
   }
 
