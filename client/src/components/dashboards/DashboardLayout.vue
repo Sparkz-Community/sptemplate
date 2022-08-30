@@ -43,19 +43,17 @@
                 </slot>
               </q-item-section>
               <q-item-section @click.stop="drawer=false" avatar class="q-mx-md lt-sm">
-                <q-icon color="primary" size="md" name="close"/>
+                <q-icon color="primary" size="md" name="close" />
               </q-item-section>
             </q-item>
-
-               <dashboard-menu-item
-                 v-for="link in dashboardSideMenuLinks"
-                 @active="clicked"
-                 v-bind="link"
-                 :key="link.title"/>
-
-           </q-list>
-         </q-scroll-area>
-       </q-drawer>
+            <dashboard-menu-item
+              v-for="link in dashboardSideMenuLinks"
+              @active="clicked"
+              v-bind="link"
+              :key="link.title" />
+          </q-list>
+        </q-scroll-area>
+      </q-drawer>
 
       <q-page-container>
         <q-page class="q-pa-md column">

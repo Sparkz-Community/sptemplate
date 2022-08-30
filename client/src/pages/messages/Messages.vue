@@ -8,7 +8,7 @@
              icon="fas fa-pencil-alt"
              :outline="$q.dark.mode"
              label="Compose"
-             @click="showInbox = true"/>
+             @click="showInbox = true" />
     </template>
     <template #page-toolbar>
       <div>
@@ -24,7 +24,7 @@
                      flat
                      dense
                      size="md"
-                     icon="search"/>
+                     icon="search" />
             </template>
           </q-input>
         </div>
@@ -48,12 +48,12 @@
                      icon="filter"
                      label="add filter"
                      aria-label="Add Filter"
-                     @click="showAddFilters = true"/>
+                     @click="showAddFilters = true" />
               <q-btn flat
                      dense
                      icon="close"
                      aria-label="Close Filters"
-                     @click="closeFilters"/>
+                     @click="closeFilters" />
             </div>
           </div>
         </q-slide-transition>
@@ -65,7 +65,7 @@
                   appear
                   enter-active-class="animated fadeOut"
                   leave-active-class="animated fadeIn">
-        <span/>
+        <span />
       </transition>
     </template>
 
@@ -80,49 +80,49 @@
           <div class="row q-gutter-sm items-center">
             <accounts-filter label="From:"
                              hint="Search senders by name or email"
-                             v-model="filter.from"/>
+                             v-model="filter.from" />
           </div>
           <div class="row q-gutter-sm items-center justify-end">
             <accounts-filter label="To:"
                              hint="Search recipients by name or email"
-                             v-model="filter.to"/>
+                             v-model="filter.to" />
 
           </div>
           <div class="row q-gutter-sm items-center justify-end">
-            <q-input hint="Search by subject" label="Subject:" v-model="query.subject.$regex" style="flex: 1;" dense/>
+            <q-input hint="Search by subject" label="Subject:" v-model="query.subject.$regex" style="flex: 1;" dense />
           </div>
           <div class="row q-gutter-sm items-center justify-end">
-            <q-input hint="Body includes" label="Has Words:" v-model="query.body.$regex" style="flex: 1;" dense/>
+            <q-input hint="Body includes" label="Has Words:" v-model="query.body.$regex" style="flex: 1;" dense />
           </div>
           <div class="row q-gutter-sm items-center justify-end">
-            <q-input hint="Body does not include" label="Has Words:" v-model="filter.nowords" style="flex: 1;" dense/>
+            <q-input hint="Body does not include" label="Has Words:" v-model="filter.nowords" style="flex: 1;" dense />
           </div>
           <div class="row q-gutter-sm items-center justify-between">
-            <date-piker label="From Date" v-model="filter.fromDate" dense style="width: 100%"/>
-            <date-piker label="To Date" v-model="filter.toDate" dense style="width: 100%"/>
+            <date-piker label="From Date" v-model="filter.fromDate" dense style="width: 100%" />
+            <date-piker label="To Date" v-model="filter.toDate" dense style="width: 100%" />
           </div>
           <div class="row q-gutter-sm items-center justify-between q-py-md">
             <q-checkbox class="text-caption"
                         style="margin-left:-0.1rem;"
                         v-model="filter.hasAttachment"
                         :true-value="true"
-                        label="Has attachment(s)"/>
+                        label="Has attachment(s)" />
             <div :class="`row q-gutter-md ${$q.screen.xs ? 'justify-between': 'justify-end'}`">
-              <q-btn class="gt-xs" flat label="Save filter" no-caps @click="saveFilter"/>
-              <q-btn color="primary" label="Search" no-caps @click="filterMessages"/>
+              <q-btn class="gt-xs" flat label="Save filter" no-caps @click="saveFilter" />
+              <q-btn color="primary" label="Search" no-caps @click="filterMessages" />
             </div>
           </div>
         </q-card>
 
       </q-slide-transition>
-      <div class="content-area" :style="showAddFilters?'z-index:-1':'z-index:0'">
-        <!--       <pre> {{ linkQuery }}</pre>-->
+      <div class="content-area" :style="showAddFilters ? 'z-index:-1' : 'z-index:0'">
+        <!--<pre> {{ linkQuery }}</pre>-->
         <table-template flat
                         square
                         v-bind="attrs"
                         row-key="_id"
                         :rows="messages"
-                        :selection="messages.length > 0 ? 'multiple':'single'"
+                        :selection="messages.length > 0 ? 'multiple' : 'single'"
                         v-model:selected="selected"
                         :visible-columns="visibleColumns"
                         :rows-per-page-label="`messages per page`"
@@ -159,19 +159,19 @@
                        no-caps
                        flat
                        dense
-                       @click.stop="openDeleteConfirm(props.row)"/>
+                       @click.stop="openDeleteConfirm(props.row)" />
               </div>
             </q-td>
             <q-td v-else-if="props.col.name==='from'" :props="props">
               <div class="flex items-center">
-                <!--                <q-avatar v-if="$lget(props,['row','_fastjoin',props.col.name,'avatar','raw','file'])">-->
-                <!--                  <q-img :src="$lget(props,['row','_fastjoin',props.col.name,'avatar','raw','file'])"/>-->
-                <!--                </q-avatar>-->
-                <div class="q-mr-xl">
+                <!--<q-avatar v-if="$lget(props,['row','_fastjoin',props.col.name,'avatar','raw','file'])">-->
+                <!--  <q-img :src="$lget(props,['row','_fastjoin',props.col.name,'avatar','raw','file'])" />-->
+                <!--</q-avatar>-->
+                <div class="q-my-xs q-mr-xl">
                   <random-avatar size="lg"
                                  :user="$lget(props,['row','_fastjoin',props.col.name])"
-                                 :menu="false"/>
-                  <p> {{ $lget(props, ['row', '_fastjoin', props.col.name, 'name']) }} </p>
+                                 :menu="false" />
+                  <p style="margin: 0;"> {{ $lget(props, ['row', '_fastjoin', props.col.name, 'name']) }} </p>
                 </div>
                 <q-badge v-if="$lget(activeAccount, 'unseenMessages', []).includes($lget(props, ['row', '_id']))"
                          id="newBadge"
@@ -183,23 +183,24 @@
             <q-td v-else-if="props.col.name==='to'" :props="props">
               <div v-if="Array.isArray($lget(props, ['row', '_fastjoin', props.col.name]))">
                 <vue-group-avatar
-                  :avatars="$lget(props,['row','_fastjoin',props.col.name],[]).map(acc=>$lget(acc,['avatar','raw','file']))"
-                  :max="2"/>
-                <!--{{$lget(props, ['row', '_fastjoin', props.col.name]).map(acc=>$lget(acc,['avatar','raw','file']))}}-->
+                  :avatars="$lget(props,['row','_fastjoin',props.col.name],[])
+                  .map(acc=>$lget(acc,['avatar','raw','file']))"
+                  :max="2" />
+                <!--{{ $lget(props, ['row', '_fastjoin', props.col.name]).map(acc => $lget(acc, ['avatar', 'raw', 'file'])) }}-->
               </div>
 
               <div v-else>
-                <!--                <q-avatar v-if="$lget(props,['row','_fastjoin',props.col.name,'avatar','raw','file'])">
-                                  <q-img :src="$lget(props,['row','_fastjoin',props.col.name,'avatar','raw','file'])"/>
-                                </q-avatar>-->
+                <!--<q-avatar v-if="$lget(props,['row','_fastjoin',props.col.name,'avatar','raw','file'])">-->
+                <!--  <q-img :src="$lget(props,['row','_fastjoin',props.col.name,'avatar','raw','file'])" />-->
+                <!--</q-avatar>-->
                 <random-avatar size="lg"
                                :user="$lget(props,['row','_fastjoin',props.col.name])"
-                               :menu="false"/>
+                               :menu="false" />
                 <p> {{ $lget(props, ['row', '_fastjoin', props.col.name, 'name']) }} </p>
               </div>
             </q-td>
             <q-td v-else-if="props.col.name==='body'" :props="props">
-              <div style="max-width:16rem;" v-html="$lget(props, ['row', 'body'])" class="ellipsis text-caption"/>
+              <div style="max-width:16rem;" v-html="$lget(props, ['row', 'body'])" class="ellipsis text-caption" />
             </q-td>
             <q-td v-else :props="props">
               {{ $lget(props, ['row', props.col.name]) }}
@@ -213,23 +214,23 @@
                 <div v-if="$lget(props.row,'from')">
                   <random-avatar size="lg"
                                  :user="$lget(props.row,['_fastjoin','from'])"
-                                 :menu="false"/>
+                                 :menu="false" />
                 </div>
                 <div v-if="$lget(props.row,'to',[]).length>0">
                   <div v-if="$lget(props, ['row', '_fastjoin', 'to'],[]).length">
-                    <vue-group-avatar
-                      :avatars="$lget(props,['row','_fastjoin','to'],[]).map(acc=>$lget(acc,['avatar','raw','file']))"
-                      :max="2"/>
+                    <vue-group-avatar :avatars="$lget(props,['row','_fastjoin','to'],[])
+                                          .map(acc=>$lget(acc,['avatar','raw','file']))"
+                                      :max="2" />
                   </div>
 
                   <div v-else>
-                    <!--                    <q-avatar v-if="$lget(props,['row','_fastjoin','to','avatar','raw','file'])">
-                                          <q-img :src="$lget(props,['row','_fastjoin','to','avatar','raw','file'])"/>
-                                        </q-avatar>-->
+                    <!--<q-avatar v-if="$lget(props,['row','_fastjoin','to','avatar','raw','file'])">-->
+                    <!--  <q-img :src="$lget(props,['row','_fastjoin','to','avatar','raw','file'])" />-->
+                    <!--</q-avatar>-->
                     <random-avatar size="lg"
                                    :user="$lget(props.row,['_fastjoin','to'])"
-                                   :menu="false"/>
-                    <!--                      <p> {{ $lget(props, ['row', '_fastjoin', 'to', 'name']) }} </p>-->
+                                   :menu="false" />
+                    <!--<p> {{ $lget(props, ['row', '_fastjoin', 'to', 'name']) }} </p>-->
                   </div>
 
                 </div>
@@ -238,7 +239,7 @@
               <q-item-section>
                 <q-item-label lines="1">{{ $lget(props.row, 'subject') }}</q-item-label>
                 <q-item-label caption lines="2">
-                  <div v-html="$lget(props.row, 'body')" class="ellipsis text-caption"/>
+                  <div v-html="$lget(props.row, 'body')" class="ellipsis text-caption" />
                 </q-item-label>
               </q-item-section>
 
@@ -247,10 +248,10 @@
                        no-caps
                        flat
                        dense
-                       @click.stop="openDeleteConfirm(props.row)"/>
+                       @click.stop="openDeleteConfirm(props.row)" />
               </q-item-section>
             </q-item>
-            <q-separator style="width: 100%"/>
+            <q-separator style="width: 100%" />
           </template>
           <template #form>
             <div class="q-py-md">
@@ -259,55 +260,64 @@
                 <q-btn flat
                        :size="($q.screen.sm || $q.screen.xs)? 'sm': '' "
                        icon="fas fa-arrow-left"
-                       @click="openMessage=false"/>
+                       @click="openMessage=false" />
                 <div :class="($q.screen.sm || $q.screen.xs)?'text-h6':'text-h4'">
                   <q-item-label v-if="!openedMessage">
-                    <q-skeleton flat icon="fas fa-arrow-left" type="text" style="width: 100px;"/>
+                    <q-skeleton flat icon="fas fa-arrow-left" type="text" style="width: 100px;" />
                   </q-item-label>
                   <q-item-label v-else>{{ $lget(openedMessage, 'subject') }}</q-item-label>
                 </div>
               </div>
               <q-item>
                 <q-item-section top avatar>
-                  <q-skeleton flat icon="fas fa-arrow-left" v-if="!openedMessage" type="QAvatar"/>
+                  <q-skeleton flat icon="fas fa-arrow-left" v-if="!openedMessage" type="QAvatar" />
                   <random-avatar v-else size="lg"
                                  :user="$lget(openedMessage ,['_fastjoin','from'])"
-                                 :menu="false"/>
+                                 :menu="false" />
                 </q-item-section>
 
                 <q-item-section>
                   <q-item-label v-if="!openedMessage">
-                    <q-skeleton type="text" style="max-width: 100px;"/>
+                    <q-skeleton type="text" style="max-width: 100px;" />
                   </q-item-label>
                   <q-item-label v-else>{{ $lget(openedMessage, ['_fastjoin', 'from', 'name']) }}</q-item-label>
                   <q-item-label caption v-if="!openedMessage">
-                    <q-skeleton type="text" style="max-width: 100px;"/>
+                    <q-skeleton type="text" style="max-width: 100px;" />
                   </q-item-label>
-                  <q-item-label v-else caption>{{ $lget(openedMessage, ['_fastjoin', 'from', 'email']) }}</q-item-label>
+                  <q-item-label v-else caption>
+                    {{ $lget(openedMessage, ['_fastjoin', 'from', 'email']) }}
+                  </q-item-label>
                 </q-item-section>
 
                 <q-item-section side top>
                   <q-chip v-if="$lget(openedMessage,'attachments',[]).length"
                           icon="attachment"
-                          :label="$lget(openedMessage,'attachments',[]).length"/>
+                          :label="$lget(openedMessage,'attachments',[]).length" />
                 </q-item-section>
               </q-item>
 
               <div v-if="!openedMessage" class="q-pa-md">
-                <q-skeleton height="100px" square/>
+                <q-skeleton height="100px" square />
               </div>
-              <div v-else class="q-pa-md" v-html="$lget(openedMessage, 'body')"/>
+              <div v-else class="q-pa-md" v-html="$lget(openedMessage, 'body')" />
               <div class="q-px-md justify-start">
-                <p class="q-mb-none text-bold">{{ $lget(openedMessage, ['_fastjoin', 'from', 'name']) }}</p>
+                <p class="q-mb-none text-bold">
+                  {{ $lget(openedMessage, ['_fastjoin', 'from', 'name']) }}
+                </p>
                 <p class="q-mb-none text-caption">
-                  {{ $lget(openedMessage, ['_fastjoin', 'from', 'phones', '0', 'number', 'national']) }}</p>
-                <p class="q-mb-none text-caption">{{ $lget(openedMessage, ['_fastjoin', 'from', 'email']) }}</p>
+                  {{ $lget(openedMessage, ['_fastjoin', 'from', 'phones', '0', 'number', 'national']) }}
+                </p>
+                <p class="q-mb-none text-caption">
+                  {{ $lget(openedMessage, ['_fastjoin', 'from', 'email']) }}
+                </p>
               </div>
 
             </div>
             <div class="q-px-md" v-if="$lget(openedMessage,'attachments',[]).length">
-              <p>{{ $lget(openedMessage, 'attachments', []).length }}
-                {{ $lget(openedMessage, 'attachments', []).length > 1 ? 'Attachments' : 'Attachment' }}</p>
+              <p>
+                {{ $lget(openedMessage, 'attachments', []).length }}
+                {{ $lget(openedMessage, 'attachments', []).length > 1 ? 'Attachments' : 'Attachment' }}
+              </p>
               <div class="row q-gutter-md">
                 <q-card style="min-width: 10%"
                         v-for="att in $lget(openedMessage,'attachments',[])"
@@ -315,7 +325,10 @@
                   <q-img :src="$lget(att,'path',$lget(att,'href'))"
                          basic>
                     <div class="absolute-bottom text-subtitle2 text-center">
-                      <q-btn :disabled="downloading" :loading="downloading" icon="download" @click="downloadItem(att)"/>
+                      <q-btn :disabled="downloading"
+                             :loading="downloading"
+                             icon="download"
+                             @click="downloadItem(att)" />
                     </div>
                   </q-img>
                 </q-card>
@@ -326,26 +339,30 @@
               <div class="q-px-md"
                    v-for="(reply, index) in $lget(openedMessage,['_fastjoin','replies'],[])"
                    :key="index">
-                <q-separator spaced/>
+                <q-separator spaced />
                 <q-item>
                   <q-item-section top avatar>
                     <random-avatar size="lg"
                                    :user="$lget(reply ,'from')"
-                                   :menu="false"/>
+                                   :menu="false" />
                   </q-item-section>
 
                   <q-item-section>
-                    <q-item-label>{{ $lget(reply, ['from', 'name']) }}</q-item-label>
-                    <q-item-label caption>{{ $lget(reply, ['from', 'email']) }}</q-item-label>
+                    <q-item-label>
+                      {{ $lget(reply, ['from', 'name']) }}
+                    </q-item-label>
+                    <q-item-label caption>
+                      {{ $lget(reply, ['from', 'email']) }}
+                    </q-item-label>
                   </q-item-section>
 
                   <q-item-section side top>
                     <q-chip v-if="$lget(reply,'attachments',[]).length"
                             icon="attachment"
-                            :label="$lget(reply,'attachments',[]).length"/>
+                            :label="$lget(reply,'attachments',[]).length" />
                   </q-item-section>
                 </q-item>
-                <div class="q-py-md" v-html="$lget(reply, 'body')"/>
+                <div class="q-py-md" v-html="$lget(reply, 'body')" />
                 <div v-if="$lget(reply,'attachments',[]).length">
                   <div class="row q-gutter-md">
                     <q-card style="min-width: 10%"
@@ -357,11 +374,11 @@
                           <q-btn :disabled="downloading"
                                  :loading="downloading"
                                  icon="download"
-                                 @click="downloadItem(att)"/>
+                                 @click="downloadItem(att)" />
                         </div>
                       </q-img>
                     </q-card>
-                    <q-separator spaced/>
+                    <q-separator spaced />
                   </div>
                 </div>
               </div>
@@ -375,7 +392,7 @@
                        rounded
                        color="primary"
                        label="Reply"
-                       @click="replyMsg"/>
+                       @click="replyMsg" />
                 <q-btn size="sm"
                        icon-right="fas fa-share"
                        no-caps
@@ -383,23 +400,23 @@
                        rounded
                        color="primary"
                        label="Forward"
-                       @click="forwardMsg"/>
+                       @click="forwardMsg" />
               </div>
               <div>
 
-                <q-btn flat size="sm" icon="delete" @click="openDeleteConfirm"/>
+                <q-btn flat size="sm" icon="delete" @click="openDeleteConfirm" />
               </div>
             </div>
 
           </template>
 
           <template v-for="(_, slot) of $slots" v-slot:[slot]="scope">
-            <slot :name="slot" v-bind="scope"/>
+            <slot :name="slot" v-bind="scope" />
           </template>
         </table-template>
       </div>
       <inbox-dialog v-model="showInbox" style="display: flex" :title="dialogTitle" @close="closeDialog">
-        <inbox-form :message="msgToEdit" :is-reply="isReply" @sent="sent"/>
+        <inbox-form :message="msgToEdit" :is-reply="isReply" @sent="sent" />
       </inbox-dialog>
     </template>
   </dashboard-layout>
@@ -559,7 +576,6 @@
     data() {
       const DAY_MS = 7 * 24 * 60 * 60 * 1000;
       return {
-        visibleColumns: [],
         columns: [],
         selected: [],
         pagination: {
@@ -643,7 +659,8 @@
               $and: [
                 {
                   _id: {
-                    $nin: this.$lget(this.activeAccount, 'outbox', []).concat(this.$lget(this.activeAccount, 'inbox', [])),
+                    $nin: this.$lget(this.activeAccount, 'outbox', [])
+                      .concat(this.$lget(this.activeAccount, 'inbox', [])),
                   },
                 },
                 {
@@ -680,17 +697,26 @@
 
         },
       },
-      columns(newVal) {
-        const cols = this.columnsToShowFirst || newVal;
-        this.visibleColumns = ['__v', ...cols];
-      },
+      // columns: {
+      //   immediate: true,
+      //   // eslint-disable-next-line no-unused-vars
+      //   handler(newVal) {
+      //     const cols = this.visibleColumns /*|| newVal*/;
+      //     console.log(cols);
+      //     // this.visibleColumns = ['__v', ...cols];
+      //     this.visibleColumns = cols;
+      //     console.log(this.visibleColumns);
+      //   },
+      // },
       messages: {
         immediate: true,
         handler(newVal) {
           if (!Array.isArray(newVal) || Array.isArray(newVal) && !newVal[0]) {
             this.columns = [];
           } else {
-            const cols = Object.keys(newVal[0]).filter(column => column !== '__v' && column !== '_fastjoin' && column !== 'updatedByHistory' && column !== '_id');
+            const cols = Object.keys(newVal[0]).filter(column => {
+              return column !== '__v' && column !== '_fastjoin' && column !== 'updatedByHistory' && column !== '_id';
+            });
             this.columns = cols.map(col => ({
               label: this.capitalize(this.kebabize(col).replace('-', ' ')),
               value: col,
@@ -717,15 +743,17 @@
         let newVal = {...this.$attrs};
         return newVal;
       },
-      columnsToShowFirst() {
+      visibleColumns() {
         if (this.link === 'outbox') {
           return ['to', 'subject', 'body'];
         }
         return ['from', 'subject', 'body'];
       },
       messageLinks() {
-        // const  newInbox =  this.messages.filter(message => this.activeAccount.inbox.includes(message._id) && message.status==='new').length;
-        //
+        // const newInbox = this.messages.filter(message => {
+        //   return this.activeAccount.inbox.includes(message._id) && message.status === 'new'.length;
+        // });
+
         const inbox = this.$lget(this.activeAccount, 'inbox', []).length;
         const outbox = this.$lget(this.activeAccount, 'outbox', []).length;
         return [
@@ -817,7 +845,8 @@
 
       },
       setPagination(newVal) {
-        this.messagesPagination.$limit = newVal.pagination.rowsPerPage === 0 ? this['messagesTotal'] : newVal.pagination.rowsPerPage;
+        this.messagesPagination.$limit =
+          newVal.pagination.rowsPerPage === 0 ? this['messagesTotal'] : newVal.pagination.rowsPerPage;
         this.messagesCurrentPage = newVal.pagination.page;
         this.pagination = newVal.pagination;
 
