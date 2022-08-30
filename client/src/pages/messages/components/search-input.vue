@@ -1,6 +1,13 @@
 <template>
+  <!--<q-select v-bind="$attrs"-->
+  <!--          :options="this['data']"-->
+  <!--          :model-value="modelValue"-->
+  <!--          use-input-->
+  <!--          @update:model-value="setModel"-->
+  <!--          @filter="filterFn"-->
+  <!--          new-value-mode="add-unique"-->
+  <!--          @new-value="$emit('add', $event)">-->
   <q-select v-bind="$attrs"
-            :options="this['data']"
             :model-value="modelValue"
             use-input
             @update:model-value="setModel"
@@ -8,14 +15,14 @@
             new-value-mode="add-unique"
             @new-value="$emit('add', $event)">
     <template v-for="(_, slot) of $slots" v-slot:[slot]="scope">
-      <slot :name="slot" v-bind="scope"/>
+      <slot :name="slot" v-bind="scope" />
     </template>
   </q-select>
 </template>
 
 <script>
   import {useFindPaginate} from '@sparkz-community/common-client-lib';
-  import {inject, ref, toRef} from 'vue';
+  import {computed, inject, ref, toRef} from 'vue';
 
   export default {
     name: 'search-input',
@@ -55,35 +62,39 @@
       const qid = toRef(props, 'qid');
       const localQuery = ref({});
 
-      const { currentPage } = useFindPaginate({
+      const query = computed(() => {
+        // if (!['', null, undefined].includes(this.search)) {
+        //   this.$lset(query, '$or', [
+        //     {
+        //       name: {$regex: `${this.search}`, $options: 'igm'},
+        //     },
+        //     {
+        //       email: {$regex: `${this.search}`, $options: 'igm'},
+        //     },
+        //   ]);
+        // }
+        return $lmerge({
+          $sort: {
+            name: 1,
+          },
+        }, localQuery, props.customQuery);
+      });
+
+      const params = computed(() => {
+        return {
+          qid: qid,
+          debounce: 500,
+          // [`${props.model.servicePath}_fJoinHookResolversQuery`]: this.fastJoinResolverQuery,
+        };
+      });
+
+      const {currentPage} = useFindPaginate({
         limit: ref(6),
         model: props.model,
         qid: qid,
         infinite: ref(true),
-        query() {
-          // if (!['', null, undefined].includes(this.search)) {
-          //   this.$lset(query, '$or', [
-          //     {
-          //       name: {$regex: `${this.search}`, $options: 'igm'},
-          //     },
-          //     {
-          //       email: {$regex: `${this.search}`, $options: 'igm'},
-          //     },
-          //   ]);
-          // }
-          return $lmerge({
-            $sort: {
-              name: 1,
-            },
-          }, localQuery, props.customQuery);
-        },
-        params() {
-          return {
-            qid: qid,
-            debounce: 500,
-            [`${props.model.servicePath}_fJoinHookResolversQuery`]: this.fastJoinResolverQuery,
-          };
-        },
+        query: query,
+        params: params,
       });
 
       return {

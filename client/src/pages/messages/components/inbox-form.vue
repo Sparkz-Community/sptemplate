@@ -133,7 +133,7 @@
           if (newVal) {
             this.form = new models.api.Messages({...newVal});
           } else {
-            this.form = new models.api.Messages().clone();
+            this.form = new models.api.Messages();
           }
         },
       },

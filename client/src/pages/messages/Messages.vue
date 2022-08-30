@@ -8,7 +8,7 @@
              icon="fas fa-pencil-alt"
              :outline="$q.dark.mode"
              label="Compose"
-             @click="showInbox = true" />
+             @click="showInbox = true; msgToEdit = undefined;" />
     </template>
     <template #page-toolbar>
       <div>
@@ -137,7 +137,7 @@
             No messages in {{ capitalize(link) }}
           </template>
 
-          <template v-if="link === 'inbox'" #body-cell-from="props">
+          <template v-if="link !== 'outbox'" #body-cell-from="props">
             <q-td key="from">
               <div class="flex row items-center">
                 <!--<q-avatar v-if="$lget(props,['row','_fastjoin',props.col.name,'avatar','raw','file'])">-->
@@ -160,17 +160,19 @@
             </q-td>
           </template>
 
-          <template v-if="link === 'outbox'" #body-cell-to="props">
+          <template v-else #body-cell-to="props">
             <q-td key="to" :props="props">
-              <div v-if="Array.isArray($lget(props, ['row', '_fastjoin', 'to']))"
+              <div v-if="$lget(props, ['row', 'to']).length > 0"
                    class="q-my-xs q-mr-xl row items-center">
                 <vue-group-avatar
                   :avatars="$lget(props, ['row', '_fastjoin', 'to'], [])
                     .map(acc => $lget(acc, ['avatar', 'raw', 'file']))"
                   :max="2" />
-                <!--{{ $lget(props, ['_fastjoin', props.col.name]).map(acc => $lget(acc, ['avatar', 'raw', 'file'])) }}-->
+                <!--{{ $lget(props, ['_fastjoin', 'to']).map(acc => $lget(acc, ['avatar', 'raw', 'file'])) }}-->
               </div>
-              <div v-else class="q-my-xs q-mr-xl row items-center">
+
+              <!--<div v-else class="q-my-xs q-mr-xl row items-center">-->
+              <div class="q-my-xs q-mr-xl row items-center">
                 <!--<q-avatar v-if="$lget(props,['_fastjoin',props.col.name,'avatar','raw','file'])">-->
                 <!--  <q-img :src="$lget(props,['_fastjoin',props.col.name,'avatar','raw','file'])" />-->
                 <!--</q-avatar>-->
@@ -211,15 +213,15 @@
           <template v-if="($q.screen.sm || $q.screen.xs)" #item="props">
             <q-item clickable v-ripple style="min-width:100%" @click="onOpenMessage($event, props.row)">
               <q-item-section top avatar>
-                <div v-if="$lget(props, ['row', 'from'])">
+                <div v-if="link === 'inbox'">
                   <random-avatar size="lg"
                                  :user="$lget(props, ['row', '_fastjoin', 'from'])"
                                  :menu="false" />
                 </div>
+                <div v-if="link === 'outbox'">
 
-                <div v-if="$lget(props, ['row', 'to'], []).length > 0">
-                  <div v-if="$lget(props, ['row', '_fastjoin', 'to'],[]).length">
-                    <vue-group-avatar :avatars="$lget(props, ['row', '_fastjoin', 'to'], [])
+                  <div v-if="$lget(props, ['row', '_fastjoin', 'to']).length">
+                    <vue-group-avatar :avatars="$lget(props, ['row', '_fastjoin', 'to'])
                                           .map(acc => $lget(acc, ['avatar', 'raw', 'file']))"
                                       :max="2" />
                   </div>
@@ -384,6 +386,7 @@
                 </div>
               </div>
             </template>
+
             <div class="q-pa-md row justify-between">
               <div class=" q-gutter-xs">
                 <q-btn size="sm"
@@ -404,18 +407,18 @@
                        @click="forwardMsg" />
               </div>
               <div>
-
                 <q-btn flat size="sm" icon="delete" @click="openDeleteConfirm" />
               </div>
             </div>
-
           </template>
 
           <template v-for="(_, slot) of $slots" v-slot:[slot]="scope">
             <slot :name="slot" v-bind="scope" />
           </template>
+
         </table-template>
       </div>
+
       <inbox-dialog v-model="showInbox" style="display: flex" :title="dialogTitle" @close="closeDialog">
         <inbox-form :message="msgToEdit" :is-reply="isReply" @sent="sent" />
       </inbox-dialog>
@@ -430,6 +433,7 @@
   import DatePiker from 'pages/messages/components/date-piker';
   import InboxDialog from 'pages/messages/components/inbox-dialog';
   import InboxForm from 'pages/messages/components/inbox-form';
+  // eslint-disable-next-line no-unused-vars
   import {routerMixin, useFindPaginate} from '@sparkz-community/common-client-lib';
   import TableTemplate
     from '@sparkz-community/common-client-lib/src/components/common/molecules/tables/TableTemplate.vue';
@@ -543,6 +547,7 @@
         messagesPagination,
         messagesCurrentPage,
         isFindMessagesPending,
+        messagesQuery,
         linkQuery,
         filter,
         searchBoxQuery,
@@ -551,25 +556,25 @@
       };
     },
     mixins: [
-      routerMixin({
-        name: 'msgPaths',
-        parseQuery(val, key) {
-          if (['openMessage'].includes(key)) {
-            return JSON.parse(val);
-          } else {
-            return val;
-          }
-
-        },
-        query() {
-          return {
-            link: this.link,
-            linkQuery: this.linkQuery,
-            openMessage: this.openMessage,
-            openedMessageId: this.openedMessageId,
-          };
-        },
-      }),
+      // routerMixin({
+      //   name: 'msgPaths',
+      //   parseQuery(val, key) {
+      //     if (['openMessage', 'linkQuery'].includes(key)) {
+      //       return JSON.parse(val);
+      //     } else {
+      //       return val;
+      //     }
+      //
+      //   },
+      //   query() {
+      //     return {
+      //       link: this.link,
+      //       linkQuery: JSON.stringify(this.linkQuery),
+      //       openMessage: this.openMessage,
+      //       openedMessageId: this.openedMessageId,
+      //     };
+      //   },
+      // }),
     ],
     inject: [
       'activeAccount',
@@ -706,6 +711,10 @@
       //     this.visibleColumns = cols;
       //     console.log(this.visibleColumns);
       //   },
+      // },
+      // linkQuery: {
+      //   immediate: true,
+      //   deep: true,
       // },
       // messages: {
       //   immediate: true,

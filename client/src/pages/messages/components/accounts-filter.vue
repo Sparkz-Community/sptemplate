@@ -1,26 +1,23 @@
 <template>
-  <search-input
-    use-chips
-    :model="accountsStore.Model"
-    v-bind="$attrs"
-    option-value="_id"
-    option-label="name"
-    multiple
-    hide-dropdown-icon
-    style="flex: 1;"
-    dense
-    @add="addAccount"
-    @selected="selectedAccounts"
-    :model-value="modelValue"
-  >
+  <search-input use-chips
+                :model="accountsStore.Model"
+                v-bind="$attrs"
+                option-value="_id"
+                option-label="name"
+                multiple
+                hide-dropdown-icon
+                style="flex: 1;"
+                dense
+                @add="addAccount"
+                @selected="selectedAccounts"
+                :model-value="modelValue">
     <template v-slot:option="scope">
       <q-item v-bind="scope.itemProps"
               v-on="scope.itemEvents">
         <q-item-section avatar>
           <q-avatar avatar text-color="white" color="accent">
             <q-img v-if="$lget(scope.opt, 'avatar.raw.file')"
-                   :src="$lget(scope.opt, 'avatar.raw.file', '')"
-            />
+                   :src="$lget(scope.opt, 'avatar.raw.file', '')" />
             <template v-else>{{ $lget(scope.opt, 'name', '').charAt(0) }}</template>
           </q-avatar>
         </q-item-section>
@@ -31,7 +28,7 @@
       </q-item>
     </template>
     <template v-for="(_, slot) of $slots" v-slot:[slot]="scope">
-      <slot :name="slot" v-bind="scope"/>
+      <slot :name="slot" v-bind="scope" />
     </template>
   </search-input>
 </template>
@@ -45,7 +42,7 @@
     name: 'accounts-filter',
     inheritAttrs: false,
     setup() {
-      const accountsStore = useAccounts;
+      const accountsStore = useAccounts();
 
       return {
         accountsStore,
