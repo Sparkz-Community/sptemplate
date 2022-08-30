@@ -38,35 +38,36 @@
       };
     },
     mounted() {
-      // Determine selector suffix from font picker's name
-      if (this.options && this.options.name) {
-        this.pickerSuffix = `-${this.options.name}`;
-      } else {
-        this.pickerSuffix = '';
+      if (this.apiKey) { // Determine selector suffix from font picker's name
+        if (this.options && this.options.name) {
+          this.pickerSuffix = `-${this.options.name}`;
+        } else {
+          this.pickerSuffix = '';
+        }
+        // Initialize FontManager object and generate the font list
+        this.fontManager = new FontManager(
+          this.apiKey,
+          this.activeFont,
+          this.options,
+        );
+        this.fontManager.init()
+          .then(() => {
+            // font list has finished loading
+            this.setState({
+              errorText: '',
+              loadingStatus: 'finished',
+            });
+          })
+          .catch((err) => {
+            // error while loading font list
+            this.setState({
+              errorText: 'Error trying to fetch the list of available fonts',
+              loadingStatus: 'error',
+            });
+            console.error(this.state.errorText);
+            console.error(err);
+          });
       }
-      // Initialize FontManager object and generate the font list
-      this.fontManager = new FontManager(
-        this.apiKey,
-        this.activeFont,
-        this.options
-      );
-      this.fontManager.init()
-        .then(() => {
-          // font list has finished loading
-          this.setState({
-            errorText: '',
-            loadingStatus: 'finished'
-          });
-        })
-        .catch((err) => {
-          // error while loading font list
-          this.setState({
-            errorText: 'Error trying to fetch the list of available fonts',
-            loadingStatus: 'error'
-          });
-          console.error(this.state.errorText);
-          console.error(err);
-        });
     },
     watch: {
       activeFont() {

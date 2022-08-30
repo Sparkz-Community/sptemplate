@@ -77,7 +77,7 @@
           console.log('-------YaY------');
           console.log('Element Update', val, this.elementData);
           if (val !== this.$lget(this.elementData, 'content')) {
-            this.patchElement([this.elementData._id, {'content': val}, {query: {_type: this.elementData._type}}])
+            this.patchElement(this.elementData._id, {'content': val}, {query: {_type: this.elementData._type}})
               .then(res => {
                 console.log('YaY it saved', res.content);
               })

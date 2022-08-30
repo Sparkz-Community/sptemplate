@@ -83,7 +83,7 @@
       imageUpdate(val) {
         let elementCopy = Object.assign({}, this.element);
         console.log('Element Update', {val, elementCopy});
-        this.patchElement([this.currentElement._id, {'raw': val.raw}, {query: {_type: this.currentElement._type}}])
+        this.patchElement(this.currentElement._id, {'raw': val.raw}, {query: {_type: this.currentElement._type}})
           .then(res => {
             console.log('YaY it saved', res);
             this.$isLoading(false);

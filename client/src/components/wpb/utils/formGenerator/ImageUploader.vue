@@ -17,6 +17,10 @@
 </template>
 
 <script>
+  import {mapState} from 'pinia';
+  import useAuthStore from 'stores/store.auth';
+
+
   // Import Doka
   import {create} from 'src/css/doka.esm.min.js';
   import 'src/css/doka.min.css';
@@ -178,13 +182,16 @@
       },
     },
     computed: {
+      ...mapState(useAuthStore, {
+        accessToken: (state) => state?.payload?.accessToken,
+      }),
       axiosFeathers() {
         return this.$axios.create({
           baseURL: process.env.VUE_APP_FEATHERS_URL || 'http://localhost:3030',
           headers: {
             ContentType: 'application/x-www-form-urlencoded',
             Accept: 'application/json',
-            Authorization: 'Bearer ' + this.$store.state.auth.accessToken
+            Authorization: 'Bearer ' + this.accessToken
           }
         });
       },
