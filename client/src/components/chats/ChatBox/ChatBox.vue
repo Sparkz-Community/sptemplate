@@ -237,15 +237,12 @@
       debounceSeen: $ldebounce(async function (seenArr) {
         for (const chat of seenArr) {
           if (this.$lget(this.myParticipant, 'unseenChats', []).includes(chat._id)) {
-            console.log('markAsSeen in chats: ', chat.text);
             await this.myParticipant.patch({
               data: {
                 $pull: {
                   unseenChats: chat._id,
                 },
               },
-            }).then(() => {
-              console.log('removed chat from unseenChats');
             });
           }
         }

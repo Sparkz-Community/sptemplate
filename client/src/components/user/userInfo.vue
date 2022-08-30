@@ -254,8 +254,8 @@
         let newAccount = {
           'accounts.owns.active': acct._id,
         };
-        this.oldUser = Object.assign({}, this.$authUser);
-        this.$store.getters['auth/activeLogin'].patch({
+        this.oldUser = Object.assign({}, this.authUser);
+        this.activeLogin.patch({
           data: newAccount,
           loginsResolversQuery: {
             accounts: true,
