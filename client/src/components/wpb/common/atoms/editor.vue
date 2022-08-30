@@ -198,7 +198,7 @@
         this.edit = false;
       },
       saveContents() {
-        this.patchElement([this.elementData._id, {content: this.content}, {query: {_type: this.elementData._type}}])
+        this.patchElement(this.elementData._id, {content: this.content}, {query: {_type: this.elementData._type}})
           .then(res => {
             console.log('Saved', res);
             this.$q.notify({

@@ -291,7 +291,7 @@
           }
         });
         arr.splice(index, 0, this.editingSlide);
-        this.patchElement([this.elementData._id, {slides: arr}, {query: {_type: this.elementData._type}}])
+        this.patchElement(this.elementData._id, {slides: arr}, {query: {_type: this.elementData._type}})
           .then(res => {
             this.editingSlide = {};
             this.editingDialog = false;
@@ -315,7 +315,7 @@
       },
       addSlide() {
         this.elementData.slides.push(this.form);
-        this.patchElement([this.elementData._id, this.elementData, {query: {_type: this.elementData._type}}])
+        this.patchElement(this.elementData._id, this.elementData, {query: {_type: this.elementData._type}})
           .then(() => {
             this.form.src = '';
             this.form.name = '';
@@ -352,7 +352,7 @@
             return arr;
           }
         });
-        this.patchElement([this.elementData._id, {slides: arr}, {query: {_type: this.elementData._type}}])
+        this.patchElement(this.elementData._id, {slides: arr}, {query: {_type: this.elementData._type}})
           .then(res => {
             this.elementDelete = {};
             this.deleteDialog = false;

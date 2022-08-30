@@ -293,7 +293,7 @@
         if (!['section', val._type, val.name].includes(change)) {
 
           if (val._type) {
-            this.patchElement([val._id, {name: change}, {query: {_type: val._type}}])
+            this.patchElement(val._id, {name: change}, {query: {_type: val._type}})
               .then(res => {
                 console.log('remvoed', res);
                 this.$q.notify({
@@ -307,7 +307,7 @@
                 console.log('erroring', err);
               });
           } else {
-            this.patchSection([val._id, {name: change}])
+            this.patchSection(val._id, {name: change})
               .then(res => {
                 console.log('remvoed', res);
                 this.$q.notify({

@@ -280,6 +280,7 @@
   import imgSettings from '../atoms/stylingComponents/imgSettings';
   import imgCarouselSettings from '../atoms/stylingComponents/imgCarouselSettings';
   import ContactFormSettings from '../atoms/stylingComponents/contactFormSettings';
+  import useAuthStore from 'stores/store.auth';
 
 
   export default {
@@ -333,6 +334,9 @@
       ...mapState(useWpbStore, {
         currentElement: 'getCurrentElement',
       }),
+      ...mapState(useAuthStore, {
+        accessToken: (state) => state?.payload?.accessToken
+      }),
       isText() {
         return this.elementInfo._type === 'text';
       },
@@ -366,7 +370,7 @@
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
-            Authorization: 'Bearer ' + this.$store.state.auth.accessToken,
+            Authorization: 'Bearer ' + this.accessToken,
           },
         });
       },
@@ -395,7 +399,7 @@
           clearedElement = {
             order: order,
           };
-          this.patchElement([this.currentElement._id, {styles: clearedElement}, {query: {_type: this.currentElement._type}}])
+          this.patchElement(this.currentElement._id, {styles: clearedElement}, {query: {_type: this.currentElement._type}})
             .then(res => {
               this.$q.notify({
                 type: 'positive',
@@ -417,7 +421,7 @@
             order: order,
             display: 'flex',
           };
-          this.patchSection([this.currentElement._id, {styles: clearedElement}])
+          this.patchSection(this.currentElement._id, {styles: clearedElement})
             .then(res => {
               this.$q.notify({
                 type: 'positive',

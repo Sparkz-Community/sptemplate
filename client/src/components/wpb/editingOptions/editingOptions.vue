@@ -47,9 +47,10 @@
 </template>
 
 <script>
-  import {mapWritableState} from 'pinia';
-  
+  import {mapState, mapWritableState} from 'pinia';
+
   import {useWpbStore} from 'stores/useWpbStore';
+  import useAuthStore from 'stores/store.auth';
 
   export default {
     name: 'editingOptions',
@@ -76,13 +77,16 @@
       ...mapWritableState(useWpbStore, {
         currentElement: 'currentElement',
       }),
+      ...mapState(useAuthStore, {
+        accessToken: (state) => state?.payload?.accessToken
+      }),
       feathersAxios() {
         return this.$axios.create({
           baseURL: process.env.VUE_APP_FEATHERS_URL || 'http://localhost:3030',
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
-            Authorization: 'Bearer ' + this.$store.state.auth.accessToken,
+            Authorization: 'Bearer ' + this.accessToken,
           },
         });
       },

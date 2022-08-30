@@ -150,6 +150,7 @@
   import VueLottiePlayer from 'vue-lottie-player';
 
   import sectionView from '../common/substance/Section';
+  import useAuthStore from 'stores/store.auth';
 
   export default {
     name: 'PageTemplateList',
@@ -238,6 +239,9 @@
       ...mapState(useProgressStore, {
         findProgress: 'findInStore',
       }),
+      ...mapState(useAuthStore, {
+        accessToken: (state) => state?.payload?.accessToken
+      }),
       progress() {
         let a = this.findProgress({query: {_id: '0'}});
         return a.data[0];
@@ -254,7 +258,7 @@
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
-            Authorization: 'Bearer ' + this.$store.state.auth.accessToken,
+            Authorization: 'Bearer ' + this.accessToken,
           },
           timeout: (1000 * 60) * 10,
         });

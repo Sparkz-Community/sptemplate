@@ -41,6 +41,8 @@
   import {useFindPaginate} from '@sparkz-community/common-client-lib';
 
   import useWpbPagePublicationsStore from 'stores/services/wpb-page-publications';
+  import {mapState} from 'pinia';
+  import useAuthStore from 'stores/store.auth';
 
   export default {
     name: 'publishing',
@@ -82,6 +84,9 @@
       };
     },
     computed: {
+      ...mapState(useAuthStore, {
+        accessToken: (state) => state?.payload?.accessToken
+      }),
       lastVersion() {
         return this.publications.reduce((acc, curr) => {
           let currV = Number(curr.version);
@@ -94,7 +99,7 @@
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
-            Authorization: 'Bearer ' + this.$store.state.auth.accessToken,
+            Authorization: 'Bearer ' + this.accessToken,
           },
         });
       },

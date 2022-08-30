@@ -702,7 +702,7 @@
       },
       updatePageName(val) {
         if (this.$lget(this.form, 'name') !== val) {
-          this.patchPage([this.form._id, {name: val}])
+          this.patchPage(this.form._id, {name: val})
             .then(() => {
               this.$q.notify({
                 type: 'positive',

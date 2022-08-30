@@ -26,7 +26,7 @@
         <q-icon @click="$emit('changeHeight', '45vh')" v-else name="height" class="maximize-editor">
           <q-tooltip>Default height</q-tooltip>
         </q-icon>
-        <q-icon  @click="$emit('changeHeight', '33px')" name="minimize"
+        <q-icon @click="$emit('changeHeight', '33px')" name="minimize"
                 class="minimize-editor">
           <q-tooltip>
             Minimize Editor
@@ -39,9 +39,9 @@
         </q-icon>
       </div>
     </div>
-    <div id="vs" :style="{opacity: stylesheets.length > 0 ? '1' : '0', height: '100vh', overflow: 'hidden'}">
 
-    </div>
+    <div id="vs" :style="{opacity: stylesheets.length > 0 ? '1' : '0', height: '100vh', overflow: 'hidden'}"></div>
+
     <div class="no-stylesheets"
          :style="{opacity: stylesheets.length > 0 ? '0' : '1', display: stylesheets.length > 0 ? 'none' : 'block'}">
       No stylesheets created
@@ -99,7 +99,8 @@
     <q-dialog v-model="removeStylesheetDio">
       <q-card>
         <q-card-section>
-          <span class="q-ml-sm" style="font-size: 1.2em;">Are you sure you wish to delete this {{ stylesheetToDelete.name }}?</span>
+          <span class="q-ml-sm"
+                style="font-size: 1.2em;">Are you sure you wish to delete this {{ stylesheetToDelete.name }}?</span>
         </q-card-section>
 
         <q-card-actions align="right">
@@ -112,12 +113,13 @@
 </template>
 
 <script>
+  import {computed, ref, toRef, watch} from 'vue';
+  import {useQuasar} from 'quasar';
+
   import loader from '@monaco-editor/loader';
   // import draggable from 'vuedraggable';
-  import {mapActions, mapState} from 'pinia';
 
   import useWpbStylesheets from 'stores/services/wpb-stylesheets';
-  import useWpbProjects from 'stores/services/wpb-projects';
 
   export default {
     name: 'CssEditor',
@@ -136,221 +138,238 @@
       pageId: {
         type: String,
         required: true,
-      }
+      },
     },
-    created() {
-      // setInterval(() => {
-      //   console.log(this.editor.getModel());
-      // }, 2000);
-      // window.addEventListener('keydown', (event) => {
-      //   if (event.key === 'Meta' && Object.keys(this.activeTab).length >= 1) {
-      //     event.preventDefault();
-      //     event.stopImmediatePropagation();
-      //     this.saveCss(false);
-      //   } else if (event.key === 'Meta') {
-      //     event.preventDefault();
-      //     alert('Must have open file before saving');
-      //   }
-      // });
-    },
-    data() {
-      return {
-        editor: null,
-        value: '',
-        activeTab: {},
-        editingTab: {},
-        keysPressed: {},
-        confirmClose: false,
-        editorHeight: '',
-        editorName: '',
-        addTabDio: false,
-        editTabDio: false,
-        stylesheetToDelete: {},
-        removeStylesheetDio: false
-      };
-    },
-    watch: {
-      projectId: {
+    emits: ['changeHeight', 'closeEditor'],
+    setup(props, {emit}) {
+      const $q = useQuasar();
+
+      const projectId = toRef(props, 'projectId');
+      const pageId = toRef(props, 'pageId');
+
+      const wpbStylesheetsStore = useWpbStylesheets();
+
+      let editor = null;
+      const cssString = ref('');
+      const activeTab = ref({});
+      const editingTab = ref({});
+      const stylesheetToDelete = ref({});
+      const removeStylesheetDio = ref(false);
+      const confirmClose = ref(false);
+      const addTabDio = ref(false);
+      const editTabDio = ref(false);
+      const editorName = ref('');
+      const editingTabName = ref('');
+
+      watch(projectId, (newVal) => {
+        if (newVal) {
+          wpbStylesheetsStore.find({query: {projects: projectId.value}}).then(res => {
+            // console.log('loadStylesheets > res', res);
+            if (res.data.length > 0) {
+              activeTab.value = res.data[0];
+              cssString.value = res.data[0].cssString;
+            }
+            loader.init().then(monaco => {
+              editor = monaco.editor.create(document.getElementById('vs'), {
+                value: cssString.value,
+                language: 'scss',
+                theme: 'vs-dark',
+                fontSize: 13,
+              });
+              editor.getModel().updateOptions({tabSize: 4});
+              // if (this.styleSheets.length >= 1) {
+              //   this.saveCss(false);
+              // } else {
+              //   this.saveCss(true);
+              // }
+              editor.getModel().setValue(cssString.value);
+            })
+              .catch((err) => {
+                console.error('loader.init()', err);
+              });
+          })
+            .catch((err) => {
+              console.error('loadStylesheets', err);
+            });
+        }
+      }, {
         deep: true,
         immediate: true,
-        handler(newVal) {
-          if (newVal) {
-            this.loadStylesheets({query: {projects: this.projectId}}).then(res => {
-              if (res.data.length > 0) {
-                this.activeTab = res.data[0];
-                this.value = res.data[0].cssString;
-              }
-              loader.init().then(monaco => {
-                this.editor = monaco.editor.create(document.getElementById('vs'), {
-                  value: this.value,
-                  language: 'scss',
-                  theme: 'vs-dark',
-                  fontSize: 13,
-                });
-                this.editor.getModel().updateOptions({tabSize: 4});
-                // if (this.styleSheets.length >= 1) {
-                //   this.saveCss(false);
-                // } else {
-                //   this.saveCss(true);
-                // }
-                this.editor.getModel().setValue(this.value);
-              });
-            });
-          }
-        },
-      },
-    },
-    computed: {
-      ...mapState(useWpbStylesheets, {
-        getStylesheets: 'findInStore',
-      }),
-      editHeight() {
-        return this.height;
-      },
-      stylesheets() {
-        if (!this.projectId) return [];
-        return this.getStylesheets({query: {projects: this.projectId}}).data;
-      },
-      feathersAxios() {
-        return this.$axios.create({
-          baseURL: process.env.VUE_APP_FEATHERS_URL,
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-            Authorization: 'Bearer ' + this.$store.state.auth.accessToken,
-          },
+      });
+
+      const stylesheets = computed(() => {
+        if (!projectId.value) return [];
+        return wpbStylesheetsStore.findInStore({query: {projects: projectId.value}}).data;
+      });
+
+      function openRemoveDio(tab) {
+        removeStylesheetDio.value = true;
+        stylesheetToDelete.value = tab;
+      }
+
+      function editNameSave() {
+        console.log(editingTab);
+        wpbStylesheetsStore.patch(editingTab.value._id, {
+          name: editingTab.value.name,
         });
-      },
-    },
-    methods: {
-      ...mapActions(useWpbStylesheets, {
-        createStylesheet: 'create',
-        loadStylesheets: 'find',
-        patchStylesheet: 'patch',
-        removeStylesheet: 'remove',
-      }),
-      ...mapActions(useWpbProjects, {
-        patchProject: 'patch',
-      }),
-      openRemoveDio(tab){
-        this.removeStylesheetDio = true;
-        this.stylesheetToDelete = tab;
-      },
-      editNameSave() {
-        console.log(this.editingTab);
-        this.patchStylesheet([this.editingTab._id, {
-          name: this.editingTab.name,
-        }]);
-      },
-      maximizeScreen() {
-        this.$emit('changeHeight', '100vh');
-      },
-      async closeAndSave(){
-        let hasError = await this.saveCss(true);
+      }
+
+      function maximizeScreen() {
+        emit('changeHeight', '100vh');
+      }
+
+      async function closeAndSave() {
+        let hasError = await saveCss(true);
         if (!hasError) {
-          this.$emit('closeEditor');
+          emit('closeEditor');
         }
-      },
-      closeEditor() {
-        if(this.activeTab.cssString !== this.editor.getValue()) {
-          this.confirmClose = true;
+      }
+
+      function closeEditor() {
+        if (activeTab.value.cssString !== editor.getValue()) {
+          confirmClose.value = true;
         } else {
-          this.$emit('closeEditor');
+          emit('closeEditor');
         }
-      },
-      // dragDrop() {
-      //   console.log(this.stylesheets);
-      // },
-      startEditing(idx, tab) {
-        this.editingTab = Object.assign({}, tab);
-        this.editTabDio = true;
-      },
-      saveTabEdit(idx) {
-        if (this.editingTabName.length === 0) {
-          this.styleSheets[idx].name = 'TAB' + idx;
+      }
+
+      function startEditing(idx, tab) {
+        editingTab.value = Object.assign({}, tab);
+        editTabDio.value = true;
+      }
+
+      function saveTabEdit(idx) {
+        if (editingTabName.value.length === 0) {
+          stylesheets.value[idx].name = 'TAB' + idx;
         } else {
-          this.styleSheets[idx].name = this.editingTabName;
+          stylesheets.value[idx].name = editingTabName.value;
         }
-        this.editingTabName = '';
-        this.styleSheets[idx].editing = false;
-      },
-      removeTab(tab) {
-        if(!tab._id) return;
-        this.removeStylesheet([tab._id, {'$stylesheetUpdatePage': this.pageId}]).then(() => {
-          this.$q.notify({
+        editingTabName.value = '';
+        stylesheets.value[idx].editing = false;
+      }
+
+      function removeTab(tab) {
+        if (!tab._id) return;
+        wpbStylesheetsStore.remove(tab._id, {'$stylesheetUpdatePage': pageId.value}).then(() => {
+          $q.notify({
             color: 'positive',
             message: 'Stylesheet deleted',
             timeout: 3000,
           });
-          if (this.stylesheets.length > 0) {
-            this.selectTab(this.stylesheets[0]);
+          if (stylesheets.value.length > 0) {
+            selectTab(stylesheets.value[0]);
           }
         }).catch(err => {
           console.error(err);
-          this.$q.notify({
+          $q.notify({
             color: 'negative',
             message: err.message,
           });
         });
-      },
-      async selectTab(tab) {
-        if (this.activeTab && (this.editor.getValue() !== this.activeTab.cssString)) {
-          let hasError = await this.saveCss(true);
+      }
+
+      async function selectTab(tab) {
+        if (activeTab.value && (editor.getValue() !== activeTab.value.cssString)) {
+          let hasError = await saveCss(true);
           if (!hasError) {
-            this.activeTab = tab;
-            this.value = this.activeTab.cssString;
-            this.editor.getModel().setValue(this.value);
+            activeTab.value = tab;
+            cssString.value = activeTab.value.cssString;
+            editor.getModel().setValue(cssString.value);
           }
         } else {
-          this.activeTab = tab;
-          this.value = this.activeTab.cssString;
-          this.editor.getModel().setValue(this.value);
+          activeTab.value = tab;
+          cssString.value = activeTab.value.cssString;
+          editor.getModel().setValue(cssString.value);
         }
-      },
-      createTab() {
+      }
+
+      function createTab() {
         let tab = {
-          name: this.editorName,
+          name: editorName.value,
           cssString: '',
           rules: [],
-          projects: [this.projectId],
-          order: this.stylesheets.length
+          projects: [projectId.value],
+          order: stylesheets.value.length,
         };
 
-        this.createStylesheet([tab, {'$stylesheetUpdatePage': this.pageId}]).then(res => {
-          this.selectTab(res);
-          this.editorName = '';
-        }).catch(err => this.$q.notify({
-          message: err.message,
-          color: 'negative',
-        }));
-      },
-      // eslint-disable-next-line no-unused-vars
-      async saveCss(returnVal = false) {
-        let cssStr = this.editor.getValue();
+        wpbStylesheetsStore.create(tab, {'$stylesheetUpdatePage': pageId.value})
+          .then(res => {
+            selectTab(res);
+            editorName.value = '';
+          })
+          .catch(err => {
+            $q.notify({
+              message: err.message,
+              color: 'negative',
+            });
+          });
+      }
+
+      async function saveCss(returnVal = false) {
+        let cssStr = editor.getValue();
         if (cssStr.includes('@supports') || cssStr.includes('@page')) {
-          this.$q.notify({
+          $q.notify({
             color: 'negative',
             message: 'You may not include @page or @supports selectors, please remove before saving',
           });
-          if(returnVal === true) return true;
+          if (returnVal === true) return true;
         } else {
-          return await this.patchStylesheet([
-            this.activeTab._id,
-            { cssString: this.editor.getValue() },
-            {'$stylesheetUpdatePage': this.pageId}
-          ]).then(() => {
-            this.$q.notify({
-              message: 'Stylesheet changes saved',
-              color: 'positive'
+          return await wpbStylesheetsStore.patch(
+            activeTab.value._id,
+            {cssString: editor.getValue()},
+            {'$stylesheetUpdatePage': pageId.value},
+          )
+            .then(() => {
+              $q.notify({
+                message: 'Stylesheet changes saved',
+                color: 'positive',
+              });
+              if (returnVal === true) return false;
+            })
+            .catch(err => {
+              console.log(err);
             });
-            if(returnVal === true) return false;
-          }).catch(err => {
-            console.log(err);
-          });
         }
-      },
+      }
 
+      return {
+        activeTab,
+        editingTab,
+        stylesheetToDelete,
+        removeStylesheetDio,
+        confirmClose,
+        addTabDio,
+        editTabDio,
+        editorName,
+        stylesheets,
+        openRemoveDio,
+        editNameSave,
+        maximizeScreen,
+        closeAndSave,
+        closeEditor,
+        startEditing,
+        saveTabEdit,
+        removeTab,
+        selectTab,
+        createTab,
+        saveCss,
+      };
     },
+    // created() {
+    //   setInterval(() => {
+    //     console.log(this.editor.getModel());
+    //   }, 2000);
+    //   window.addEventListener('keydown', (event) => {
+    //     if (event.key === 'Meta' && Object.keys(this.activeTab).length >= 1) {
+    //       event.preventDefault();
+    //       event.stopImmediatePropagation();
+    //       this.saveCss(false);
+    //     } else if (event.key === 'Meta') {
+    //       event.preventDefault();
+    //       alert('Must have open file before saving');
+    //     }
+    //   });
+    // },
   };
 </script>
 
