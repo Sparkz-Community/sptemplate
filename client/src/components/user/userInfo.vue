@@ -197,12 +197,13 @@
 </template>
 
 <script>
-  import {mapState} from 'pinia';
+  import {mapActions, mapState} from 'pinia';
 
   import RandomAvatar from 'components/profile/RandomAvatar/RandomAvatar';
   // import MyAccounts from '../profile/MyAccounts';
 
   import useLoginsStore from 'stores/services/logins';
+  import useAuthStore from 'stores/store.auth';
 
   export default {
     name: 'UserInfo',
@@ -233,7 +234,7 @@
         loginsPendingById: 'pendingById',
       }),
       isPatchLogins() {
-        return this.loginsPendingById[this.$lget(this.activeLogin, '_id')];
+        return this.$lget(this.loginsPendingById, [this.$lget(this.activeLogin, '_id'), 'patch'], false);
       },
       accounts() {
         return this.$lget(this.data, 'accounts', []).map(account => account.clone());
@@ -250,6 +251,9 @@
       },
     },
     methods: {
+      ...mapActions(useAuthStore, {
+        setActiveAccount: 'setActiveAccount',
+      }),
       switchAccount(acct) {
         let newAccount = {
           'accounts.owns.active': acct._id,
@@ -263,7 +267,7 @@
         })
           .then(() => {
             // TODO: this commit needs to be rethought.
-            this.$store.commit('auth/setActiveAccount', acct);
+            this.setActiveAccount(acct);
             this.$q.notify({
               type: 'positive',
               message: `Successfully switch account to "${acct.name}"`,
