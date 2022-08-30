@@ -133,11 +133,7 @@
                   @drop="(e) => onCardDrop(column.data, e)"
                 >
                   <draggable v-for="item in column.children" :key="item.id">
-                    <q-card class="q-ma-sm bg-primary text-white">
-                      <q-card-section>
-                        {{ item.data.name }}
-                      </q-card-section>
-                    </q-card>
+                    <card :card="item.data" :list="column.data" :board="item"/>
                   </draggable>
                 </container>
               </q-card-section>
@@ -156,7 +152,7 @@
           </draggable>
         </template>
       </container>
-
+      <pre> {{ scene.children.map(i => i.data) }}</pre>
     </div>
 
     <list-form-dialog
@@ -181,6 +177,7 @@
   import ActionFab from 'pages/taskManager/components/ActionFab';
   import {getMaxOrder, moveItem} from 'pages/taskManager/utils';
   import AddCardFormContainer from 'pages/taskManager/components/AddCardFormContainer';
+  import Card from 'pages/taskManager/components/Card';
 
   const $q = useQuasar();
   const $router = useRouter();
@@ -268,6 +265,7 @@
   watch(() => lists.value,
         (newVal, oldVal) => {
           if (JSON.stringify(newVal) !== JSON.stringify(oldVal)) {
+
             const hiddenListId = toHide.value.map(item => $lget(item, '_id'));
             for (const list of newVal.filter(lst => $lget(lst, '_id'))) {
               if ($lget(list, 'hidden') && !hiddenListId.includes($lget(list, '_id'))) {
@@ -298,7 +296,7 @@
             });
             const list = newVal.find(lst => !tempToHide.value.map(itm => $lget(itm, '_id')).includes($lget(lst, '_id')));
             if (!hiddenListId.includes($lget(list, '_id'))) {
-              $emit('update:modelValue', {...props.modelValue, lists: listsToEdit});
+              $emit('update:modelValue', {lists: listsToEdit});
             }
 
           }
