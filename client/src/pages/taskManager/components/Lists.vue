@@ -156,7 +156,7 @@
           </draggable>
         </template>
       </container>
-      <pre> {{ scene.children.map(i => i.data) }}</pre>
+
     </div>
 
     <list-form-dialog
