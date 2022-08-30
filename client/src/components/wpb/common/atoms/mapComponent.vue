@@ -20,6 +20,10 @@
 </template>
 
 <script>
+  import {mapWritableState} from 'pinia';
+
+  import {useWpbStore} from 'stores/useWpbStore';
+
   import editingOptions from 'components/wpb/editingOptions/editingOptions';
 
   export default {
@@ -69,18 +73,12 @@
       }
     },
     computed: {
+      ...mapWritableState(useWpbStore, {
+        currentElement: 'currentElement',
+      }),
       isEditing() {
         return this.$lget(this.currentElement, '_id', false) === this.$lget(this.elementData, '_id', true) && !this.previewing;
       },
-      currentElement: {
-        get() {
-          return this.$store.getters.getCurrentElement;
-        },
-        set(element) {
-          this.$store.dispatch('setCurrentElement', element);
-        }
-      },
-
     }
   };
 </script>

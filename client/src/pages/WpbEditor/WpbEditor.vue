@@ -390,7 +390,7 @@
   import layers from 'components/wpb/layers/layers';
   import publishing from 'components/wpb/publishing/publishing';
 
-  let {getScrollTarget, setScrollPosition} = scroll;
+  let {getScrollTarget, setVerticalScrollPosition} = scroll;
 
   export default {
     name: 'WpbEditor',
@@ -527,7 +527,7 @@
             let payload = {project: newVal.project, user: this.authUser, page: newVal};
             // console.log('page change payload', payload);
             await this.setCurrentDbCollection(payload);
-            // await this.setUndoRedoStatus(newVal);
+            await this.setUndoRedoStatus(newVal);
             this.applyCssRules(this.$lget(newVal, '_fastjoin.css', ''));
           }
         },
@@ -542,7 +542,7 @@
             let payload = {project: newVal.project, user: this.authUser, page: newVal};
             // console.log('Page change payload', payload);
             await this.setCurrentDbCollection(payload);
-            // await this.setUndoRedoStatus(newVal);
+            await this.setUndoRedoStatus(newVal);
             this.applyCssRules(this.$lget(newVal, '_fastjoin.css', ''));
           }
         },
@@ -653,10 +653,10 @@
       }),
       ...mapActions(useWpbStore, {
         setAutosavePreferences: 'setAutosavePreferences',
-        undoRedo: 'undoRedo',
+        undoRedoAction: 'undoRedo',
         setCurrentDbCollection: 'setCurrentDbCollection',
         setAvailableClasses: 'setAvailableClasses',
-        // setUndoRedoStatus: 'setUndoRedoStatus',
+        setUndoRedoStatus: 'setUndoRedoStatus',
       }),
       // setTheme(event) {
       //   this.$setCssVar('--q-color-primary', event);
@@ -892,7 +892,7 @@
             // console.log('scroll', `element.offsetTop: ${element.offsetTop}`, `form.offsetTop: ${form.offsetTop}`);
             const offset = elementOffset - (this.parentHeight / 6);
             const duration = 300;
-            setScrollPosition(scrollTarget, offset, duration);
+            setVerticalScrollPosition(scrollTarget, offset, duration);
           }
         }
       },
@@ -950,7 +950,7 @@
         event.returnValue = '';
       },
       undoRedo(val) {
-        this.undoRedo({type: val, page: this.form});
+        this.undoRedoAction({type: val, page: this.form});
       },
       markSaved() {
         this.unsavedChanges = false;

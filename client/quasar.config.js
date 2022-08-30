@@ -32,6 +32,7 @@ module.exports = configure(function (ctx) {
       'globalMixins',
       'i18n',
       'pinia',
+      'qIconPicker',
       'spAuthManagementLib',
       'spCommonLib',
       'spFormGenLib',
