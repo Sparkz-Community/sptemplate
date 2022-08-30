@@ -2,6 +2,9 @@ import {onMounted, ref} from 'vue';
 import{models} from 'feathers-pinia';
 import {useRoute} from 'vue-router';
 import {lodash, singularize} from '@sparkz-community/common-client-lib';
+import {useQuasar} from 'quasar';
+
+
 
 const {$lcamelCase, $lcapitalize}  = lodash;
 
@@ -17,6 +20,7 @@ export function useItemLists({
                                params = {},
                              } = {}) {
 
+  const $q = useQuasar();
   const item = singularize(service);
   window[$lcamelCase(item)] = ref({});
   const modalName = nameModal(service);
@@ -37,14 +41,49 @@ export function useItemLists({
   });
 
 
-
   return {
     item:window[$lcamelCase(item)],
-    changeName: async function () {
+    addList: async function (list) {
       try {
-        window[$lcamelCase(item)].value = await new Model({...window[$lcamelCase(item)].value}).save();
+        window[$lcamelCase(item)].value = await new Model({...window[$lcamelCase(item)].value}).save({
+          data: {
+            $addToSet: {
+              lists: list,
+            },
+          },
+          ...params,
+          query: {
+            ...params.query,
+            ...query
+          }
+        });
       } catch (e) {
-        this.$q.notify({
+        $q.notify({
+          type: 'negative',
+          message: e.message,
+          timeout: 30000,
+          actions: [
+            {
+              icon: 'close', color: 'white', handler: () => {
+                /* ... */
+              },
+            },
+          ],
+        });
+      }
+    },
+    updateItem: async function (data) {
+      try {
+        window[$lcamelCase(item)].value = await new Model({...window[$lcamelCase(item)].value}).save({
+          data,
+          ...params,
+          query: {
+            ...params.query,
+            ...query
+          }
+        });
+      } catch (e) {
+        $q.notify({
           type: 'negative',
           message: e.message,
           timeout: 30000,

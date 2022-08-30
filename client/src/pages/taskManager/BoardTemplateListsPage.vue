@@ -1,15 +1,24 @@
 <template>
   <q-page>
-    <lists v-if="boardTemplate" v-model="boardTemplate">
+    <lists
+      v-if="boardTemplate"
+      cards-path="cards"
+      :model-value="boardTemplate"
+      @add-list="addList"
+      @update:model-value="updateItem"
+      @@add-card="addCardToList"
+      @get-card-payload="getCardPayload"
+      @on-card-drop="onCardDrop"
+    >
       <template #update-name>
-        <q-input v-model="boardTemplate.name" @keyup.enter="changeName"
+        <q-input v-model="boardTemplate.name" @keyup.enter="updateItem({name: boardTemplate.name})"
                  borderless
                  class="title text-h3"
                  :style="`width: ${boardTemplate?.name?.length + 1}ch`">
         </q-input>
       </template>
 
-      <template #left-control="{item}">
+      <template #left-control="item">
         <div class="dropdown">
           <q-btn
             color="primary"
@@ -38,13 +47,18 @@
           </q-slide-transition>
         </div>
       </template>
-
+      <template v-for="list in boardTemplate.lists" #[`form_${list._id}`]="{close}"   :key="list._id">
+       <add-template-card-form
+       @create-card="addCardToList({list,...$event, close})"
+       />
+      </template>
     </lists>
   </q-page>
 </template>
 
 <script setup>
   import Lists from 'pages/taskManager/components/Lists';
+                  // import Card from 'pages/taskManager/components/Card';
   import {useItemLists} from 'pages/taskManager/composables/itemListsComposable';
   import {ref, inject, watch} from 'vue';
   import {models} from 'feathers-pinia';
@@ -53,11 +67,13 @@
   import {Boards} from 'stores/services/boards';
   import {useQuasar} from 'quasar';
   import {getMaxOrder} from 'pages/taskManager/utils';
+  import AddTemplateCardForm from 'pages/taskManager/components/AddTemplateCardForm';
 
   const $router = useRouter();
   const $q = useQuasar();
 
   const $lget = inject('$lget');
+                  // const $lisEqual = inject('$lisEqual'); //
   const open_create_board = ref(false);
   const keepCards = ref(true);
   const creatingBoard = ref(false);
@@ -71,23 +87,19 @@
     query: {},
     params: {
       debounce: 2000,
-    }
+    },
   });
-  const {item: boardTemplate, changeName} = useItemLists({service: 'board-templates'});
+  const {item: boardTemplate, addList, updateItem} = useItemLists({service: 'board-templates'});
 
-  watch(boardTemplate, async (newVal) => {
-    if($lget(newVal,'_id')) {
-      await new models.api.BoardTemplates(newVal).save();
-    }
-  }, {immediate: true, deep: true});
 
   watch(boards, (newVal) => {
     boardOrder.value = getMaxOrder(newVal) + 1;
   }, {immediate: true, deep: true});
 
+
   async function createBoardFromTemplate(boardTemplate) {
     try {
-      // create b
+                  // create b
       const data = {
         ...boardTemplate,
         name: boardTitle.value,
@@ -112,7 +124,7 @@
 
       const addCardsInSequence = async (boardId) => {
 
-        try{
+        try {
           for (let crd of cardsToAdd) {
             delete crd._id;
             const {total, data} = await models.api.Cards.find({
@@ -153,12 +165,11 @@
       };
 
 
-
       const [savedBoard] = await Promise.all([
         boardToSave.save(),
         boards.value.filter(item => item.order >= boardToSave.order).map(item => item.save({data: {order: (item.order + 1)}})),
       ]);
-      console.log('oooo',{savedBoard});
+
       if (keepCards.value) {
         await addCardsInSequence(savedBoard._id);
       }
@@ -174,7 +185,7 @@
         actions: [
           {
             icon: 'close', color: 'white', handler: () => {
-              /* ... */
+                  /* ... */
             },
           },
         ],
@@ -183,6 +194,103 @@
   }
 
 
+
+  function getCardPayload(list) {
+    return index => {
+      return list.cards.find(card => {
+        console.log({list});
+        return card.order === (index);
+      });
+    };
+  }
+
+                  /* async function addCardToList({list,card,close}) {
+    console.log({list, card});
+    try {
+      const cardsOnList = $lget(list,['cards'],[]);
+      card.order = $lget(card,['order'],getMaxOrder(cardsOnList));
+      card.list = $lget(list, '_id');
+
+      const id = $lget(boardTemplate.value,'_id');
+      const res =
+        await new models.api.BoardTemplates(boardTemplate.value)
+          .patch(id,
+                 { $addToSet: {
+                   'lists.$.cards': card
+                 }},{
+                   query: {
+                     'lists._id' : $lget(list,'_id')
+                   }
+                 }
+          );
+      console.log(res);
+      close();
+
+    } catch (e) {
+      $q.notify({
+        type: 'negative',
+        message: e.message,
+        timeout: 30000,
+        actions: [
+          {
+            icon: 'close', color: 'white', handler: () => {
+      /!* ... *!/
+            },
+          },
+        ],
+      });
+    }
+  }
+*/
+  function onCardDrop(crd) {
+    console.log(crd);
+  }
+
+</script>
+<script>
+  import {mapActions} from 'pinia';
+  import useBoardTemplates from 'stores/services/board-templates';
+
+
+  export default {
+    methods: {
+      ...mapActions(useBoardTemplates,{
+        patchBoardTemplate: 'patch'
+      }),
+      async addCardToList({list,card,close}) {
+        console.log(card);
+        try {
+          const cardsOnList = this.$lget(list,['cards'],[]);
+          card.order = this.$lget(card,['order'],this.getMaxOrder(cardsOnList));
+          card.list = this.$lget(list, '_id');
+
+          const id = this.$lget(this.boardTemplate,'_id');
+          this.boardTemplate = await this.patchBoardTemplate(
+            id,
+            { $addToSet: {'lists.$.cards': card}},
+            {query: {'lists._id' : this.$lget(list,'_id')}}
+          );
+
+
+          close();
+
+        } catch (e) {
+          this.$q.notify({
+            type: 'negative',
+            message: e.message,
+            timeout: 30000,
+            actions: [
+              {
+                icon: 'close', color: 'white', handler: () => {
+                  /* ... */
+                },
+              },
+            ],
+          });
+        }
+      }
+    }
+  };
 </script>
 
 <style scoped lang="scss">

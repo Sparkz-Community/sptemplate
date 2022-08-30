@@ -178,4 +178,35 @@ input.apple-switch:checked:after {
   }
 }
 
+#ListsList {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+}
 
+#ListsList:deep(.drop-placeholder-style) {
+  background-color: rgba(var(--q-primary-rgb), 0.2);
+  border: 2px dotted var(--q-primary);
+}
+
+#ListsList:deep(.drag-style) {
+  border: 2px solid;
+  z-index: 50;
+  transform: rotate(6deg) scale(1.15) !important;
+  transition: all 100ms ease-in !important;
+  &:hover {
+    border-color: var(--q-primary) !important;
+  }
+}
+
+#ListsList:deep(.drop-style) {
+  z-index: 50 !important;
+  transform: rotate(-2deg) scale(0.9) !important;
+  transition: all 100ms ease-in !important;
+}
+/*
+
+            transition duration-100
+            ease-in z-50 transform
+            -rotate-2 scale-90
+*/

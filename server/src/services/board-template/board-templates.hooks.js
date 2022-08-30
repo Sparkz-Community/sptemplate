@@ -3,9 +3,11 @@ const {fastJoin} = require('feathers-hooks-common');
 
 const taskListOwnerResolvers = require('../../hooks/taskListOwnerResolvers');
 const {packages: {lodash: {lget, lset}}} = require('@iy4u/common-utils');
-const {hooks: {relate,
-  joinHooks: {fJoinHook},
-},
+const {
+  hooks: {
+    relate,
+    joinHooks: {fJoinHook},
+  },
   // utils: {coreCall}
 } = require('@iy4u/common-server-lib');
 
@@ -34,15 +36,15 @@ module.exports = {
     find: [],
     get: [],
     create: [
-      setEnvironment,setOwner,
+      setEnvironment, setOwner,
       relate('otm', relateOwnerConfig),
     ],
     update: [
-      setEnvironment,setOwner,
+      setEnvironment, setOwner,
       relate('otm', relateOwnerConfig),
     ],
     patch: [
-      setEnvironment,setOwner,
+      setEnvironment, setOwner,
       relate('otm', relateOwnerConfig),
     ],
     remove: [
@@ -69,7 +71,7 @@ module.exports = {
     ],
     find: [],
     get: [],
-    create: [ relate('otm', relateOwnerConfig)],
+    create: [relate('otm', relateOwnerConfig)],
     update: [relate('otm', relateOwnerConfig)],
     patch: [relate('otm', relateOwnerConfig)],
     remove: [relate('otm', relateOwnerConfig)],

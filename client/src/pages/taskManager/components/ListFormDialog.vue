@@ -4,15 +4,15 @@
               style="width: 350px">
       <q-header class="bg-primary">
         <q-toolbar>
-          <q-toolbar-title>{{ formData['_id'] ? 'Edit' : 'New' }} List</q-toolbar-title>
-          <q-btn flat  round dense icon="close" @click="$emit('close')"/>
+          <q-toolbar-title>{{ $lget(formData, '_id') ? 'Edit' : 'New' }} List</q-toolbar-title>
+          <q-btn flat round dense icon="close" @click="$emit('close')"/>
         </q-toolbar>
       </q-header>
 
       <q-page-container>
         <q-page class="q-pa-sm">
           <form-generator v-model="formData" :fields="fields"></form-generator>
-          <q-toggle v-model="formData.completeCard" label="Completes Card"></q-toggle>
+          <!--          <q-toggle v-model="formData.completeCard" label="Completes Card"></q-toggle>-->
         </q-page>
       </q-page-container>
       <q-footer :class="$q.dark.mode ? 'bg-dark' : 'bg-white'" bordered>
@@ -33,24 +33,29 @@
   const props = defineProps({
     modelValue: {
       type: Boolean,
-      default: false
+      default: false,
     },
     initialValue: {
       type: Object,
-      default() {
-        return {};
-      }
-    }
+    },
+    maxOrder: {
+      type: Number,
+      required: true,
+    },
   });
+
+  defineEmits(['save-list']);
 
   const colorsStore = useColorStore();
 
   const {lightSpring} = storeToRefs(colorsStore);
-  const formData = ref({});
+  let formData = ref({});
 
-  watch(props.initialValue,function (newVal) {
-    formData.value = newVal.value;
-  },{ deep: true, immediate: true});
+
+  watch(() => props.initialValue, function (newVal) {
+    formData.value = newVal;
+  }, {deep: true, immediate: true});
+
 
   const fields = computed(() => [
     {
@@ -73,6 +78,7 @@
       attrs: {
         min: 1,
         center: true,
+        max: props.maxOrder,
       },
       'div-attrs': {
         class: 'col-12',

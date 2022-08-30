@@ -1,5 +1,5 @@
 <template>
-  <div class="q-pa-sm" id="ListsList" :style="{'min-height': '100vh', ...titleCssVars}">
+  <div class="q-pa-sm" :style="{'min-height': '100vh', ...titleCssVars}">
     <div class="flex justify-between flex q-pr-lg">
       <div v-if="modelValue && layout === 'Card view'" class="card-view-nav">
         <q-btn @click="goBack" icon="fas fa-arrow-left" flat color="secondary"/>
@@ -37,53 +37,68 @@
     </div>
 
     <div v-if="layout === 'Card view'" style="position: relative; flex: 1;">
-      <container v-if="lists" orientation="horizontal" behaviour="contain" :get-child-payload="getChildPayload" style="border-spacing: 1rem; " @drop="onDrop">
-        <template v-for="list in lists" :key="list._id">
-          <q-card v-if="!list._id"
+
+      <container
+        id="ListsList"
+        group-name="cols"
+        tag="div"
+        orientation="horizontal"
+        :get-child-payload="getChildPayload"
+        style="border-spacing: 1rem; "
+        @drop="onDrop"
+        class="h-full flex overflow-x-auto gap-8  p-8"
+
+      >
+        <template v-for="column in scene.children" :key="column.id">
+          <q-card v-if="column.id===0"
                   :class="['list-card cursor-pointer column align-center justify-center', $q.dark.mode ? 'bg-grey-9' : 'bg-grey-5']"
-                  @click.stop="handleOpenListDialog(list)"
-                  @touchstart.stop="handleOpenListDialog(list)">
+                  style="max-height: 100px"
+                  @click.stop="handleOpenListDialog(column.data)"
+                  @touchstart.stop="handleOpenListDialog(column.data)">
             <q-card-section class="flex flex-center" style="height: 100%; width: 100%">
               <q-icon name="add"/>
               New List
             </q-card-section>
           </q-card>
-          <draggable v-else :tag="{value: 'tr', props: {class: 'cursor-pointer'}}">
-            <q-card :class="['list-card', 'shadow-8', $q.dark.mode ? 'bg-grey-9' : 'bg-grey-3',`nestable-item-${list._id}`]"
-                    style="position: relative;">
+          <draggable v-else>
+            <q-card
+              :class="['list-card', 'shadow-8', $q.dark.mode ? 'bg-grey-9' : 'bg-grey-3',`nestable-item-${column.id}`]"
+              style="position: relative;">
               <q-toolbar
-                :style="`background-color: ${$lget(list, 'color.hexa', 'grey')}; color: ${textColor(list)}; border-bottom-right-radius: 0; border-bottom-left-radius: 0;`">
-                <q-toolbar-title @dblclick="handlePopupShow(list._id)">
-                  {{ list.name }}
-                  <q-popup-edit v-if="$lget(list,'_id')!==modelValue._id"
-                                :ref="el => { popups[list._id] = el }"
-                                v-model="list.name"
-                                :validate="val => val.length > 0"
-                                @save="editName(list)"
-                                @before-show="handlePopup(list._id)"
+                :style="`background-color: ${$lget(column.data, 'color.hexa', 'grey')}; color: ${textColor(column.data)}; border-bottom-right-radius: 0; border-bottom-left-radius: 0;`">
+                <q-toolbar-title @dblclick="handlePopupShow(column.data)">
+                  {{ $lget(column, ['data', 'name']) }}
+                  <q-popup-edit v-if="column.id!==modelValue._id"
+                                :ref="el => { popups[column.id] = el }"
+                                v-model="column.data.name"
+                                :validate="val => $lget(val,'length') > 0"
+                                @save="handleSaveList({...column.data, name: $event})"
+                                @before-show="handlePopup(column.id)"
                                 @hide="popupShow = false"
                                 v-slot="scope"
                   >
 
-                      <q-input
-                        v-model="scope.value"
-                        :model-value="scope.value"
-                        autofocus
-                        dense
-                        hint="List Name"
-                        :rules="[val => scope.validate(val) || 'More than 0 chars required']">
-                        <template v-slot:after>
-                          <q-btn flat dense color="negative" icon="cancel" @click.stop="scope.cancel"/>
-                          <q-btn flat dense color="positive" icon="check_circle" @click.stop="scope.set"
-                                 :disable="scope.validate(scope.value) === false || scope.initialValue === scope.value"
-                          />
-                        </template>
-                      </q-input>
+                    <q-input
+                      v-model="scope.value"
+                      :model-value="scope.value"
+                      autofocus
+                      dense
+                      hint="List Name"
+                      :rules="[val => scope.validate(val) || 'More than 0 chars required']">
+                      <template v-slot:after>
+                        <q-btn flat dense color="negative" icon="cancel" @click.stop="scope.cancel"/>
+                        <q-btn flat dense color="positive" icon="check_circle" @click.stop="scope.set"
+                               :disable="scope.validate(scope.value) === false || scope.initialValue === scope.value"
+                        />
+                      </template>
+                    </q-input>
 
                   </q-popup-edit>
                 </q-toolbar-title>
 
-                <action-fab v-if="$lget(list,'_id')!==modelValue._id" :item="list" @hide="hideList(list)" @edit="handleOpenListDialog(list)" @delete="handleDeleteList(list)"></action-fab>
+                <action-fab v-if="column.id!==modelValue._id" :item="column.data" @hide="hideList(column.data)"
+                            @edit="handleOpenListDialog(column.data)"
+                            @delete="handleDeleteList(column.data)"></action-fab>
                 <div v-else id="actionFab">
                   <q-fab v-model="fab"
                          @touchstart.stop="fab = !fab"
@@ -97,30 +112,67 @@
                                   color="primary"
                                   icon="visibility_off"
                                   label="Hide"
-                                  @click.stop="hideList(list)"
-                                  @touchstart.stop="hideList(list)" />
+                                  @click.stop="hideList(column.data)"
+                                  @touchstart.stop="hideList(column.data)"/>
                   </q-fab>
                 </div>
 
               </q-toolbar>
+              <q-card-section style="max-height: 78vh; min-height:5rem" class="scroll q-pa-sm">
+
+                <container
+                  class="flex-grow overflow-y-auto overflow-x-hidden"
+                  orientation="vertical"
+                  group-name="col-items"
+                  :shouldAcceptDrop="(e, payload) =>  (e.groupName === 'col-items' && !payload.loading)"
+                  :get-child-payload="getCardPayload(column.id)"
+                  :drop-placeholder="{ className:`q-mx-sm q-my-xs rounded-borders drop-placeholder-style`,animationDuration: '200', showOnTop: true }"
+
+                  drag-class="bg-primary dark:bg-primary text-white drag-style"
+                  drop-class="drop-style"
+                  @drop="(e) => onCardDrop(column.data, e)"
+                >
+                  <draggable v-for="item in column.children" :key="item.id">
+                    <q-card class="q-ma-sm bg-primary text-white">
+                      <q-card-section>
+                        {{ item.data.name }}
+                      </q-card-section>
+                    </q-card>
+                  </draggable>
+                </container>
+              </q-card-section>
+              <add-card-form-container
+                v-if="modelValue._id !== column.id"
+                label="Card"
+                :list="column.data"
+                style="position: sticky; bottom: 0;"
+                v-bind="$attrs"
+              >
+                <template v-for="(_, name) in $slots" v-slot:[name]="slotData">
+                  <slot :name="name" v-bind="slotData"/>
+                </template>
+              </add-card-form-container>
             </q-card>
           </draggable>
         </template>
       </container>
-
+      <pre> {{ scene.children.map(i => i.data) }}</pre>
     </div>
+
     <list-form-dialog
       :initial-value="itemToEdit"
       v-model="openListDialog"
       @save-list="handleSaveList"
+      @delete-list="handleDeleteList"
       @close="openListDialog=false"
+      :max-order="maxOrder"
     />
   </div>
 </template>
 
 <script setup>
   import ListFormDialog from 'pages/taskManager/components/ListFormDialog';
-  import {computed, defineEmits, defineProps, inject, onBeforeUpdate, reactive, ref, watch} from 'vue';
+  import {computed, defineEmits, defineProps, inject, onBeforeUpdate, ref, watch} from 'vue';
   import {useCssVars} from '@sparkz-community/common-client-lib';
   // import {storeToRefs} from 'pinia/dist/pinia';
   import {useRouter} from 'vue-router/dist/vue-router';
@@ -128,17 +180,22 @@
   import {Container, Draggable} from 'vue3-smooth-dnd';
   import ActionFab from 'pages/taskManager/components/ActionFab';
   import {getMaxOrder, moveItem} from 'pages/taskManager/utils';
+  import AddCardFormContainer from 'pages/taskManager/components/AddCardFormContainer';
 
   const $q = useQuasar();
   const $router = useRouter();
   const $lget = inject('$lget');
-  const $lset = inject('$lset');
+  // const $lset = inject('$lset');
   const $lorderBy = inject('$lorderBy');
-  const fab = ref(false);
+
 
   const props = defineProps({
     modelValue: {
       type: Object,
+      required: true,
+    },
+    cardsPath: {
+      type: String,
       required: true,
     },
   });
@@ -148,7 +205,31 @@
       if (item) {
         return true;
       } else {
-        console.warn('Invalid submit event payload!');
+        console.warn('Invalid update event payload!');
+        return false;
+      }
+    },
+    'add-list': (item) => {
+      if (item) {
+        return true;
+      } else {
+        console.warn('Invalid add-list payload!');
+        return false;
+      }
+    },
+    'get-card-payload': (item) => {
+      if (item) {
+        return true;
+      } else {
+        console.warn('Invalid get-card-payload event payload!');
+        return false;
+      }
+    },
+    'on-card-drop': (item) => {
+      if (item) {
+        return true;
+      } else {
+        console.warn('Invalid on-card-drop event payload!');
         return false;
       }
     },
@@ -157,22 +238,26 @@
   const cssVarStore = useCssVars();
   const {$isHexDark} = cssVarStore;
 
-  let itemToEdit = reactive({});
+  let itemToEdit = ref({});
   let openListDialog = ref(false);
   let layout = ref('Card view');
   let toHide = ref([]);
   let tempToHide = ref([]);
   let lists = ref([]);
   const popups = ref([]);
+  const columns = ref([]);
   const popupShow = ref(false);
+  const fab = ref(false);
+  const popupName = ref('');
 
   onBeforeUpdate(() => {
     popups.value = [];
+    columns.value = [];
   });
 
   watch(() => props.modelValue,
         (newVal) => {
-          lists.value = $lorderBy($lget(newVal, 'lists', []).concat([{_id: undefined}]), [
+          lists.value = $lorderBy($lget(newVal, 'lists', []).concat({_id: 0}), [
             'order',
             'createdAt',
           ], ['asc', 'asc', 'asc']);
@@ -184,36 +269,47 @@
         (newVal, oldVal) => {
           if (JSON.stringify(newVal) !== JSON.stringify(oldVal)) {
             const hiddenListId = toHide.value.map(item => $lget(item, '_id'));
-            newVal.forEach(item => {
-              if ($lget(item, 'hidden') && !hiddenListId.includes($lget(item, '_id'))) {
-                toHide.value.push(item);
-                let elements = document.getElementsByClassName(`nestable-item-${$lget(item, '_id')}`)[0];
-                elements.classList.add('hiding-anim');
-                elements.style.display = 'none';
-                elements.classList.remove('hiding-anim');
+            for (const list of newVal.filter(lst => $lget(lst, '_id'))) {
+              if ($lget(list, 'hidden') && !hiddenListId.includes($lget(list, '_id'))) {
+                toHide.value.push(list);
+                setTimeout(() => {
+                  let elements = document.getElementsByClassName(`nestable-item-${list._id}`)[0];
+                  elements.classList.add('hiding-anim');
+                  elements.style.display = 'none';
+                  elements.classList.remove('hiding-anim');
+                }, 0.1);
               }
-            });
+            }
           }
+
         },
-        {deep: true, immediate: true},
+        {immediate: true, deep: true},
   );
+
 
   watch(() => toHide.value,
         (newVal) => {
           if (JSON.stringify(newVal) !== JSON.stringify(tempToHide.value)) {
             toHide.value = $lorderBy(newVal, ['order', 'createdAt'], ['asc', 'asc']);
             const hiddenListId = newVal.map(item => $lget(item, '_id'));
-            const lists = [...lists.filter(list => !!list._id)].map(function (item) {
-              item.hidden = hiddenListId.includes(item._id);
+            const listsToEdit = cleanList.value.map(function (item) {
+              item.hidden = hiddenListId.includes($lget(item, '_id'));
               return item;
             });
+            const list = newVal.find(lst => !tempToHide.value.map(itm => $lget(itm, '_id')).includes($lget(lst, '_id')));
+            if (!hiddenListId.includes($lget(list, '_id'))) {
+              $emit('update:modelValue', {...props.modelValue, lists: listsToEdit});
+            }
 
-            $emit('update:modelValue', {...props.modelValue,lists});
           }
           tempToHide.value = Array.from(newVal);
         },
         {immediate: true, deep: true},
   );
+
+  watch(() => itemToEdit.value, (newVal) => {
+    popupName.value = $lget(newVal, 'name', '');
+  }, {deep: true, immediate: true});
 
 
   const titleCssVars = computed(() => ({
@@ -221,25 +317,42 @@
     '--dark-bg-color': $q.dark.mode ? 'var(--q-color-dark)' : '#fff',
   }));
 
-  function editName(itm) {
+  const cleanList = computed(() => lists.value.filter(lst => $lget(lst, '_id') !== 0));
 
-    const listsToEdit = [...lists.value.filter(list => !!$lget(list,'_id'))].map(function (list) {
-      if ($lget(list,'_id') === itm._id) {
-        list = itm;
-      }
-      return list;
-    });
+  const maxOrder = computed(() => getMaxOrder(cleanList.value));
 
-    $emit('update:modelValue', {...props.modelValue,lists:listsToEdit});
-  }
+  const scene = computed(() => {
+    return {
+      type: 'container',
+      props: {
+        orientation: 'horizontal',
+      },
+      children: lists.value.map(list => ({
+        id: $lget(list, '_id'),
+        type: 'container',
+        data: list,
+        props: {
+          orientation: 'vertical',
+        },
+        children: $lget(list, props.cardsPath, []).map((card) => ({
+          type: 'draggable',
+          id: card._id,
+          loading: false,
+          data: card,
+        })),
+      })),
+    };
+
+  });
+
 
   function goBack() {
     $router.go(-1);
   }
 
   function getChildPayload(index) {
-    if(lists.value.length){
-      return lists.value.at(index);
+    if (cleanList.value.length) {
+      return cleanList.value.at(index);
     }
   }
 
@@ -251,14 +364,19 @@
     if (!popupShow.value) popups.value[listId].hide();
   }
 
-  function handlePopupShow(listId) {
+  function handlePopupShow(list) {
+    itemToEdit.value = list;
     popupShow.value = true;
-    popups.value[listId].show();
+    popups.value[list._id].show();
   }
 
-  function handleOpenListDialog(listToEdit) {
+  function handleOpenListDialog(list) {
     openListDialog.value = true;
-    itemToEdit.value = listToEdit;
+    if ($lget(list, '_id')) {
+      itemToEdit.value = list;
+    } else {
+      itemToEdit.value = {order: maxOrder.value};
+    }
   }
 
   async function unHideList(list, idx) {
@@ -279,64 +397,63 @@
       elements.style.display = 'none';
       elements.classList.remove('hiding-anim');
     }, 500);
-
   }
 
-  function placeListOnItem(list, itemLists) {
-    const order = $lget(list, ['order']);
+  /* function placeListOnItem(list, itemLists) {
+     const order = $lget(list, ['order']);
 
-    if (order) {
-      const index = order - 1;
-      itemLists.forEach((lst) => {
-        if (lst.order >= order) {
-          lst.order = lst.order + 1;
-        }
-      });
-      itemLists.splice(index, 0, list);
-    } else {
-      let newOrder = $lget(itemLists,'length',1);
-      if (itemLists.length) {
-        newOrder = getMaxOrder(itemLists) + 1;
-      }
-      $lset(list, 'order', newOrder);
-      itemLists.push(list);
-    }
-    return itemLists;
-  }
+     if (order) {
+       const index = order - 1;
+       itemLists.forEach((lst) => {
+         if (lst.order >= order) {
+           lst.order = lst.order + 1;
+         }
+       });
+       itemLists.splice(index, 0, list);
+     } else {
+       let newOrder = maxOrder.value + 1;
+       $lset(list, 'order', newOrder);
+       itemLists.push(list);
+     }
+     return itemLists;
+   }*/
 
   async function onDrop(dragResult) {
     const {removedIndex, addedIndex, payload} = dragResult;
     console.log({dragResult});
-    if (removedIndex !== null && addedIndex!== null) {
-      const removedOrder = removedIndex+1;
-      const addedOrder = addedIndex+1;
-      const itemLists =  moveItem(removedOrder,addedOrder,payload,lists.value);
-      console.log({itemLists});
-      $emit('update:modelValue', {...props.modelValue,lists: itemLists});
+    if (removedIndex !== null && addedIndex !== null) {
+      const removedOrder = removedIndex + 1;
+      const addedOrder = (addedIndex + 1) < maxOrder.value ? (addedIndex + 1) : maxOrder.value - 1;
+
+      moveItem(removedOrder, addedOrder, payload, cleanList.value);
+      $emit('update:modelValue', {lists: $lget(props.modelValue, 'lists')});
+
+
     }
   }
 
   function handleSaveList(list) {
 
     if (list._id) {
-      let itemLists = [...lists.value.filter(lst => !!$lget(lst,'_id'))].map(lst => {
-        if ($lget(lst,'_id') === list._id) {
+      let itemLists = cleanList.value.map(lst => {
+        if ($lget(lst, '_id') === list._id) {
           lst = list;
         }
         return lst;
       });
       const removedOrder = itemToEdit.value.order;
       const addedOrder = list.order;
-      itemLists = moveItem(removedOrder,addedOrder,list,itemLists);
-      $emit('update:modelValue', {...props.modelValue,lists: itemLists});
+      itemLists = moveItem(removedOrder, addedOrder, list, itemLists);
+
+      $emit('update:modelValue', {...props.modelValue, lists: itemLists});
+      openListDialog.value = false;
     } else {
-      const itemLists = placeListOnItem(list, [...lists.value.filter(lst => !!$lget(lst,'_id'))]);
-      console.log({itemLists});
-      $emit('update:modelValue', {...props.modelValue,lists: itemLists});
+      $emit('add-list', list);
+      openListDialog.value = false;
     }
   }
 
-  function  handleDeleteList(list) {
+  function handleDeleteList(list) {
     $q.dialog({
       title: 'Confirm',
       message: `Are you sure you want to remove "${list.name}"?`,
@@ -347,19 +464,47 @@
       cancel: true,
       persistent: true,
     }).onOk(() => {
-
-      const itemLists = [...lists.value.filter(lst => $lget(lst,'_id'))].filter(itm => $lget(itm,'_id') !== list._id).map(itm => {
-        if ($lget(itm,'order') > list.order) {
+      openListDialog.value = false;
+      const itemLists = cleanList.value.filter(itm => $lget(itm, '_id') !== list._id).map(itm => {
+        if ($lget(itm, 'order') > list.order) {
           itm.order -= 1;
         }
         return itm;
       });
-      $emit('update:modelValue', {...props.modelValue,lists:itemLists});
+      $emit('update:modelValue', {...props.modelValue, lists: itemLists});
     });
   }
+
+  function getCardPayload(columnId) {
+    return index => {
+      return scene.value.children.filter(p => p.id === columnId)[0].children[index];
+    };
+  }
+
+  function onCardDrop(list, dropResult) {
+    // console.log({list, dropResult});
+    // check if element where ADDED or REMOVED in current collumn
+    if ($lget(dropResult, 'removedIndex') !== null || $lget(dropResult, 'addedIndex') !== null) {
+      console.log('added or removed from to current column');
+
+      // check if element was ADDED in current column
+      if (($lget(dropResult, 'removedIndex') === null && $lget(dropResult, 'addedIndex') >= 0)) {
+        // your action / api call
+        console.log('added to another column', list);
+        // simulate api call
+
+      } else {
+        console.log('moved on current column', list);
+      }
+
+
+    }
+  }
+
 
 </script>
 
 <style scoped lang="scss" src="./lists.scss">
+
 
 </style>
