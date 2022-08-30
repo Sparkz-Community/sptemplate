@@ -29,7 +29,7 @@
           </q-input>
         </div>
         <q-slide-transition>
-          <div v-if="showFilters" class=" gt-xs row justify-between no-wrap">
+          <div v-if="showFilters" class="gt-xs row justify-between no-wrap">
             <div class="row q-gutter-sm q-my-sm no-wrap filter-scroll-area">
               <q-chip dark
                       @click="toggleSelected(filter)"
@@ -40,7 +40,6 @@
                       :key="filter.label"
                       :color="filter.color"
                       :icon="filter.icon">
-
               </q-chip>
             </div>
             <div class="row q-gutter-sm items-center no-wrap" style="float:right;">
@@ -113,10 +112,10 @@
             </div>
           </div>
         </q-card>
-
       </q-slide-transition>
+
       <div class="content-area" :style="showAddFilters ? 'z-index:-1' : 'z-index:0'">
-        <!--<pre> {{ linkQuery }}</pre>-->
+
         <table-template flat
                         square
                         v-bind="attrs"
@@ -124,8 +123,8 @@
                         :rows="messages"
                         :selection="messages.length > 0 ? 'multiple' : 'single'"
                         v-model:selected="selected"
-                        :visible-columns="visibleColumns"
-                        :rows-per-page-label="`messages per page`"
+                        :columns="columns"
+                        rows-per-page-label="Messages Per Page"
                         v-model:pagination="pagination"
                         @request="setPagination"
                         :grid="($q.screen.sm || $q.screen.xs)"
@@ -133,93 +132,95 @@
                         @row-click="onOpenMessage"
                         :open-add-form="openMessage"
                         :loading="isFindMessagesPending">
-          <template #top>
 
-          </template>
           <template #no-data>
-            No messages {{ link }}
+            No messages in {{ capitalize(link) }}
           </template>
 
-          <template #header-cell="props">
-
-            <q-th v-if="props.col.name==='__v'" :props="props">
-              Actions
-            </q-th>
-            <q-th v-else :props="props">
-              {{ capitalize(kebabize(props.col.name).replace('-', ' ')) }}
-            </q-th>
-
-          </template>
-
-          <template #body-cell="props">
-            <q-td v-if="props.col.name==='__v'">
-              <div class="row justify-end q-gutter-sm">
-
-                <q-btn icon-right="delete"
-                       no-caps
-                       flat
-                       dense
-                       @click.stop="openDeleteConfirm(props.row)" />
-              </div>
-            </q-td>
-            <q-td v-else-if="props.col.name==='from'" :props="props">
-              <div class="flex items-center">
+          <template v-if="link === 'inbox'" #body-cell-from="props">
+            <q-td key="from">
+              <div class="flex row items-center">
                 <!--<q-avatar v-if="$lget(props,['row','_fastjoin',props.col.name,'avatar','raw','file'])">-->
                 <!--  <q-img :src="$lget(props,['row','_fastjoin',props.col.name,'avatar','raw','file'])" />-->
                 <!--</q-avatar>-->
-                <div class="q-my-xs q-mr-xl">
+                <div class="q-my-xs q-mr-xl row items-center">
                   <random-avatar size="lg"
-                                 :user="$lget(props,['row','_fastjoin',props.col.name])"
-                                 :menu="false" />
-                  <p style="margin: 0;"> {{ $lget(props, ['row', '_fastjoin', props.col.name, 'name']) }} </p>
+                                 :user="$lget(props, ['row', '_fastjoin', 'from'])"
+                                 :menu="false"
+                                 class="q-mr-sm" />
+                  <p class="tableText tableName">{{ $lget(props, ['row', '_fastjoin', 'from', 'name']) }}</p>
                 </div>
-                <q-badge v-if="$lget(activeAccount, 'unseenMessages', []).includes($lget(props, ['row', '_id']))"
+                <q-badge v-if="$lget(activeAccount, 'unseenMessages', []).includes($lget(props, '_id'))"
                          id="newBadge"
                          class="q-ml-sm"
-                         align="middle">new!
+                         align="middle">
+                  New!
                 </q-badge>
               </div>
             </q-td>
-            <q-td v-else-if="props.col.name==='to'" :props="props">
-              <div v-if="Array.isArray($lget(props, ['row', '_fastjoin', props.col.name]))">
-                <vue-group-avatar
-                  :avatars="$lget(props,['row','_fastjoin',props.col.name],[])
-                  .map(acc=>$lget(acc,['avatar','raw','file']))"
-                  :max="2" />
-                <!--{{ $lget(props, ['row', '_fastjoin', props.col.name]).map(acc => $lget(acc, ['avatar', 'raw', 'file'])) }}-->
-              </div>
+          </template>
 
-              <div v-else>
-                <!--<q-avatar v-if="$lget(props,['row','_fastjoin',props.col.name,'avatar','raw','file'])">-->
-                <!--  <q-img :src="$lget(props,['row','_fastjoin',props.col.name,'avatar','raw','file'])" />-->
+          <template v-if="link === 'outbox'" #body-cell-to="props">
+            <q-td key="to" :props="props">
+              <div v-if="Array.isArray($lget(props, ['row', '_fastjoin', 'to']))"
+                   class="q-my-xs q-mr-xl row items-center">
+                <vue-group-avatar
+                  :avatars="$lget(props, ['row', '_fastjoin', 'to'], [])
+                    .map(acc => $lget(acc, ['avatar', 'raw', 'file']))"
+                  :max="2" />
+                <!--{{ $lget(props, ['_fastjoin', props.col.name]).map(acc => $lget(acc, ['avatar', 'raw', 'file'])) }}-->
+              </div>
+              <div v-else class="q-my-xs q-mr-xl row items-center">
+                <!--<q-avatar v-if="$lget(props,['_fastjoin',props.col.name,'avatar','raw','file'])">-->
+                <!--  <q-img :src="$lget(props,['_fastjoin',props.col.name,'avatar','raw','file'])" />-->
                 <!--</q-avatar>-->
                 <random-avatar size="lg"
-                               :user="$lget(props,['row','_fastjoin',props.col.name])"
+                               :user="$lget(props, ['row', '_fastjoin', 'to'])"
                                :menu="false" />
-                <p> {{ $lget(props, ['row', '_fastjoin', props.col.name, 'name']) }} </p>
+                <p class="tableText tableName">{{ $lget(props, ['row', '_fastjoin', 'to', 'name']) }}</p>
               </div>
             </q-td>
-            <q-td v-else-if="props.col.name==='body'" :props="props">
-              <div style="max-width:16rem;" v-html="$lget(props, ['row', 'body'])" class="ellipsis text-caption" />
-            </q-td>
-            <q-td v-else :props="props">
-              {{ $lget(props, ['row', props.col.name]) }}
-            </q-td>
+          </template>
 
+          <template #body-cell-subject="props">
+            <q-td key="subject">
+              <div style="max-width: 16rem;" class="ellipsis text-caption">
+                <p class="tableText tableSubject">{{ $lget(props, ['row', 'subject']) }}</p>
+              </div>
+            </q-td>
+          </template>
+
+          <template #body-cell-body="props">
+            <q-td key="body">
+              <div style="max-width: 16rem;" class="ellipsis text-caption">
+                <p class="tableText tableBody">{{ $lget(props, ['row', 'body']) }}</p>
+              </div>
+            </q-td>
+          </template>
+
+          <template #body-cell-actions>
+            <q-td>
+              <q-btn icon-right="delete"
+                     no-caps
+                     flat
+                     dense
+                     @click.stop="openDeleteConfirm(props.row)" />
+            </q-td>
           </template>
 
           <template v-if="($q.screen.sm || $q.screen.xs)" #item="props">
-            <q-item clickable v-ripple style="min-width:100%" @click="onOpenMessage($event,props.row)">
+            <q-item clickable v-ripple style="min-width:100%" @click="onOpenMessage($event, props.row)">
               <q-item-section top avatar>
-                <div v-if="$lget(props.row,'from')">
+                <div v-if="$lget(props, ['row', 'from'])">
                   <random-avatar size="lg"
-                                 :user="$lget(props.row,['_fastjoin','from'])"
+                                 :user="$lget(props, ['row', '_fastjoin', 'from'])"
                                  :menu="false" />
                 </div>
-                <div v-if="$lget(props.row,'to',[]).length>0">
+
+                <div v-if="$lget(props, ['row', 'to'], []).length > 0">
                   <div v-if="$lget(props, ['row', '_fastjoin', 'to'],[]).length">
-                    <vue-group-avatar :avatars="$lget(props,['row','_fastjoin','to'],[])
-                                          .map(acc=>$lget(acc,['avatar','raw','file']))"
+                    <vue-group-avatar :avatars="$lget(props, ['row', '_fastjoin', 'to'], [])
+                                          .map(acc => $lget(acc, ['avatar', 'raw', 'file']))"
                                       :max="2" />
                   </div>
 
@@ -228,11 +229,10 @@
                     <!--  <q-img :src="$lget(props,['row','_fastjoin','to','avatar','raw','file'])" />-->
                     <!--</q-avatar>-->
                     <random-avatar size="lg"
-                                   :user="$lget(props.row,['_fastjoin','to'])"
+                                   :user="$lget(props, ['row', '_fastjoin', 'to'])"
                                    :menu="false" />
-                    <!--<p> {{ $lget(props, ['row', '_fastjoin', 'to', 'name']) }} </p>-->
+                    <!--<p>{{ $lget(props, ['row', '_fastjoin', 'to', 'name']) }}</p>-->
                   </div>
-
                 </div>
               </q-item-section>
 
@@ -253,6 +253,7 @@
             </q-item>
             <q-separator style="width: 100%" />
           </template>
+
           <template #form>
             <div class="q-py-md">
               <div class="row q-gutter-sm">
@@ -576,7 +577,6 @@
     data() {
       const DAY_MS = 7 * 24 * 60 * 60 * 1000;
       return {
-        columns: [],
         selected: [],
         pagination: {
           sortBy: 'desc',
@@ -610,7 +610,6 @@
               attachments: {$ne: []},
             },
           },
-
         ],
         link: 'inbox',
         showFilters: false,
@@ -703,29 +702,29 @@
       //   handler(newVal) {
       //     const cols = this.visibleColumns /*|| newVal*/;
       //     console.log(cols);
-      //     // this.visibleColumns = ['__v', ...cols];
+      //     // this.visibleColumns = ['actions', ...cols];
       //     this.visibleColumns = cols;
       //     console.log(this.visibleColumns);
       //   },
       // },
-      messages: {
-        immediate: true,
-        handler(newVal) {
-          if (!Array.isArray(newVal) || Array.isArray(newVal) && !newVal[0]) {
-            this.columns = [];
-          } else {
-            const cols = Object.keys(newVal[0]).filter(column => {
-              return column !== '__v' && column !== '_fastjoin' && column !== 'updatedByHistory' && column !== '_id';
-            });
-            this.columns = cols.map(col => ({
-              label: this.capitalize(this.kebabize(col).replace('-', ' ')),
-              value: col,
-            }));
-            const id = this.$lget(this.$route, ['query', 'openedMessageId']);
-            this.openedMessage = newVal.find(msg => msg._id === id);
-          }
-        },
-      },
+      // messages: {
+      //   immediate: true,
+      //   handler(newVal) {
+      //     if (!Array.isArray(newVal) || Array.isArray(newVal) && !newVal[0]) {
+      //       this.columns = [];
+      //     } else {
+      //       const cols = Object.keys(newVal[0]).filter(column => {
+      //         return column !== 'actions' && column !== '_fastjoin' && column !== 'updatedByHistory' && column !== '_id';
+      //       });
+      //       this.columns = cols.map(col => ({
+      //         label: this.capitalize(this.kebabize(col).replace('-', ' ')),
+      //         value: col,
+      //       }));
+      //       const id = this.$lget(this.$route, ['query', 'openedMessageId']);
+      //       this.openedMessage = newVal.find(msg => msg._id === id);
+      //     }
+      //   },
+      // },
       messagesTotal: {
         immediate: true,
         handler(newVal, oldVal) {
@@ -743,11 +742,61 @@
         let newVal = {...this.$attrs};
         return newVal;
       },
-      visibleColumns() {
+      columns() {
         if (this.link === 'outbox') {
-          return ['to', 'subject', 'body'];
+          return [
+            {
+              name: 'to',
+              label: 'To',
+              field: 'to',
+              align: 'left',
+            },
+            {
+              name: 'subject',
+              label: 'Subject',
+              field: 'subject',
+              align: 'left',
+            },
+            {
+              name: 'body',
+              label: 'Body',
+              field: 'body',
+              align: 'left',
+            },
+            {
+              name: 'actions',
+              label: 'Actions',
+              field: '',
+              align: 'right',
+            },
+          ];
         }
-        return ['from', 'subject', 'body'];
+        return [
+          {
+            name: 'from',
+            label: 'From',
+            field: 'from',
+            align: 'left',
+          },
+          {
+            name: 'subject',
+            label: 'Subject',
+            field: 'subject',
+            align: 'left',
+          },
+          {
+            name: 'body',
+            label: 'Body',
+            field: 'body',
+            align: 'left',
+          },
+          {
+            name: 'actions',
+            label: 'Actions',
+            field: '',
+            align: 'left',
+          },
+        ];
       },
       messageLinks() {
         // const newInbox = this.messages.filter(message => {
@@ -1066,6 +1115,18 @@
     width: 96%;
     overflow-x: hidden !important;
     margin-left: -0.4rem;
+  }
 
+  .tableText {
+    margin: 0;
+  }
+
+  .tableSubject {
+    font-size: 1.05rem;
+    font-weight: 400;
+  }
+
+  .tableBody {
+    opacity: .75;
   }
 </style>
