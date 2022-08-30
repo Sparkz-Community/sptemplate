@@ -43,7 +43,7 @@ export function useItemLists({
 
   return {
     item:window[$lcamelCase(item)],
-    addList: async function (list) {
+    addList: async function (list, customParams = {}) {
       try {
         window[$lcamelCase(item)].value = await new Model({...window[$lcamelCase(item)].value}).save({
           data: {
@@ -55,7 +55,8 @@ export function useItemLists({
           query: {
             ...params.query,
             ...query
-          }
+          },
+            ...customParams
         });
       } catch (e) {
         $q.notify({
@@ -72,15 +73,16 @@ export function useItemLists({
         });
       }
     },
-    updateItem: async function (data) {
+    updateItem: async function (data, customParams = {}) {
       try {
         window[$lcamelCase(item)].value = await new Model({...window[$lcamelCase(item)].value}).save({
           data,
           ...params,
           query: {
             ...params.query,
-            ...query
-          }
+            ...query,
+          },
+          ...customParams
         });
       } catch (e) {
         $q.notify({

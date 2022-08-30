@@ -225,7 +225,7 @@
         return false;
       }
     },
-    'on-card-drop': (item) => {
+    'card-dropped': (item) => {
       if (item) {
         return true;
       } else {
@@ -334,12 +334,37 @@
         props: {
           orientation: 'vertical',
         },
-        children: $lget(list, props.cardsPath, []).map((card) => ({
-          type: 'draggable',
-          id: card._id,
-          loading: false,
-          data: card,
-        })),
+        children:
+          $lorderBy($lget(list, props.cardsPath, []), [
+            card => {
+              switch ($lget(card, 'priority')) {
+                case 'critical': {
+                  return 0;
+                }
+                case 'high': {
+                  return 1;
+                }
+                case 'medium': {
+                  return 2;
+                }
+                case 'low': {
+                  return 4;
+                }
+                default: {
+                  return 3;
+                }
+              }
+            },
+            'order',
+            'createdAt',
+          ], ['asc', 'asc', 'asc'])
+            .map((card) => ({
+              type: 'draggable',
+              id: card._id,
+              oldList:list,
+              loading: false,
+              data: card,
+            })),
       })),
     };
 
@@ -399,36 +424,13 @@
     }, 500);
   }
 
-  /* function placeListOnItem(list, itemLists) {
-     const order = $lget(list, ['order']);
-
-     if (order) {
-       const index = order - 1;
-       itemLists.forEach((lst) => {
-         if (lst.order >= order) {
-           lst.order = lst.order + 1;
-         }
-       });
-       itemLists.splice(index, 0, list);
-     } else {
-       let newOrder = maxOrder.value + 1;
-       $lset(list, 'order', newOrder);
-       itemLists.push(list);
-     }
-     return itemLists;
-   }*/
-
   async function onDrop(dragResult) {
     const {removedIndex, addedIndex, payload} = dragResult;
-    console.log({dragResult});
     if (removedIndex !== null && addedIndex !== null) {
       const removedOrder = removedIndex + 1;
       const addedOrder = (addedIndex + 1) < maxOrder.value ? (addedIndex + 1) : maxOrder.value - 1;
-
       moveItem(removedOrder, addedOrder, payload, cleanList.value);
       $emit('update:modelValue', {lists: $lget(props.modelValue, 'lists')});
-
-
     }
   }
 
@@ -482,22 +484,14 @@
   }
 
   function onCardDrop(list, dropResult) {
-    // console.log({list, dropResult});
-    // check if element where ADDED or REMOVED in current collumn
-    if ($lget(dropResult, 'removedIndex') !== null || $lget(dropResult, 'addedIndex') !== null) {
-      console.log('added or removed from to current column');
-
-      // check if element was ADDED in current column
-      if (($lget(dropResult, 'removedIndex') === null && $lget(dropResult, 'addedIndex') >= 0)) {
-        // your action / api call
-        console.log('added to another column', list);
-        // simulate api call
-
-      } else {
-        console.log('moved on current column', list);
+    if ($lget(dropResult, 'removedIndex')!==null || $lget(dropResult, 'addedIndex') !== null) {
+      const {addedIndex, payload: {data, oldList}} = dropResult;
+      const oldCard = oldList.cards.find(crd => crd._id === data._id);
+      if(oldCard ) {
+        const removedOrder = oldCard.order;
+        const addedOrder = addedIndex + 1;
+        $emit('card-dropped',{removedOrder, addedOrder,card: data, newList:list, oldList});
       }
-
-
     }
   }
 

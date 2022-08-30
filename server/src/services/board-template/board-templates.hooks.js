@@ -22,6 +22,7 @@ const relateOwnerConfig = {
   herePath: 'owner',
   therePath: 'boardTemplates',
   thereService: 'accounts',
+  noTransaction: true,
 };
 //lget(context,['params','user','_fastjoin','logins','active','accounts','owns','active'])
 const setOwner = setField({
