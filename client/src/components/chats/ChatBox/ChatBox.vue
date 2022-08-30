@@ -274,6 +274,8 @@
             this.$lset(this.newChat, 'sender', this.activeAccount.participant);
             this.$lset(this.newChat, 'room', this.room._id);
 
+            this.newChat.addToStore();
+
             this.newChat.create()
               .then(() => {
                 this.newChat = new models.api.Chats();

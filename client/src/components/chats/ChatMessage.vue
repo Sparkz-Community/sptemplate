@@ -2,12 +2,24 @@
   <div id="ChatMessage">
     <q-chat-message :sent="$lget(chat, 'sender') === $lget(activeAccount, 'participant')"
                     :stamp="`${humanizedDate} ${editedTag}`"
-                    :avatar="$lget(chat, '_fastjoin.sender._fastjoin.owner.avatar.raw.file')"
                     :text-color="$lget(chat, 'sender') === $lget(activeAccount, 'participant') ? 'white' : $q.dark.mode ? 'white' : 'black'"
                     :bg-color="$lget(chat, 'sender') === $lget(activeAccount, 'participant') ? 'primary' : $q.dark.mode ? 'grey-9' : 'accent'">
       <q-spinner v-if="isDeleting" size="1.5em"/>
       <template v-else>
         <div v-for="(text, index) in isDeleting ? [] : [$lget(chat, 'text')]" :key="index" v-html="text"></div>
+      </template>
+
+      <template v-slot:avatar>
+        <q-avatar class="q-mx-sm">
+          <img v-if="$lget(chat, '_fastjoin.sender._fastjoin.owner.avatar.raw.file')"
+               :src="$lget(chat, '_fastjoin.sender._fastjoin.owner.avatar.raw.file')"
+               :alt="$lget(chat, '_fastjoin.sender._fastjoin.owner.name')">
+          <template v-else>
+            <div :class="['full-width full-height flex justify-center items-center', $q.dark.mode ? 'bg-grey-7 text-white' : 'bg-accent']">
+              {{ $lget(chat, '_fastjoin.sender._fastjoin.owner.name', '').charAt(0) }}
+            </div>
+          </template>
+        </q-avatar>
       </template>
 
       <template v-slot:name>
