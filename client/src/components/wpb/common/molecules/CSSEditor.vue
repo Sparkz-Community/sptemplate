@@ -208,7 +208,7 @@
       }
 
       function editNameSave() {
-        console.log(editingTab);
+        // console.log(editingTab);
         wpbStylesheetsStore.patch(editingTab.value._id, {
           name: editingTab.value.name,
         });
