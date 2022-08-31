@@ -282,7 +282,7 @@
                          id="scrollArea"
                          :style="`height: ${previewing ? `${parentHeight}px` : `calc(${parentHeight}px - 50px)`};  max-width: ${parentWidth}px;${screenSizeStyles}`">
             <div :style="{padding: `${previewing ? '0 13px 0 0' : '25px 13px 0 5px'}`}">
-              <div :id="form.project"
+              <div :id="form._id"
                    :style="form.styles"
                    :class="!previewing ? !isSelected(form) ? showBorder ? 'inactive': '' : 'editing' : ''"
                    style="position: relative">
@@ -874,18 +874,21 @@
           let element = document.getElementById(refName);
           // console.log('the element', element);
           let form;
+          let elementOffset;
           if (index) {
-            let nestableItems = document.getElementsByClassName('nestable-item-' + this.form._id);
+            let nestableItems = document.getElementsByClassName('tree-node');
             if (nestableItems.length) {
               form = nestableItems[0];
             }
             // console.log('the tree form',form);
+            elementOffset = element.offsetTop;
           } else {
-            form = document.getElementById(this.form.project);
+            form = document.getElementById(this.form._id);
             // console.log('the reg form',form);
+            elementOffset = this.findOffset(element, form);
           }
+          // console.log('form', form);
           if (element && form) {
-            let elementOffset = this.findOffset(element, form);
             // console.log('elementOffset', elementOffset);
             const scrollTarget = getScrollTarget(element);
             // console.log('scroll', `element.offsetTop: ${element.offsetTop}`, `form.offsetTop: ${form.offsetTop}`);
@@ -900,7 +903,7 @@
         let offset = element.offsetTop;
         if (element !== top) {
           let parent = element.offsetParent;
-          if (parent !== top) {
+          if (parent && parent !== top) {
             offset += this.findOffset(parent, top);
           }
         }

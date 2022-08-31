@@ -1,15 +1,8 @@
 <template>
   <div id="Layers" :style="`height: calc(${parentHeight}px - 50px)`">
     <q-scroll-area :style="`height: calc(${parentHeight}px - (50px + 45px))`">
-      <draggable-tree v-model="tree"
-                      :attrs="{
-                        keyProp: '_id',
-                        childrenProp: 'tree_children',
-                        group: 'page',
-                      }"
-                      :div-attrs="{height: '100%'}"
-                      @change="editTree">
-        <template v-slot:default="{item, index}">
+      <draggable v-model="tree" childrenKey="tree_children" :statHandler="statHandler" @change="editTree">
+        <template #default="{ node: item, stat: {index} }">
           <div :class="`${isSelected(item) ? 'bg-grey-4':''} flex q-pl-sm q-my-xs`"
                :id="`${index}-${item._id}`"
                style="width: 90%; border-radius: 10px"
@@ -42,7 +35,50 @@
             </div>
           </div>
         </template>
-      </draggable-tree>
+      </draggable>
+
+      <!--            <draggable-tree v-model="tree"
+                                  :attrs="{
+                                    keyProp: '_id',
+                                    childrenProp: 'tree_children',
+                                    group: 'page',
+                                  }"
+                                  :div-attrs="{height: '100%'}"
+                                  @change="editTree">
+                    <template v-slot:default="{item, index}">
+                      <div :class="`${isSelected(item) ? 'bg-grey-4':''} flex q-pl-sm q-my-xs`"
+                           :id="`${index}-${item._id}`"
+                           style="width: 90%; border-radius: 10px"
+                           @click.stop="$emit('scrollToElement', item)">
+                        <div class="flex items-center" style="font-size: .9rem; align-self: center">
+                          {{ item._type !== 'page' ? `${index + 1}. ` : '' }}
+                          <p style="margin: 0"
+                             @dblclick.stop="handleContentEditable"
+                             :contenteditable="contentEditable"
+                             @blur="updateName(item, $event.target.innerText)">
+                            {{ $lget(item, 'name', $lget(item, '_type', 'section')) }}
+                          </p>
+                        </div>
+                        <q-space/>
+                        <div class="drag-action-icons">
+                          <q-icon v-show="isSelected(item) && item._type !== 'page'"
+                                  name="drive_folder_upload"
+                                  size="xs"
+                                  class="cursor-pointer"
+                                  @click.stop="setItem(item)">
+                            <q-tooltip>Make a Template</q-tooltip>
+                          </q-icon>
+                          <q-icon v-show="isSelected(item) && item._type !== 'page'"
+                                  name="delete"
+                                  size="xs"
+                                  class="cursor-pointer"
+                                  @click.stop="startRemove(item)">
+                            <q-tooltip>Delete</q-tooltip>
+                          </q-icon>
+                        </div>
+                      </div>
+                    </template>
+                  </draggable-tree>-->
     </q-scroll-area>
 
     <q-dialog v-model="saveAsTemplate">
@@ -136,12 +172,15 @@
   import useWpbElements from 'stores/services/wpb-elements';
   import useWpbSections from 'stores/services/wpb-sections';
 
-  import draggableTree from 'components/common/atoms/draggableTree/draggableTree';
+  // import draggableTree from 'components/common/atoms/draggableTree/draggableTree';
+  import {Draggable} from '@he-tree/vue';
+  import '@he-tree/vue/style/default.css';
 
   export default {
     name: 'layers',
     components: {
-      draggableTree,
+      // draggableTree,
+      Draggable,
     },
     props: {
       form: Object,
@@ -150,6 +189,7 @@
     inject: ['authUser'],
     data() {
       return {
+        stateIndex: {},
         formCopy: {},
         removeDialog: false,
         saveAsTemplate: false,
@@ -280,6 +320,19 @@
       },
     },
     methods: {
+      statHandler(stat) {
+
+        let id = this.$lget(stat, 'parent.data._id');
+        let levelArr = this.$lget(this.stateIndex, id, []);
+        let index = levelArr.length;
+
+        levelArr.push(index);
+        this.$lset(this.stateIndex, id, levelArr);
+        return {
+          ...stat,
+          index,
+        };
+      },
       ...mapActions(useWpbElements, {
         patchElement: 'patch',
         removeElement: 'remove',
