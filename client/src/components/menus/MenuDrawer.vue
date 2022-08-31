@@ -86,8 +86,9 @@
           }, delay);
         });
       },
+      // eslint-disable-next-line no-unused-vars
       handleLayout(state) {
-        console.log(`handleLayout: ${state}`);
+        // console.log(`handleLayout: ${state}`);
         this.drawerBelowBreakpoint = this.$refs.drawer.belowBreakpoint;
         this.resize(100);
       },

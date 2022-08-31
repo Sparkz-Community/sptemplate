@@ -137,6 +137,7 @@
       'update:autoExpand',
       'close',
     ],
+    inject: ['authUser'],
     data() {
       return {
         dark: false,
@@ -204,11 +205,11 @@
       handleDarkModeToggle(val) {
         if (typeof val === 'boolean') {
           this.$q.dark.set(val);
-          if (this.$authUser) {
+          if (this.authUser) {
             let payload = {
               'settings.theme.darkMode': val,
             };
-            this.$authUser.patch({data: payload})
+            this.authUser.patch({data: payload})
               .then(res => {
                 this.$q.notify({
                   type: 'positive',

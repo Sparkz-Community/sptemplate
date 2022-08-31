@@ -72,11 +72,13 @@ module.exports = configure(function (ctx) {
     build: {
       vueRouterMode: 'history', // available values: 'hash', 'history'
 
-      env: {
-        VUE_APP_FEATHERS_URL: process.env.VUE_APP_FEATHERS_URL,
-        TRANSPORT_SECRET: process.env.TRANSPORT_SECRET,
-        FONT_PICKER_KEY: JSON.stringify(process.env.FONT_PICKER_KEY),
-      },
+      // env: {
+      //   VUE_APP_FEATHERS_URL: process.env.VUE_APP_FEATHERS_URL,
+      //   TRANSPORT_SECRET: process.env.TRANSPORT_SECRET,
+      //   FONT_PICKER_KEY: JSON.stringify(process.env.FONT_PICKER_KEY),
+      //   SITES: process.env.SITES,
+      // },
+      env: require('dotenv').config().parsed,
 
       devtool: 'source-map',
 
