@@ -27,7 +27,7 @@
             <div  class="row q-gutter-sm">
               <q-btn
                 icon="add"
-                :label="$lget(boardTemplate,'lists',[]).length? 'Task': 'Lists'" v-if="$lget($activeAccount,'_id') === $lget(boardTemplate,['owner'])"
+                :label="$lget(boardTemplate,'lists',[]).length? 'Task': 'Lists'" v-if="$lget(activeAccount,'_id') === $lget(boardTemplate,['owner'])"
                 @click.stop="$router.push(`${boardTemplate._id}/board-template-lists`).catch((err) => {throw new Error(`board-template.vue -> template -> q-card -> @click.stop -> boardTemplate: ${err}.`);})"
                 @touchstart.stop="$router.push(`${boardTemplate._id}/board-template-lists`).catch((err) => {throw new Error(`board-template-lists.vue -> template -> q-card -> @touchstart.stop -> cards: ${err}.`);})"
               />

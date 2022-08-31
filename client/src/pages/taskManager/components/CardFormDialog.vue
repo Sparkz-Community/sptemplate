@@ -242,8 +242,8 @@
   const $q = useQuasar();
   const $lget = inject('$lget');
   const $fingerprint = inject('$fingerprint');
-  const $authUser= inject('$authUser');
-  const $activeAccount= inject('$activeAccount');
+  const authUser= inject('authUser');
+  const activeAccount= inject('activeAccount');
 
   const props = defineProps({
     modelValue: {
@@ -525,15 +525,15 @@
       comment: commentInputVal.value,
       createdBy: {
         fingerprint: $lget($fingerprint, ['_id']),
-        user: $lget($authUser, ['_id']),
-        login: $lget($authUser, ['_fastjoin','logins','active','_id']),
-        account: $lget($activeAccount, ['_id']),
+        user: $lget(authUser, ['_id']),
+        login: $lget(authUser, ['_fastjoin','logins','active','_id']),
+        account: $lget(activeAccount, ['_id']),
       },
       updatedBy: {
         fingerprint: $lget($fingerprint, ['_id']),
-        user: $lget($authUser, ['_id']),
-        login: $lget($authUser, ['_fastjoin','logins','active','_id']),
-        account: $lget($activeAccount, ['_id']),
+        user: $lget(authUser, ['_id']),
+        login: $lget(authUser, ['_fastjoin','logins','active','_id']),
+        account: $lget(activeAccount, ['_id']),
       }
     });
     $emit('save-card', form_data.value);
@@ -594,9 +594,9 @@
         return Object.assign(comment,commentToEdit.value, {
           updatedBy: {
             fingerprint: $lget($fingerprint, ['_id']),
-            user: $lget($authUser, ['_id']),
-            login: $lget($authUser, ['_fastjoin','logins','active','_id']),
-            account: $lget($activeAccount, ['_id']),
+            user: $lget(authUser, ['_id']),
+            login: $lget(authUser, ['_fastjoin','logins','active','_id']),
+            account: $lget(activeAccount, ['_id']),
           }
         });
       }

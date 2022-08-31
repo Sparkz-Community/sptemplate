@@ -139,6 +139,7 @@
                       :board="modelValue"
                       @delete-card="$emit('delete-card',$event)"
                       @save-card="$emit('save-card',$event)"
+                      @restore-from-recycle="$emit('restore-from-recycle',$event)"
                     />
                   </draggable>
                 </container>
@@ -160,7 +161,7 @@
         </template>
       </container>
 <!--      <pre> {{ scene.children.map(i => i.data) }}</pre>-->
-      <pre>{{ modelValue }}</pre>
+<!--      <pre>{{ $lget(modelValue, 'lists', []).map(i => ({name: i.name, cards: $lget(i, '_fastjoin.cards')})) }}</pre>-->
     </div>
 
     <list-form-dialog
@@ -246,6 +247,31 @@
         return false;
       }
     },
+    'save-card': (item) => {
+      if (item) {
+        return true;
+      } else {
+        console.warn('Invalid on-card-drop event payload!');
+        return false;
+      }
+    },
+    'delete-card': (item) => {
+      if (item) {
+        return true;
+      } else {
+        console.warn('Invalid on-card-drop event payload!');
+        return false;
+      }
+    },
+    'restore-from-recycle': (item) => {
+      if (item) {
+        return true;
+      } else {
+        console.warn('Invalid on-card-drop event payload!');
+        return false;
+      }
+    },
+
   });
 
   const cssVarStore = useCssVars();
@@ -267,69 +293,6 @@
     popups.value = [];
     columns.value = [];
   });
-
-  watch(() => props.modelValue,
-        (newVal) => {
-          lists.value = $lorderBy($lget(newVal, 'lists', []).concat({_id: 0}), [
-            'order',
-            'createdAt',
-          ], ['asc', 'asc', 'asc']);
-        },
-        {immediate: true, deep: true},
-  );
-
-  watch(() => lists.value,
-        (newVal, oldVal) => {
-          if (JSON.stringify(newVal) !== JSON.stringify(oldVal)) {
-
-            const hiddenListId = toHide.value.map(item => $lget(item, '_id'));
-            for (const list of newVal.filter(lst => $lget(lst, '_id'))) {
-              if ($lget(list, 'hidden') && !hiddenListId.includes($lget(list, '_id'))) {
-                toHide.value.push(list);
-                setTimeout(() => {
-                  let elements = document.getElementsByClassName(`nestable-item-${list._id}`)[0];
-                  elements.classList.add('hiding-anim');
-                  elements.style.display = 'none';
-                  elements.classList.remove('hiding-anim');
-                }, 0.1);
-              }
-            }
-          }
-
-        },
-        {immediate: true, deep: true},
-  );
-
-
-  watch(() => toHide.value,
-        (newVal) => {
-          if (JSON.stringify(newVal) !== JSON.stringify(tempToHide.value)) {
-            toHide.value = $lorderBy(newVal, ['order', 'createdAt'], ['asc', 'asc']);
-            const hiddenListId = newVal.map(item => $lget(item, '_id'));
-            const listsToEdit = cleanList.value.map(function (item) {
-              item.hidden = hiddenListId.includes($lget(item, '_id'));
-              return item;
-            });
-            const list = newVal.find(lst => !tempToHide.value.map(itm => $lget(itm, '_id')).includes($lget(lst, '_id')));
-            if (!hiddenListId.includes($lget(list, '_id'))) {
-              $emit('update:modelValue', {lists: listsToEdit});
-            }
-
-          }
-          tempToHide.value = Array.from(newVal);
-        },
-        {immediate: true, deep: true},
-  );
-
-  watch(() => itemToEdit.value, (newVal) => {
-    popupName.value = $lget(newVal, 'name', '');
-  }, {deep: true, immediate: true});
-
-
-  const titleCssVars = computed(() => ({
-    '--title-bg-color': $q.dark.mode ? 'rgba(255, 255, 255, 0.16)' : 'rgba(0, 0, 0, 0.16)',
-    '--dark-bg-color': $q.dark.mode ? 'var(--q-color-dark)' : '#fff',
-  }));
 
   const cleanList = computed(() => lists.value.filter(lst => $lget(lst, '_id') !== 0));
 
@@ -383,6 +346,69 @@
     };
 
   });
+
+  watch(() => props.modelValue,
+        (newVal) => {
+          lists.value = $lorderBy($lget(newVal, 'lists', []).concat({_id: 0}), [
+            'order',
+            'createdAt',
+          ], ['asc', 'asc', 'asc']);
+        },
+        {immediate: true, deep: true},
+  );
+
+  watch(() => lists.value,
+        async (newVal, oldVal) => {
+          if (JSON.stringify(newVal) !== JSON.stringify(oldVal)) {
+
+            const hiddenListId = toHide.value.map(item => $lget(item, '_id'));
+            for (const list of newVal.filter(lst => $lget(lst, '_id'))) {
+              if (list && $lget(list, 'hidden') && !hiddenListId.includes($lget(list, '_id'))) {
+                toHide.value.push(list);
+                setTimeout(async () => {
+                  let elements = document.getElementsByClassName(`nestable-item-${list._id}`)[0];
+                  elements.classList.add('hiding-anim');
+                  elements.style.display = 'none';
+                  elements.classList.remove('hiding-anim');
+                }, 0.1);
+              }
+            }
+          }
+
+        },
+        {immediate: true, deep: true},
+  );
+
+
+  watch(() => toHide.value,
+        (newVal) => {
+          if (JSON.stringify(newVal) !== JSON.stringify(tempToHide.value)) {
+            toHide.value = $lorderBy(newVal, ['order', 'createdAt'], ['asc', 'asc']);
+            const hiddenListId = newVal.map(item => $lget(item, '_id'));
+            const listsToEdit = cleanList.value.map(function (item) {
+              item.hidden = hiddenListId.includes($lget(item, '_id'));
+              return item;
+            });
+            const list = newVal.find(lst => !tempToHide.value.map(itm => $lget(itm, '_id')).includes($lget(lst, '_id')));
+            if (!hiddenListId.includes($lget(list, '_id'))) {
+              $emit('update:modelValue', {lists: listsToEdit});
+            }
+
+          }
+          tempToHide.value = Array.from(newVal);
+        },
+        {immediate: true, deep: true},
+  );
+
+  watch(() => itemToEdit.value, (newVal) => {
+    popupName.value = $lget(newVal, 'name', '');
+  }, {deep: true, immediate: true});
+
+
+  const titleCssVars = computed(() => ({
+    '--title-bg-color': $q.dark.mode ? 'rgba(255, 255, 255, 0.16)' : 'rgba(0, 0, 0, 0.16)',
+    '--dark-bg-color': $q.dark.mode ? 'var(--q-color-dark)' : '#fff',
+  }));
 
 
   function goBack() {
@@ -500,7 +526,7 @@
   function onCardDrop(list, dropResult) {
     if ($lget(dropResult, 'removedIndex')!==null || $lget(dropResult, 'addedIndex') !== null) {
       const {addedIndex, payload: {data, oldList}} = dropResult;
-      const oldCard = oldList.cards.find(crd => crd._id === data._id);
+      const oldCard = $lget(oldList, props.cardsPath, []).find(crd => crd._id === data._id);
       if(oldCard ) {
         const removedOrder = oldCard.order;
         const addedOrder = addedIndex + 1;

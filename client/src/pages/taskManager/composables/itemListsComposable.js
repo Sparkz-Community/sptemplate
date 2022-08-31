@@ -42,7 +42,7 @@ export function useItemLists({
     return {
       $fastJoinShared: true, // common
       [`${service}_fJoinHookResolversQuery`]: { // common
-        creator: true,
+        owner: true,
       },
       ...params.value
     };
@@ -52,7 +52,6 @@ export function useItemLists({
     window[$lcamelCase(item)]['value'] = await Model.get(id,{
       ...params.value,
       query: {
-        ...params.value.query,
         ...query.value
       }
     });
@@ -76,7 +75,6 @@ export function useItemLists({
           },
           ...params.value,
           query: {
-            ...params.value.query,
             ...query.value
           },
             ...customParams
@@ -102,7 +100,6 @@ export function useItemLists({
           data,
           ...params.value,
           query: {
-            ...params.value.query,
             ...query.value,
           },
           ...customParams

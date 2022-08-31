@@ -13,7 +13,7 @@
                 size="xs"
                 class="hover-copy"
                 @touchstart.stop="handleCopyMobile(card._id)"></q-icon>
-          <q-badge v-if="$lget($activeAccount, 'unseenTasks', []).includes(card._id)"
+          <q-badge v-if="$lget(activeAccount, 'unseenTasks', []).includes(card._id)"
                    id="newBadge"
                    class="q-ml-sm"
                    align="middle">
@@ -34,19 +34,19 @@
           </q-icon>
       </span>
       <div style="position: absolute; top: 0; right: 0;" v-if="!$lget(card,'completed',false)">
-<!--        <div v-if="$(list,'_id') !== $lget(board,'_id')">-->
+        <div v-if="$lget(list,'_id') !== $lget(board,'_id')">
           <q-btn size="sm" flat round icon="edit" @click.stop="openEditDialog(card)"
                  @touchstart.stop="openEditDialog(card)"></q-btn>
           <q-btn size="sm" flat round icon="fas fa-trash" @click.stop="$emit('delete-card', {list,card, close})"
                  @touchstart.stop="$emit('delete-card', {list,card, close})"></q-btn>
         </div>
         <div v-else>
-          <q-btn hint="restore" size="sm" flat round icon="fas fa-undo" @click.stop="$emit('restore-from-recycle',card)"
-                 @touchstart.stop="$emit('restore-from-recycle',card)"/>
+          <q-btn hint="restore" size="sm" flat round icon="fas fa-undo" @click.stop="$emit('restore-from-recycle',{list,card,close})"
+                 @touchstart.stop="$emit('restore-from-recycle',{list,card,close})"/>
           <q-btn hint="delete for good" size="sm" flat round icon="fas fa-trash" @click.stop="$emit('delete-card',{list,card,close})"
                  @touchstart.stop="$emit('delete-card',{list,card,close})"/>
         </div>
-
+      </div>
       <span @dblclick="handlePopupShow">
         <span style="font-size: 13pt; margin-left: -10px">{{ card.name }}
           <q-icon v-if="$lget(card,'completed')" name="check" color="positive">
@@ -145,7 +145,7 @@
   import CardFormDialog from 'pages/taskManager/components/CardFormDialog';
 
   const $lget = inject('$lget');
-  const $activeAccount = inject('$activeAccount');
+  const activeAccount = inject('activeAccount');
 
   const $q = useQuasar();
 
@@ -188,7 +188,7 @@
       }
     },
     'restore-from-recycle': (item) => {
-      if (item) {
+      if (item.card) {
         return true;
       } else {
         console.warn('Invalid restore-from-recycle event payload!');
@@ -281,11 +281,11 @@
   }
 
   function markAsSeen(isVisible) {
-    if (isVisible && $lget($activeAccount.value, 'unseenTasks', []).includes(props.card._id)) {
+    if (isVisible && $lget(activeAccount.value, 'unseenTasks', []).includes(props.card._id)) {
       console.log('pull id from unseenTasks arr');
       // maybe do some transition thing?
       // document.getElementById('newBadge').classList.add('remove-badge');
-      // this.$activeAccount.patch({
+      // this.activeAccount.patch({
       //   data: {
       //     $pull: {
       //       unseenTasks: this.card._id,
