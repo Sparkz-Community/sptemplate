@@ -190,7 +190,7 @@
 
           <q-btn flat round dense icon="close" v-close-popup/>
         </q-toolbar>
-<!--          <my-accounts></my-accounts>-->
+          <my-accounts></my-accounts>
       </q-card>
     </q-dialog>
   </div>
@@ -200,14 +200,14 @@
   import {mapState} from 'pinia';
 
   import RandomAvatar from 'components/profile/RandomAvatar/RandomAvatar';
-  // import MyAccounts from '../profile/MyAccounts';
+  import MyAccounts from '../profile/MyAccounts';
 
   import useLoginsStore from 'stores/services/logins';
 
   export default {
     name: 'UserInfo',
     components: {
-      // MyAccounts,
+      MyAccounts,
       RandomAvatar,
     },
     props: {
@@ -227,6 +227,15 @@
       isPatchLogins(newVal) {
         this.$isLoading(newVal);
       },
+      manageAccounts: {
+        immediate: true,
+        deep: true,
+        handler(newVal) {
+          if (newVal) {
+            console.log('this is manageAccounts: ', newVal);
+          }
+        }
+      }
     },
     computed: {
       ...mapState(useLoginsStore, {

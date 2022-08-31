@@ -1,4 +1,5 @@
 import commonRoutes from './commonRoutes.js';
+import {packageRoutes} from '@sparkz-community/common-client-lib';
 
 export default function ({store, ssrContext}) {
   const routes = [
@@ -30,7 +31,7 @@ export default function ({store, ssrContext}) {
           // meta: {requiresAuth: true},
           component: () => import ('pages/notifications/Notifications.vue'),
         },
-
+        packageRoutes.find(route => route.name === 'quickbooks-connect'),
         ...commonRoutes({store, ssrContext}),
       ],
     },
