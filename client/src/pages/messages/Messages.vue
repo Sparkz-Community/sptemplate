@@ -459,6 +459,7 @@
     setup() {
       const $lget = inject('$lget');
       const $lmerge = inject('$lmerge');
+      const activeAccount = inject('activeAccount');
       const messagesStore = useMessages();
 
       const filter = ref({
@@ -467,8 +468,13 @@
         toDate: '',
         hasAttachment: false,
       });
+      const link = ref('inbox');
       const selectedFilters = ref([]);
-      const linkQuery = ref({});
+      const linkQuery = ref({
+        _id: {
+          $in: $lget(activeAccount, link.value, []),
+        },
+      });
 
       const selectedFilterQuery = computed(() => {
         let selectedFilterQuery = {};
@@ -549,6 +555,7 @@
         isFindMessagesPending,
         messagesQuery,
         linkQuery,
+        link,
         filter,
         searchBoxQuery,
         selectedFilters,
@@ -556,25 +563,26 @@
       };
     },
     mixins: [
-      // routerMixin({
-      //   name: 'msgPaths',
-      //   parseQuery(val, key) {
-      //     if (['openMessage', 'linkQuery'].includes(key)) {
-      //       return JSON.parse(val);
-      //     } else {
-      //       return val;
-      //     }
-      //
-      //   },
-      //   query() {
-      //     return {
-      //       link: this.link,
-      //       linkQuery: JSON.stringify(this.linkQuery),
-      //       openMessage: this.openMessage,
-      //       openedMessageId: this.openedMessageId,
-      //     };
-      //   },
-      // }),
+      routerMixin({
+        name: 'msgPaths',
+        parseQuery(val, key) {
+          if (['openMessage', 'linkQuery'].includes(key)) {
+            return JSON.parse(val);
+          } else {
+            return val;
+          }
+
+        },
+        query() {
+          return {
+            link: this.link,
+            linkQuery: JSON.stringify(this.linkQuery),
+            openMessage: this.openMessage,
+            openedMessageId: this.openedMessageId,
+          };
+        },
+        runWhen: this.runRouterMixin,
+      }),
     ],
     inject: [
       'activeAccount',
@@ -616,10 +624,10 @@
             },
           },
         ],
-        link: 'inbox',
         showFilters: false,
         showAddFilters: false,
         showInbox: false,
+        runRouterMixin: false,
         // checkAll: false,
         // check1: false,
         // check2: false,
@@ -647,41 +655,43 @@
         dialogTitle: 'New Message',
       };
     },
+    // beforeCreate() {
+    //   this.onSelectLink(this.link);
+    // },
     watch: {
-      link: {
-        immediate: true,
-        deep: true,
-        handler(newVal) {
-          if (newVal !== 'trash') {
-            this.linkQuery = {
-              _id: {
-                $in: this.$lget(this.activeAccount, newVal, []),
-              },
-            };
-          } else {
-            this.linkQuery = {
-              $and: [
-                {
-                  _id: {
-                    $nin: this.$lget(this.activeAccount, 'outbox', [])
-                      .concat(this.$lget(this.activeAccount, 'inbox', [])),
-                  },
-                },
-                {
-                  $or: [
-                    {from: this.$lget(this.activeAccount, '_id')},
-                    {to: this.$lget(this.activeAccount, '_id')},
-                  ],
-                },
-              ],
-            };
-          }
-        },
-      },
+      // link: {
+      //   immediate: true,
+      //   deep: true,
+      //   handler(newVal) {
+      //     if (newVal !== 'trash') {
+      //       this.linkQuery = {
+      //         _id: {
+      //           $in: this.$lget(this.activeAccount, newVal, []),
+      //         },
+      //       };
+      //     } else {
+      //       this.linkQuery = {
+      //         $and: [
+      //           {
+      //             _id: {
+      //               $nin: this.$lget(this.activeAccount, 'outbox', [])
+      //                 .concat(this.$lget(this.activeAccount, 'inbox', [])),
+      //             },
+      //           },
+      //           {
+      //             $or: [
+      //               {from: this.$lget(this.activeAccount, '_id')},
+      //               {to: this.$lget(this.activeAccount, '_id')},
+      //             ],
+      //           },
+      //         ],
+      //       };
+      //     }
+      //   },
+      // },
       filter: {
         deep: true,
         handler(newValue) {
-
           if (newValue.fromDate) {
             // eslint-disable-next-line no-unused-vars
             const froUnixTimestamp = Math.floor(new Date(newValue.fromDate).getTime() / 1000);
@@ -692,13 +702,11 @@
             const toUnixTimestamp = Math.floor(new Date(newValue.toDate).getTime() / 1000);
             // console.log(toUnixTimestamp);
           }
-
           if (newValue.hasAttachment) {
             this.$lset(this.query, 'attachments', {$ne: []});
           } else {
             this.$lunset(this.query, 'attachments');
           }
-
         },
       },
       // columns: {
@@ -743,9 +751,7 @@
           }
         },
       },
-
     },
-
     computed: {
       attrs() {
         let newVal = {...this.$attrs};
@@ -874,14 +880,12 @@
         }
       },
 
-      // eslint-disable-next-line no-unused-vars
-      selectedToAccounts(newVal) {
-        // console.log('selected: ', newVal);
-      },
-      // eslint-disable-next-line no-unused-vars
-      selectedFroAccounts(newVal) {
-        // console.log('selected: ', newVal);
-      },
+      // selectedToAccounts(newVal) {
+      //   console.log('selected: ', newVal);
+      // },
+      // selectedFroAccounts(newVal) {
+      //   console.log('selected: ', newVal);
+      // },
       closeFilters() {
         this.showAddFilters = false;
         this.showFilters = false;
@@ -921,6 +925,31 @@
         this.link = value;
         this.openMessage = false;
         this.openedMessage = undefined;
+        if (value !== 'trash') {
+          this.linkQuery = {
+            _id: {
+              $in: this.$lget(this.activeAccount, value, []),
+            },
+          };
+        } else {
+          this.linkQuery = {
+            $and: [
+              {
+                _id: {
+                  $nin: this.$lget(this.activeAccount, 'outbox', [])
+                    .concat(this.$lget(this.activeAccount, 'inbox', [])),
+                },
+              },
+              {
+                $or: [
+                  {from: this.$lget(this.activeAccount, '_id')},
+                  {to: this.$lget(this.activeAccount, '_id')},
+                ],
+              },
+            ],
+          };
+        }
+        this.runRouterMixin = true;
       },
       onOpenMessage(evt, row) {
         this.openMessage = true;
