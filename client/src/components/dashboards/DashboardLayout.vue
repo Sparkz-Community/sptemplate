@@ -3,18 +3,7 @@
     <q-layout view="lHh Lpr lff" container :style="{'min-height': 'calc(100vh - 81px)', ...layoutStyles}"
               class="rounded-borders">
       <q-header :class="$q.dark.mode ? 'bg-dark' : 'bg-white'">
-
         <q-toolbar class="col-8 q-pa-lg text-primary">
-
-          <q-toolbar-title>
-            <slot name="page-toolbar" :activeLink="activeLink">
-              <span class="text-h4">
-                {{ pageTitle }}
-              </span>
-            </slot>
-
-          </q-toolbar-title>
-
           <slot name="close-drawer-btn">
             <q-btn flat
                    dense
@@ -24,6 +13,13 @@
             />
           </slot>
 
+          <q-toolbar-title>
+            <slot name="page-toolbar" :activeLink="activeLink">
+              <span class="text-h4">
+                {{ pageTitle }}
+              </span>
+            </slot>
+          </q-toolbar-title>
         </q-toolbar>
       </q-header>
 
@@ -56,7 +52,6 @@
       <q-page-container>
         <q-page class="q-pa-md column">
           <slot name="page-content">
-
           </slot>
         </q-page>
       </q-page-container>
