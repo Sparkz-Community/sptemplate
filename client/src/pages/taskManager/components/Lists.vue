@@ -132,10 +132,17 @@
                   drop-class="drop-style"
                   @drop="(e) => onCardDrop(column.data, e)"
                 >
-                  <draggable v-for="item in column.children" :key="item.id">
-                    <card :card="item.data" :list="column.data" :board="item"/>
+                  <draggable v-for="child in column.children" :key="child.id">
+                    <card
+                      :card="child.data"
+                      :list="column.data"
+                      :board="modelValue"
+                      @delete-card="$emit('delete-card',$event)"
+                      @save-card="$emit('save-card',$event)"
+                    />
                   </draggable>
                 </container>
+
               </q-card-section>
               <add-card-form-container
                 v-if="modelValue._id !== column.id"
@@ -152,7 +159,8 @@
           </draggable>
         </template>
       </container>
-      <pre> {{ scene.children.map(i => i.data) }}</pre>
+<!--      <pre> {{ scene.children.map(i => i.data) }}</pre>-->
+      <pre>{{ modelValue }}</pre>
     </div>
 
     <list-form-dialog
@@ -163,6 +171,13 @@
       @close="openListDialog=false"
       :max-order="maxOrder"
     />
+<!--    <card-form-dialog
+      v-model="openEditDialog"
+      :card="cardToEdit.card"
+      :list="cardToEdit.list"
+      @save-card="$emit('save-card',{card:$event,close:close})"
+      @delete-card="$emit('delete-card',{card:$event,close:close})"
+    />-->
   </div>
 </template>
 
@@ -178,6 +193,7 @@
   import {getMaxOrder, moveItem} from 'pages/taskManager/utils';
   import AddCardFormContainer from 'pages/taskManager/components/AddCardFormContainer';
   import Card from 'pages/taskManager/components/Card';
+
 
   const $q = useQuasar();
   const $router = useRouter();
@@ -492,6 +508,10 @@
       }
     }
   }
+
+  // function close (){
+  //   openEditDialog.value = false;
+  // }
 
 
 </script>

@@ -1,4 +1,4 @@
-import {onMounted, ref} from 'vue';
+import {computed, onMounted, ref} from 'vue';
 import{models} from 'feathers-pinia';
 import {useRoute} from 'vue-router';
 import {lodash, singularize} from '@sparkz-community/common-client-lib';
@@ -13,6 +13,7 @@ function nameModal (service) {
   modalNameArray = modalNameArray.map(item => $lcapitalize(item));
   return modalNameArray.join('');
 }
+
 
 export function useItemLists({
                                service,
@@ -30,19 +31,41 @@ export function useItemLists({
   const {id} = $route.params;
 
   onMounted(async () => {
+    window[$lcamelCase(`get-${service}`)]();
 
-    window[$lcamelCase(item)]['value'] = await Model.get(id,{
-      ...params,
-      query: {
-        ...params.query,
-        ...query
-      }
-    });
+    Model.on('created',window[$lcamelCase(`get-${service}`)]);
+    Model.on('patched',window[$lcamelCase(`get-${service}`)]);
+    Model.on('removed',window[$lcamelCase(`get-${service}`)]);
   });
 
+  window[$lcamelCase(`${item}-params`)] = computed(() => {
+    return {
+      $fastJoinShared: true, // common
+      [`${service}_fJoinHookResolversQuery`]: { // common
+        creator: true,
+      },
+      ...params.value
+    };
+  });
+
+   window[$lcamelCase(`get-${service}`)] = async function() {
+    window[$lcamelCase(item)]['value'] = await Model.get(id,{
+      ...params.value,
+      query: {
+        ...params.value.query,
+        ...query.value
+      }
+    });
+  };
 
   return {
     item:window[$lcamelCase(item)],
+    itemParams:window[$lcamelCase(`${item}-params`)],
+    getCardPayload: function (list) {
+      return index => {
+        return list.cards.find((_, idx) => idx === (index));
+      };
+    },
     addList: async function (list, customParams = {}) {
       try {
         window[$lcamelCase(item)].value = await new Model({...window[$lcamelCase(item)].value}).save({
@@ -51,10 +74,10 @@ export function useItemLists({
               lists: list,
             },
           },
-          ...params,
+          ...params.value,
           query: {
-            ...params.query,
-            ...query
+            ...params.value.query,
+            ...query.value
           },
             ...customParams
         });
@@ -77,10 +100,10 @@ export function useItemLists({
       try {
         window[$lcamelCase(item)].value = await new Model({...window[$lcamelCase(item)].value}).save({
           data,
-          ...params,
+          ...params.value,
           query: {
-            ...params.query,
-            ...query,
+            ...params.value.query,
+            ...query.value,
           },
           ...customParams
         });

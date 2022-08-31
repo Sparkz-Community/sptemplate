@@ -6,10 +6,11 @@
       :model-value="boardTemplate"
       @add-list="addList"
       @update:model-value="updateItem"
-      @@add-card="addCardToList"
+      @add-card="addCardToList"
       @get-card-payload="getCardPayload"
       @card-dropped="handleCardDrop"
-
+      @delete-card="handleDeleteCard"
+      @save-card="handleEditCard"
     >
       <template #update-name>
         <q-input v-model="boardTemplate.name" @keyup.enter="updateItem({name: boardTemplate.name})"
@@ -90,7 +91,7 @@
       debounce: 2000,
     },
   });
-  const {item: boardTemplate, addList, updateItem} = useItemLists({service: 'board-templates'});
+  const {item: boardTemplate, addList, updateItem, getCardPayload} = useItemLists({service: 'board-templates'});
 
 
   watch(boards, (newVal) => {
@@ -202,26 +203,19 @@
     }
   }
 
-
-  function getCardPayload(list) {
-    return index => {
-      return list.cards.find(card => card.order === (index));
-    };
-  }
-
   async function addCardToList({list, card, close}) {
     try {
       const cardsOnList = $lget(list, ['cards'], []);
-      card.order = $lget(card, ['order'], this.getMaxOrder(cardsOnList));
+      card.order = $lget(card, ['order'], getMaxOrder(cardsOnList));
       card.list = $lget(list, '_id');
 
       await updateItem(
         {$addToSet: {'lists.$.cards': card}},
-        {query: {'lists._id': this.$lget(list, '_id')}}
+        {query: {'lists._id': $lget(list, '_id')}},
       );
       close();
     } catch (e) {
-      this.$q.notify({
+      $q.notify({
         type: 'negative',
         message: e.message,
         timeout: 30000,
@@ -236,7 +230,7 @@
     }
   }
 
-  async function  handleCardDrop(dropResult) {
+  async function handleCardDrop(dropResult) {
     const {removedOrder, addedOrder, card, newList, oldList} = dropResult;
     if (newList._id === oldList._id) {
       moveItem(removedOrder, addedOrder, card, newList.cards);
@@ -249,9 +243,9 @@
         const {cards} = list;
 
         if (list._id === newList._id) {
-          card.order =  addedOrder;
+          card.order = addedOrder;
           list.cards = [card, ...cards.map(crd => {
-            if (crd.order >=  addedOrder) {
+            if (crd.order >= addedOrder) {
               crd.order += 1;
             }
             return crd;
@@ -272,6 +266,134 @@
     }
 
   }
+
+  async function handleEditCard({list, card, close}) {
+    try {
+
+      await updateItem(
+        {$set: {[`lists.$.cards.${card.order - 1}`]: card}},
+        {query: {'lists._id': $lget(list, '_id')}}
+      );
+      close();
+
+      $q.notify({
+        type: 'positive',
+        message: $lget({}, 'successMessage', `Successfully Edited added ${$lget(card, 'name')} card.`),
+      });
+    } catch(e){
+      $q.notify({
+        type: 'negative',
+        message: e.message,
+        timeout: 30000,
+        actions: [
+          {
+            icon: 'close', color: 'white', handler: () => {
+              /* ... */
+            },
+          },
+        ],
+      });
+    }
+  }
+
+  async function handleDeleteCard({list, card, close}) {
+    console.log({list, card, close});
+    $q.dialog({
+      title: 'Confirm',
+      message: `Are you sure you want to remove "${card.name}"?`,
+      ok: {
+        push: true,
+        color: 'negative',
+      },
+      cancel: true,
+      persistent: true,
+    }).onOk(async () => {
+      try {
+        // const cardsToPatch = list.cards.filter(c => c._id !==card._id).filter(crd => (crd.order > card.order) && crd._id);
+        // console.log({cardsToPatch});
+        const {lists} = boardTemplate.value;
+        const newLists = lists.map(list => {
+          const {cards} = list;
+          list.cards = cards.filter(crd => crd._id !== card._id).map(crd => {
+            if (crd.order > card.order) {
+              crd.order -= 1;
+            }
+            return crd;
+          });
+
+          return list;
+        });
+        await updateItem({lists: newLists});
+
+        $q.notify({
+          type: 'positive',
+          message: $lget({}, 'successMessage', `Successfully Edited added ${$lget(card, 'name')} card.`),
+        });
+      } catch (e) {
+        $q.notify({
+          type: 'negative',
+          message: e.message,
+          timeout: 30000,
+          actions: [
+            {
+              icon: 'close', color: 'white', handler: () => {
+                /* ... */
+              },
+            },
+          ],
+        });
+      }
+      // remove from list and save
+      // try {
+      //   const id = this.$lget(this.boardTemplate,'_id');
+      //   const otherCardsOnList = list.cards.filter(c => c._id !==card._id);
+      //   const otherCardsOnListWhoseOrderDecremeted = otherCardsOnList.filter(crd => (crd.order > card.order) && crd._id);
+      //
+      //   await this.patchBdTemplate([
+      //     id,
+      //     {
+      //       $pull: {'lists.$.cards': {_id: card._id}},
+      //     },
+      //     {
+      //       query: {
+      //         'lists._id' : this.$lget(list,'_id')
+      //       }
+      //     },
+      //   ]);
+      //
+      //   await Promise.all([
+      //     otherCardsOnListWhoseOrderDecremeted.map(crd =>this.patchBdTemplate([
+      //       id,
+      //       { $inc: { [`lists.$.cards.${crd.order-2}.order`]: -1}},
+      //       {
+      //         query: {
+      //           'lists._id' : this.$lget(list,'_id')
+      //         }
+      //       },
+      //     ]))
+      //   ]);
+      //   close();
+      //   this.$q.notify({
+      //     type: 'positive',
+      //     message: this.$lget(this.elementData, 'successMessage', `Successfully Edited added ${this.$lget(card, 'name')} card.`),
+      //   });
+      // } catch (e) {
+      //   this.$q.notify({
+      //     type: 'negative',
+      //     message: e.message,
+      //     timeout: 30000,
+      //     actions: [
+      //       {
+      //         icon: 'close', color: 'white', handler: () => {
+      //           /* ... */
+      //         },
+      //       },
+      //     ],
+      //   });
+      // }
+    });
+  }
+
 </script>
 
 

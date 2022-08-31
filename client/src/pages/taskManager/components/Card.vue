@@ -34,20 +34,19 @@
           </q-icon>
       </span>
       <div style="position: absolute; top: 0; right: 0;" v-if="!$lget(card,'completed',false)">
-        <div v-if="$lget(list,'_id') !== $lget(board,'_id')">
-          <q-btn size="sm" flat round icon="edit" @click.stop="$emit('open-edit-dialog',card)"
-                 @touchstart.stop="$emit('open-edit-dialog',card)"></q-btn>
-          <q-btn size="sm" flat round icon="fas fa-trash" @click.stop="$emit('delete-card', card)"
-                 @touchstart.stop="$emit('delete-card', card)"></q-btn>
+<!--        <div v-if="$(list,'_id') !== $lget(board,'_id')">-->
+          <q-btn size="sm" flat round icon="edit" @click.stop="openEditDialog(card)"
+                 @touchstart.stop="openEditDialog(card)"></q-btn>
+          <q-btn size="sm" flat round icon="fas fa-trash" @click.stop="$emit('delete-card', {list,card, close})"
+                 @touchstart.stop="$emit('delete-card', {list,card, close})"></q-btn>
         </div>
         <div v-else>
           <q-btn hint="restore" size="sm" flat round icon="fas fa-undo" @click.stop="$emit('restore-from-recycle',card)"
                  @touchstart.stop="$emit('restore-from-recycle',card)"/>
-          <q-btn hint="delete for good" size="sm" flat round icon="fas fa-trash" @click.stop="$emit('delete-card',card)"
-                 @touchstart.stop="$emit('delete-card',card)"/>
+          <q-btn hint="delete for good" size="sm" flat round icon="fas fa-trash" @click.stop="$emit('delete-card',{list,card,close})"
+                 @touchstart.stop="$emit('delete-card',{list,card,close})"/>
         </div>
 
-      </div>
       <span @dblclick="handlePopupShow">
         <span style="font-size: 13pt; margin-left: -10px">{{ card.name }}
           <q-icon v-if="$lget(card,'completed')" name="check" color="positive">
@@ -65,7 +64,7 @@
         <q-popup-edit ref="popup"
                       v-model="edit_card.name"
                       :validate="val => val.length > 0"
-                      @save="$emit('save-card',{edit_card, ...arguments})"
+                      @save="$emit('save-card',{list, card: edit_card, close, ...arguments})"
                       @before-show="handlePopup"
                       @hide="popup_show = false">
           <template v-slot="{ initialValue, value, validate, set, cancel }">
@@ -103,17 +102,25 @@
       <transition name="slide-fade">
         <div class="cursor-pointer">
           <div v-for="(childCard,index) in card.children" :key="index" class="q-ml-sm q-my-xs">
+
             <card
               :board="board"
               :card="childCard"
               :list="list"
               @delete-card="deleteCardFromParent"
-              @open-edit-dialog="openEditDialog"
             />
           </div>
         </div>
       </transition>
     </q-card-section>
+
+    <card-form-dialog
+      v-model="openFormDialog"
+      :card="cardToEdit"
+      :list="list"
+      @save-card="$emit('save-card', {list,card:$event, close})"
+      @delete-card="$emit('delete-card',{list,card: $event, close})"
+    />
 
 <!--
     <card-form-dialog
@@ -135,6 +142,7 @@
   import {inject, ref, watch} from 'vue';
   import {useQuasar,  date} from 'quasar';
   import { copyText } from 'vue3-clipboard';
+  import CardFormDialog from 'pages/taskManager/components/CardFormDialog';
 
   const $lget = inject('$lget');
   const $activeAccount = inject('$activeAccount');
@@ -172,7 +180,7 @@
       }
     },
     'delete-card': (item) => {
-      if (item) {
+      if (item.card) {
         return true;
       } else {
         console.warn('Invalid delete-card event payload!');
@@ -187,14 +195,7 @@
         return false;
       }
     },
-    'open-edit-dialog': (item) => {
-      if (item) {
-        return true;
-      } else {
-        console.warn('Invalid open-edit-dialog event payload!');
-        return false;
-      }
-    },
+
   });
 
   const showChild = ref(false);
@@ -306,7 +307,7 @@
   }
 
   function save(card) {
-    $emit('save-card',card);
+    $emit('save-card', {list: props.list,card, close});
     openFormDialog.value = false;
   }
   function deleteCardFromParent(card){
@@ -319,6 +320,9 @@
     openFormDialog.value = true;
   }
 
+  function close() {
+    openFormDialog.value = false;
+  }
   // function editCardOnList(card){
   //   edit_card.value.children = edit_card.value.children.map(child => {
   //     if(child._id === card._id) {
