@@ -459,7 +459,6 @@
     setup() {
       const $lget = inject('$lget');
       const $lmerge = inject('$lmerge');
-      const activeAccount = inject('activeAccount');
       const messagesStore = useMessages();
 
       const filter = ref({
@@ -468,13 +467,8 @@
         toDate: '',
         hasAttachment: false,
       });
-      const link = ref('inbox');
       const selectedFilters = ref([]);
-      const linkQuery = ref({
-        _id: {
-          $in: $lget(activeAccount, link.value, []),
-        },
-      });
+      const linkQuery = ref({});
 
       const selectedFilterQuery = computed(() => {
         let selectedFilterQuery = {};
@@ -555,7 +549,6 @@
         isFindMessagesPending,
         messagesQuery,
         linkQuery,
-        link,
         filter,
         searchBoxQuery,
         selectedFilters,
@@ -581,7 +574,6 @@
             openedMessageId: this.openedMessageId,
           };
         },
-        runWhen: this.runRouterMixin,
       }),
     ],
     inject: [
@@ -627,7 +619,7 @@
         showFilters: false,
         showAddFilters: false,
         showInbox: false,
-        runRouterMixin: false,
+        link: 'inbox',
         // checkAll: false,
         // check1: false,
         // check2: false,
@@ -655,40 +647,37 @@
         dialogTitle: 'New Message',
       };
     },
-    // beforeCreate() {
-    //   this.onSelectLink(this.link);
-    // },
     watch: {
-      // link: {
-      //   immediate: true,
-      //   deep: true,
-      //   handler(newVal) {
-      //     if (newVal !== 'trash') {
-      //       this.linkQuery = {
-      //         _id: {
-      //           $in: this.$lget(this.activeAccount, newVal, []),
-      //         },
-      //       };
-      //     } else {
-      //       this.linkQuery = {
-      //         $and: [
-      //           {
-      //             _id: {
-      //               $nin: this.$lget(this.activeAccount, 'outbox', [])
-      //                 .concat(this.$lget(this.activeAccount, 'inbox', [])),
-      //             },
-      //           },
-      //           {
-      //             $or: [
-      //               {from: this.$lget(this.activeAccount, '_id')},
-      //               {to: this.$lget(this.activeAccount, '_id')},
-      //             ],
-      //           },
-      //         ],
-      //       };
-      //     }
-      //   },
-      // },
+      link: {
+        immediate: true,
+        deep: true,
+        handler(newVal) {
+          if (newVal !== 'trash') {
+            this.linkQuery = {
+              _id: {
+                $in: this.$lget(this.activeAccount, newVal, []),
+              },
+            };
+          } else {
+            this.linkQuery = {
+              $and: [
+                {
+                  _id: {
+                    $nin: this.$lget(this.activeAccount, 'outbox', [])
+                      .concat(this.$lget(this.activeAccount, 'inbox', [])),
+                  },
+                },
+                {
+                  $or: [
+                    {from: this.$lget(this.activeAccount, '_id')},
+                    {to: this.$lget(this.activeAccount, '_id')},
+                  ],
+                },
+              ],
+            };
+          }
+        },
+      },
       filter: {
         deep: true,
         handler(newValue) {
@@ -925,31 +914,6 @@
         this.link = value;
         this.openMessage = false;
         this.openedMessage = undefined;
-        if (value !== 'trash') {
-          this.linkQuery = {
-            _id: {
-              $in: this.$lget(this.activeAccount, value, []),
-            },
-          };
-        } else {
-          this.linkQuery = {
-            $and: [
-              {
-                _id: {
-                  $nin: this.$lget(this.activeAccount, 'outbox', [])
-                    .concat(this.$lget(this.activeAccount, 'inbox', [])),
-                },
-              },
-              {
-                $or: [
-                  {from: this.$lget(this.activeAccount, '_id')},
-                  {to: this.$lget(this.activeAccount, '_id')},
-                ],
-              },
-            ],
-          };
-        }
-        this.runRouterMixin = true;
       },
       onOpenMessage(evt, row) {
         this.openMessage = true;
