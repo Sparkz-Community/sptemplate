@@ -433,7 +433,6 @@
   import DatePiker from 'pages/messages/components/date-piker';
   import InboxDialog from 'pages/messages/components/inbox-dialog';
   import InboxForm from 'pages/messages/components/inbox-form';
-  // eslint-disable-next-line no-unused-vars
   import {routerMixin, useFindPaginate} from '@sparkz-community/common-client-lib';
   import TableTemplate
     from '@sparkz-community/common-client-lib/src/components/common/molecules/tables/TableTemplate.vue';
