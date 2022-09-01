@@ -269,18 +269,17 @@
 
   async function handleEditCard({list, card, close}) {
     try {
-
+      const cardIndex = list.cards.findIndex(crd => crd._id === card._id);
       await updateItem(
-        {$set: {[`lists.$.cards.${card.order - 1}`]: card}},
-        {query: {'lists._id': $lget(list, '_id')}}
+        {$set: {[`lists.$.cards.${cardIndex}`]: card}},
+        {query: {'lists._id': $lget(list, '_id')}},
       );
       close();
-
       $q.notify({
         type: 'positive',
         message: $lget({}, 'successMessage', `Successfully Edited added ${$lget(card, 'name')} card.`),
       });
-    } catch(e){
+    } catch (e) {
       $q.notify({
         type: 'negative',
         message: e.message,
