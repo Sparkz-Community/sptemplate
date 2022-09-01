@@ -467,8 +467,6 @@
         hasAttachment: false,
       });
       const selectedFilters = ref([]);
-      const linkQuery = ref({});
-
       const selectedFilterQuery = computed(() => {
         let selectedFilterQuery = {};
         selectedFilters.value.map(selectedFilter => {
@@ -476,6 +474,7 @@
         });
         return selectedFilterQuery;
       });
+
       const searchBoxQuery = computed(() => {
         const words = $lget(filter.value, 'words');
         return {
@@ -498,6 +497,7 @@
         };
       });
 
+      const linkQuery = ref({});
       const messagesQuery = computed(() => {
         return Object.assign(
           {},
@@ -514,7 +514,6 @@
       });
       const messagesParams = computed(() => {
         return {
-          // paginate: false,
           ['in-app-messages_fJoinHookResolversQuery']: {
             from: true,
             to: true,
@@ -669,7 +668,7 @@
                 {
                   $or: [
                     {from: this.$lget(this.activeAccount, '_id')},
-                    {to: this.$lget(this.activeAccount, '_id')},
+                    {to: [this.$lget(this.activeAccount, '_id')]},
                   ],
                 },
               ],
@@ -1079,12 +1078,13 @@
               {
                 $or: [
                   {from: this.$lget(this.activeAccount, '_id')},
-                  {to: this.$lget(this.activeAccount, '_id')},
+                  {to: [this.$lget(this.activeAccount, '_id')]},
                 ],
               },
             ],
           };
         }
+        this.messagesRefresh();
       },
     },
   };
