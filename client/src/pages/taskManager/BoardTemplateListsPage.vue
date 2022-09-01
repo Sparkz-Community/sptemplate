@@ -98,6 +98,10 @@
     boardOrder.value = getMaxOrder(newVal) + 1;
   }, {immediate: true, deep: true});
 
+  watch(()=>boardTemplate.value, (newVal) => {
+    boardTitle.value = newVal.name;
+  }, {immediate: true, deep: true});
+
 
   async function createBoardFromTemplate(boardTemplate) {
     try {
