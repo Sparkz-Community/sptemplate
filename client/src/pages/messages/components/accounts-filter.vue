@@ -1,6 +1,7 @@
 <template>
   <search-input use-chips
                 :model="accountsStore.Model"
+                qid="messageRecipients"
                 v-bind="$attrs"
                 option-value="_id"
                 option-label="name"

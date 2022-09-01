@@ -1,13 +1,6 @@
 <template>
-  <!--<q-select v-bind="$attrs"-->
-  <!--          :options="this['data']"-->
-  <!--          :model-value="modelValue"-->
-  <!--          use-input-->
-  <!--          @update:model-value="setModel"-->
-  <!--          @filter="filterFn"-->
-  <!--          new-value-mode="add-unique"-->
-  <!--          @new-value="$emit('add', $event)">-->
   <q-select v-bind="$attrs"
+            :options="serviceItems"
             :model-value="modelValue"
             use-input
             @update:model-value="setModel"
@@ -61,6 +54,7 @@
       const $lmerge = inject('$lmerge');
       const qid = toRef(props, 'qid');
       const localQuery = ref({});
+      const customQuery = toRef(props, 'customQuery');
 
       const query = computed(() => {
         // if (!['', null, undefined].includes(this.search)) {
@@ -77,18 +71,16 @@
           $sort: {
             name: 1,
           },
-        }, localQuery, props.customQuery);
+        }, localQuery.value, customQuery.value);
       });
 
       const params = computed(() => {
         return {
-          qid: qid,
           debounce: 500,
-          // [`${props.model.servicePath}_fJoinHookResolversQuery`]: this.fastJoinResolverQuery,
         };
       });
 
-      const {currentPage} = useFindPaginate({
+      const {currentPage, items: serviceItems, error} = useFindPaginate({
         limit: ref(6),
         model: props.model,
         qid: qid,
@@ -98,8 +90,10 @@
       });
 
       return {
+        error,
         localQuery,
         currentPage,
+        serviceItems,
       };
     },
     emits: [
