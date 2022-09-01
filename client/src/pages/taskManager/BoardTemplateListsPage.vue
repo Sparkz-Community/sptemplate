@@ -237,14 +237,18 @@
       const {lists} = boardTemplate.value;
       await updateItem({lists});
     } else {
+      // moved lists
+      // TODO: Test some casl abilities based on rules on list  if failed, add dialog with fields to help provide info to satisfy ability
+      // NB: rules will be checked backend too
+      //else run this code
       const {lists} = boardTemplate.value;
 
       const newLists = lists.map(list => {
-        const {cards} = list;
 
         if (list._id === newList._id) {
           card.order = addedOrder;
-          list.cards = [card, ...cards.map(crd => {
+          card.list = $lget(list, '_id');
+          list.cards = [card, ...newList.cards.map(crd => {
             if (crd.order >= addedOrder) {
               crd.order += 1;
             }
@@ -253,7 +257,7 @@
         }
         if (list._id === oldList._id) {
 
-          list.cards = cards.filter(crd => crd._id !== card._id).map(crd => {
+          list.cards = oldList.cards.filter(crd => crd._id !== card._id).map(crd => {
             if (crd.order > removedOrder) {
               crd.order -= 1;
             }
@@ -262,7 +266,7 @@
         }
         return list;
       });
-      await updateItem({lists: newLists});
+      await updateItem({lists: newLists},);
     }
 
   }

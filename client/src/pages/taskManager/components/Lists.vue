@@ -160,8 +160,8 @@
           </draggable>
         </template>
       </container>
-<!--      <pre> {{ scene.children.map(i => i.data) }}</pre>-->
-<!--      <pre>{{ $lget(modelValue, 'lists', []).map(i => ({name: i.name, cards: $lget(i, '_fastjoin.cards')})) }}</pre>-->
+      <!--      <pre> {{ scene.children.map(i => i.data) }}</pre>-->
+      <!--      <pre>{{ $lget(modelValue, 'lists', []).map(i => ({name: i.name, cards: $lget(i, '_fastjoin.cards')})) }}</pre>-->
     </div>
 
     <list-form-dialog
@@ -172,13 +172,13 @@
       @close="openListDialog=false"
       :max-order="maxOrder"
     />
-<!--    <card-form-dialog
-      v-model="openEditDialog"
-      :card="cardToEdit.card"
-      :list="cardToEdit.list"
-      @save-card="$emit('save-card',{card:$event,close:close})"
-      @delete-card="$emit('delete-card',{card:$event,close:close})"
-    />-->
+    <!--    <card-form-dialog
+          v-model="openEditDialog"
+          :card="cardToEdit.card"
+          :list="cardToEdit.list"
+          @save-card="$emit('save-card',{card:$event,close:close})"
+          @delete-card="$emit('delete-card',{card:$event,close:close})"
+        />-->
   </div>
 </template>
 
@@ -338,7 +338,7 @@
             .map((card) => ({
               type: 'draggable',
               id: card._id,
-              oldList:list,
+              oldList: list,
               loading: false,
               data: card,
             })),
@@ -389,10 +389,10 @@
               item.hidden = hiddenListId.includes($lget(item, '_id'));
               return item;
             });
-            const list = newVal.find(lst => !tempToHide.value.map(itm => $lget(itm, '_id')).includes($lget(lst, '_id')));
-            if (!hiddenListId.includes($lget(list, '_id'))) {
-              $emit('update:modelValue', {lists: listsToEdit});
-            }
+            // const list = newVal.find(lst => !tempToHide.value.map(itm => $lget(itm, '_id')).includes($lget(lst, '_id')));
+            // if (!hiddenListId.includes($lget(list, '_id'))) {
+            $emit('update:modelValue', {lists: listsToEdit});
+            // }
 
           }
           tempToHide.value = Array.from(newVal);
@@ -524,13 +524,13 @@
   }
 
   function onCardDrop(list, dropResult) {
-    if ($lget(dropResult, 'removedIndex')!==null || $lget(dropResult, 'addedIndex') !== null) {
+    if ($lget(dropResult, 'removedIndex') !== null || $lget(dropResult, 'addedIndex') !== null) {
       const {addedIndex, payload: {data, oldList}} = dropResult;
       const oldCard = $lget(oldList, props.cardsPath, []).find(crd => crd._id === data._id);
-      if(oldCard ) {
+      if (oldCard) {
         const removedOrder = oldCard.order;
         const addedOrder = addedIndex + 1;
-        $emit('card-dropped',{removedOrder, addedOrder,card: data, newList:list, oldList});
+        $emit('card-dropped', {removedOrder, addedOrder, card: data, newList: list, oldList});
       }
     }
   }

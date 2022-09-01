@@ -73,6 +73,7 @@ export function useItemLists({
               lists: list,
             },
           },
+          ...window[$lcamelCase(`${item}-params`)].value,
           ...params.value,
           query: {
             ...query.value
@@ -98,6 +99,7 @@ export function useItemLists({
       try {
         window[$lcamelCase(item)].value = await new Model({...window[$lcamelCase(item)].value}).save({
           data,
+          ...window[$lcamelCase(`${item}-params`)].value,
           ...params.value,
           query: {
             ...query.value,

@@ -58,7 +58,7 @@
     };
   });
 
-  const {item: board, addList, updateItem, getCardPayload, itemParams: boardParams} = useItemLists({
+  const {item: board, addList, updateItem, getCardPayload} = useItemLists({
     service: 'boards',
     params,
   });
@@ -86,7 +86,6 @@
               boards,
             },
           },
-          boardParams.value,
         );
       }
       close();
@@ -224,7 +223,6 @@
               card._id,
               {$set: {'boards.$.removed': true}},
               {
-                ...boardParams.value,
                 query: {'boards.id': boardId},
               },
             );
