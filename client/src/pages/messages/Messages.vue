@@ -200,7 +200,7 @@
             </q-td>
           </template>
 
-          <template #body-cell-actions>
+          <template #body-cell-actions="props">
             <q-td>
               <q-btn icon-right="delete"
                      no-caps
@@ -1085,7 +1085,6 @@
             ],
           };
         }
-        this.messagesRefresh();
       },
     },
   };

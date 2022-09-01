@@ -1,58 +1,60 @@
 <template>
   <q-card square flat class="form">
     <q-card-section style="position:absolute; bottom: 5rem; top:1rem; width:100%;">
-      <accounts-filter
-        v-if="!isReply"
-        autofocus
-        :label="placeholder.to"
-        @focus="placeholder.to='To:'"
-        @blur="placeholder.to='Recipients:'"
-        hint="Search recipients by name or email"
-        v-model="form.to"
+      <accounts-filter v-if="!isReply"
+                       autofocus
+                       :label="placeholder.to"
+                       @focus="placeholder.to='To:'"
+                       @blur="placeholder.to='Recipients:'"
+                       hint="Search recipients by name or email"
+                       v-model="form.to"
       />
       <div class="row q-gutter-sm items-center justify-end">
-        <q-input v-if="!isReply" hint="Search by subject" label="Subject:" v-model="form.subject" style="flex: 1;"
-                 dense/>
+        <q-input v-if="!isReply"
+                 hint="Search by subject"
+                 label="Subject:"
+                 v-model="form.subject"
+                 style="flex: 1;"
+                 dense />
       </div>
       <div style="position:relative; height: 70%;">
-        <q-editor
-          flat
-          square
-          style="position:absolute; bottom: 0; top: 0; left: 0; right: 0"
-          class="scroll q-mt-md"
-          v-model="form.body"
-          :definitions="{
-        save: {
-          tip: 'Save your work',
-          icon: 'save',
-          handler: saveWork
-        },
-        upload: {
-          tip: 'Upload attachment(s)',
-          icon: 'attachment',
-          handler: uploadIt
-        }
-      }"
-          :toolbar="[
-               [
-      {
-        label: 'Align',
-        icon: 'fas fa-align-left',
-        fixedLabel: true,
-        options: ['left', 'center', 'right', 'justify']
-      }
-    ],
-        ['bold', 'italic', 'strike', 'underline'],
-        ['upload', 'save']
-      ]"
+        <q-editor flat
+                  square
+                  style="position:absolute; bottom: 0; top: 0; left: 0; right: 0"
+                  class="scroll q-mt-md"
+                  v-model="form.body"
+                  :definitions="{
+                    save: {
+                      tip: 'Save your work',
+                      icon: 'save',
+                      handler: saveWork
+                    },
+                    upload: {
+                      tip: 'Upload attachment(s)',
+                      icon: 'attachment',
+                      handler: uploadIt
+                    }
+                  }"
+                  :toolbar="[
+                    [
+                      {
+                        label: 'Align',
+                        icon: 'fas fa-align-left',
+                        fixedLabel: true,
+                        options: ['left', 'center', 'right', 'justify']
+                      }
+                    ],
+                    ['bold', 'italic', 'strike', 'underline'],
+                    ['upload', 'save']
+                  ]"
         />
       </div>
       <q-dialog id="dia" v-model="uploadDialog">
         <q-card dark flat square bordered class="dia-card">
           <q-card-section class="row q-gutter-md no-wrap justify-between">
-            <q-btn @click="addAttachment" color="primary" label="Attachment" icon="add" :disabled="!validAttachment"/>
+            <q-btn @click="addAttachment" color="primary" label="Attachment" icon="add" :disabled="!validAttachment" />
 
-            <q-space/>
+            <q-space />
 
             <q-btn dense flat icon="close" v-close-popup>
               <q-tooltip>Close</q-tooltip>
@@ -82,7 +84,7 @@
         <q-btn flat v-if="form.attachments.length" :label="form.attachments.length" icon-right="attachment"></q-btn>
       </div>
       <q-btn-group flat class=" row q-gutter-sm">
-        <q-checkbox class="text-caption" v-model="form.isExternal" :true-value="true" label="Is External Mail"/>
+        <q-checkbox class="text-caption" v-model="form.isExternal" :true-value="true" label="Is External Mail" />
         <!--         <q-btn icon="fas fa-trash-alt">
                    <q-tooltip>
                      Discard draft
@@ -95,12 +97,12 @@
 </template>
 
 <script>
-  import {models} from 'feathers-pinia';
+  import { models } from 'feathers-pinia';
   import AccountsFilter from 'pages/messages/components/accounts-filter';
 
   export default {
     name: 'inbox-form',
-    components: {AccountsFilter},
+    components: { AccountsFilter },
     props: {
       message: {
         type: Object,
@@ -112,6 +114,7 @@
     },
     emits: [
       'sent',
+      'update:model-value'
     ],
     data() {
       return {
@@ -120,7 +123,7 @@
           to: 'Recipients: ',
         },
         form: new models.api.Messages(),
-        attachmentForm: {attachments: []},
+        attachmentForm: { attachments: [] },
         sending: false,
         validAttachment: false,
       };
@@ -131,7 +134,7 @@
         deep: true,
         handler: function (newVal) {
           if (newVal) {
-            this.form = new models.api.Messages({...newVal});
+            this.form = new models.api.Messages({ ...newVal });
           } else {
             this.form = new models.api.Messages();
           }

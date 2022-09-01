@@ -4,8 +4,8 @@
             :model-value="modelValue"
             use-input
             @update:model-value="setModel"
-            @filter="filterFn"
             new-value-mode="add-unique"
+            @filter="filterFn"
             @new-value="$emit('add', $event)">
     <template v-for="(_, slot) of $slots" v-slot:[slot]="scope">
       <slot :name="slot" v-bind="scope" />

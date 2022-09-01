@@ -11,10 +11,10 @@
                 dense
                 @add="addAccount"
                 @selected="selectedAccounts"
+                @update:model-value="$emit('update:model-value', $event)"
                 :model-value="modelValue">
     <template v-slot:option="scope">
-      <q-item v-bind="scope.itemProps"
-              v-on="scope.itemEvents">
+      <q-item v-bind="scope.itemProps">
         <q-item-section avatar>
           <q-avatar avatar text-color="white" color="accent">
             <q-img v-if="$lget(scope.opt, 'avatar.raw.file')"
@@ -70,17 +70,17 @@
         /**
          * This is the original code from website-Builder
          */
-        const form = new models.api.Accounts();
-        // console.log(form);
-        this.$emit('add', form);
+        // const form = new models.api.Accounts();
+        // // console.log(form);
+        // this.$emit('add', form);
 
         /**
          * This is what I assume would be the intended behavior
          */
-        // const form = new models.api.Accounts(newVal);
-        // form.addToStore();
-        // // console.log(form);
-        // this.$emit('add', form);
+        const form = new models.api.Accounts(newVal);
+        form.addToStore();
+        // console.log(form);
+        this.$emit('add', form);
       },
       selectedAccounts(newVal) {
         // console.log('selected: ', newVal);
