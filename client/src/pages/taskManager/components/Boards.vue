@@ -297,21 +297,21 @@
         dense: true,
       },
     },
-    // {
-    //   fieldType: 'ImageSelect',
-    //   path: 'banner',
-    //   attrs: {
-    //     stylePanelLayout: null,
-    //     imageCropAspectRatio: null,
-    //   },
-    //   'label-attrs': {
-    //     'v-text': 'Banner Image',
-    //     style: 'font-size: 20px; margin-top: -5px',
-    //   },
-    //   'div-attrs': {
-    //     class: 'col-12 q-my-lg',
-    //   },
-    // },
+    {
+      fieldType: 'ImageSelect',
+      path: 'banner',
+      attrs: {
+        stylePanelLayout: null,
+        imageCropAspectRatio: null,
+      },
+      'label-attrs': {
+        'v-text': 'Banner Image',
+        style: 'font-size: 20px; margin-top: -5px',
+      },
+      'div-attrs': {
+        class: 'col-12 q-my-lg',
+      },
+    },
   ]));
 
   watch(items, (newVal) => {

@@ -238,6 +238,9 @@
   import CardFormDialog from 'pages/taskManager/components/CardFormDialog';
   import {computed, inject, ref, watch} from 'vue';
   import {useQuasar, Screen} from 'quasar';
+  // import SelectInput
+  //   from '@sparkz-community/form-gen-client-lib/src/components/common/atoms/SelectInput/SelectInput';
+
 
   const $q = useQuasar();
   const $lget = inject('$lget');
@@ -383,7 +386,7 @@
       },
     },
     // {
-    //   fieldType: 'selectInput',
+    //   fieldType: SelectInput,
     //   path: 'owners',
     //   attrs: {
     //     multiple: true,
