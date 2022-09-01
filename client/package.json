@@ -36,7 +36,7 @@
     "feathers-batch": "^1.1.1",
     "feathers-graph-populate": "^3.0.1",
     "feathers-hooks-common": "^5.0.6",
-    "feathers-pinia": "^0.34.0",
+    "feathers-pinia": "^0.36.3",
     "pinia": "^2.0.17",
     "quasar": "^2.6.0",
     "socket.io-client": "^2.5.0",
