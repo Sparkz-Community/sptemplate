@@ -32,7 +32,6 @@ export function useItemLists({
 
   onMounted(async () => {
     window[$lcamelCase(`get-${service}`)]();
-
     Model.on('created',window[$lcamelCase(`get-${service}`)]);
     Model.on('patched',window[$lcamelCase(`get-${service}`)]);
     Model.on('removed',window[$lcamelCase(`get-${service}`)]);

@@ -567,6 +567,9 @@ module.exports = {
     find: [],
     get: [],
     create: [
+      context => {
+        return context;
+      },
       relate('mtm',relateBoardsConfig),
 
       // auditLogAfter({
@@ -629,7 +632,11 @@ module.exports = {
   },
 
   error: {
-    all: [],
+    all: [
+      context => {
+        return context;
+      },
+    ],
     find: [],
     get: [],
     create: [],

@@ -37,7 +37,7 @@
 
   import {useItemLists} from 'pages/taskManager/composables/itemListsComposable';
   import {computed, inject} from 'vue';
-  import {useQuasar} from 'quasar';
+  import {QSpinnerFacebook, useQuasar} from 'quasar';
   import {getMaxOrder} from 'pages/taskManager/utils';
   import {models} from 'feathers-pinia';
 
@@ -76,8 +76,15 @@
         id: $lget(board.value, '_id'),
         currentList: $lget(list, '_id'),
       };
+      $q.loading.show({
+        spinner: QSpinnerFacebook,
+        // spinnerColor: $lget(board.value, 'color.hexa', 'teal'),
+        spinnerSize: 140,
+        message: `adding card ${card.name} to list ${list.name} on board ${board.value.name}.`,
+      });
       if (tab === 'new') {
-        result = await new models.api.Cards({...card, boards}).save();
+        card.boards.push(boards);
+        result = await new models.api.Cards(card).save();
       } else {
         result = await cardStore.patch(
           card._id,
@@ -89,6 +96,7 @@
         );
       }
       close();
+      $q.loading.hide();
       $q.notify({
         type: 'positive',
         message: `Successfully Sent added ${$lget(result, 'name')} card to ${$lget(list, 'name')} list`,
@@ -111,8 +119,15 @@
 
   async function handleEditCard({card, close}) {
     try {
+      $q.loading.show({
+        spinner: QSpinnerFacebook,
+        // spinnerColor: $lget(board.value, 'color.hexa', 'teal'),
+        spinnerSize: 140,
+        message: `updating card ${card.name}.`,
+      });
       const result = await new models.api.Cards(card).save();
       close();
+      $q.loading.hide();
       $q.notify({
         type: 'positive',
         message: `Successfully edited ${$lget(result, 'name')}`,
@@ -209,15 +224,27 @@
         switch (data) {
 
           case 'recycle': {
+            $q.loading.show({
+              spinner: QSpinnerFacebook,
+              // spinnerColor: $lget(board.value, 'color.hexa', 'teal'),
+              spinnerSize: 140,
+              message: `recycling card ${card.name}.`,
+            });
             const result = await moveToList({froList, toList, card});
             console.log({result});
+            $q.loading.hide();
             action = `Successfully recycled ${$lget(card, 'name')}`;
             break;
           }
           case 'permanently': {
 
             const boardId = $lget(board.value, '_id');
-
+            $q.loading.show({
+              spinner: QSpinnerFacebook,
+              // spinnerColor: $lget(board.value, 'color.hexa', 'teal'),
+              spinnerSize: 140,
+              message: `removing card ${card.name} from board ${board.value.name}.`,
+            });
             // when we remove, remove only from the boards in data but do not delete the card unless now boards are empty
             const result = await cardStore.patch(
               card._id,
@@ -226,11 +253,18 @@
                 query: {'boards.id': boardId},
               },
             );
+            $q.loading.hide();
             action = `${$lget(result, 'name')} will be removed permanently from this board after 30 days`;
             break;
           }
           default: {
             //
+            $q.loading.show({
+              spinner: QSpinnerFacebook,
+              // spinnerColor: $lget(board.value, 'color.hexa', 'teal'),
+              spinnerSize: 140,
+              message: `deleteing card ${card.name} from all boards.`,
+            });
             const cardId = $lget(card, ['_id']);
             const result = await new models.api.Cards(card).remove(cardId);
             action = `${$lget(result, 'name')} will be removed permanently from all boards after 30 days`;
@@ -265,27 +299,33 @@
     const historyB4Recycle = listHistory.find(item => item.to === froList);
     const toList = $lget(historyB4Recycle, ['from', 'list']);
     try {
-      console.log({froList, toList});
+      $q.loading.show({
+        spinner: QSpinnerFacebook,
+        // spinnerColor: $lget(board.value, 'color.hexa', 'teal'),
+        spinnerSize: 140,
+        message: `restoring ${card.name} from recycle bin.`,
+      });
       const result = await moveToList({froList, toList, card});
       console.log({result});
+      $q.loading.hide();
       close();
       $q.notify({
         type: 'positive',
         message: `Successfully restored ${$lget(card, 'name')} card from Recycle Bin.`,
       });
     } catch (e) {
-      // $q.notify({
-      //   type: 'negative',
-      //   message: e.message,
-      //   timeout: 30000,
-      //   actions: [
-      //     {
-      //       icon: 'close', color: 'white', handler: () => {
-      //         /* ... */
-      //       },
-      //     },
-      //   ],
-      // });
+      $q.notify({
+        type: 'negative',
+        message: e.message,
+        timeout: 30000,
+        actions: [
+          {
+            icon: 'close', color: 'white', handler: () => {
+              /* ... */
+            },
+          },
+        ],
+      });
     }
   }
 
@@ -302,6 +342,12 @@
         const cardsWhosePosnIncreased = otherCardsOnList.filter(crd => (crd.order < removedOrder) && crd.order >= addedOrder);
         const theirIds = cardsWhosePosnIncreased.map(crd => crd._id);
         //their posn has increased by 1
+        $q.loading.show({
+          spinner: QSpinnerFacebook,
+          // spinnerColor: $lget(board.value, 'color.hexa', 'teal'),
+          spinnerSize: 140,
+          message: `moving card ${card.name} up on list ${newList.name}.`,
+        });
         await Promise.all([
           cardStore.patch(card._id,{order: addedOrder}),
           cardStore.patch(
@@ -314,24 +360,32 @@
             }
           )
         ]);
+        $q.loading.hide();
       } else {
         console.log('Moved Down');
         const cardsWhosePosnDecreased = otherCardsOnList.filter(crd => (crd.order > removedOrder) && crd.order <= addedOrder);
         const theirIds = cardsWhosePosnDecreased.map(crd => crd._id);
         //their posn has decreased by 1
+        $q.loading.show({
+          spinner: QSpinnerFacebook,
+          // spinnerColor: $lget(board.value, 'color.hexa', 'teal'),
+          spinnerSize: 140,
+          message: `moving card ${card.name} down list ${newList.name}.`,
+        });
         await Promise.all([
-
           cardStore.patch(card._id,{order: addedOrder}),
           cardStore.patch(
             null,
             {$inc : {'order' : -1}},
             {
               query: {
-                _id: {$in: theirIds}
+                _id: {$in: theirIds},
+                'boards.id': $lget(board.value, ['_id']),
               }
             }
           )
         ]);
+        $q.loading.hide();
       }
     } else {
       console.log('Changed lists',{addedOrder});
@@ -341,8 +395,15 @@
       const froList = oldList._id;
       const toList = newList._id;
       try {
+        $q.loading.show({
+          spinner: QSpinnerFacebook,
+          // spinnerColor: $lget(board.value, 'color.hexa', 'teal'),
+          spinnerSize: 140,
+          message: `moving ${card.name} from list ${oldList.name} to list ${oldList.name}.`,
+        });
         const result = await moveToList({froList, toList, card});
         console.log({result});
+        $q.loading.hide();
         close();
         $q.notify({
           type: 'positive',

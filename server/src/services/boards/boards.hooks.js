@@ -36,17 +36,18 @@ const boardListResolvers = {
                 ...customParams,
               },
               _id: {$in: lget(list, ['cards'],[])},
-              'boards.id': lget(board,['_id']),
-              'boards.removed': false,
-              'boards.currentList': lget(list, '_id')
+              $and: [
+                {'boards.id': lget(board,['_id'])},
+                {'boards.removed': false},
+                {'boards.currentList': lget(list, '_id')}
+              ]
             },
           };
           if ($select) {
             lset(params, 'query.$select', $select);
           }
           const result = await coreCall(context, 'cards').find(params);
-          const cardsToAddToList = lget(result,['data'],[]).map(item => item._id) ;
-          console.log(cardsToAddToList);
+
           lset(list,['_fastjoin','cards'], lget(result,['data'],[]));
           return list;
         }));
