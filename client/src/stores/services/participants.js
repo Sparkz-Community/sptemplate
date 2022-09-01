@@ -1,6 +1,9 @@
 import feathersClient from '../../api/feathers-client';
 import { defineStore, BaseModel } from 'feathers-pinia';
 
+// eslint-disable-next-line no-undef
+const {lodash} = require('@sparkz-community/common-client-lib');
+const {$lget, $lset} = lodash;
 
 export class Participants extends BaseModel {
   constructor(data, options) {
@@ -15,6 +18,18 @@ export class Participants extends BaseModel {
       rooms: [],
       unseenChats: [],
     };
+  }
+
+  static setupInstance(data) {
+    let createdAt = $lget(data, 'createdAt');
+    if (typeof createdAt === 'string') {
+      $lset(data, 'createdAt', new Date(createdAt));
+    }
+    let updatedAt = $lget(data, 'updatedAt');
+    if (typeof updatedAt === 'string') {
+      $lset(data, 'updatedAt', new Date(updatedAt));
+    }
+    return data;
   }
 }
 

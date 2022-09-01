@@ -54,7 +54,7 @@
     "@ionrev/ir-auth-management-server": "^3.1.2",
     "@ionrev/ir-encryption-server": "^0.1.0",
     "@ionrev/ir-messenger-server": "^2.2.2",
-    "@ionrev/ir-roles-server": "^2.0.5",
+    "@ionrev/ir-roles-server": "2.0.5",
     "@iy4u/common-server-lib": "^2.1.21",
     "@iy4u/common-utils": "^0.3.1",
     "@iy4u/feathers-fingerprint": "^0.3.3",

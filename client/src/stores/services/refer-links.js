@@ -1,8 +1,11 @@
 import feathersClient from '../../api/feathers-client';
 import { defineStore, BaseModel } from 'feathers-pinia';
 
+// eslint-disable-next-line no-undef
+const {lodash} = require('@sparkz-community/common-client-lib');
+const {$lget, $lset} = lodash;
 
-export class ReferLinks  extends BaseModel {
+export class ReferLinks extends BaseModel {
   constructor(data, options) {
     super(data, options);
   }
@@ -19,6 +22,18 @@ export class ReferLinks  extends BaseModel {
       createdBy: undefined,
       updatedBy: undefined,
     };
+  }
+
+  static setupInstance(data) {
+    let createdAt = $lget(data, 'createdAt');
+    if (typeof createdAt === 'string') {
+      $lset(data, 'createdAt', new Date(createdAt));
+    }
+    let updatedAt = $lget(data, 'updatedAt');
+    if (typeof updatedAt === 'string') {
+      $lset(data, 'updatedAt', new Date(updatedAt));
+    }
+    return data;
   }
 }
 

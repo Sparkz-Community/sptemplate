@@ -17,6 +17,28 @@ export default function ({store, ssrContext}) {
           // meta: {requiresAuth: true},
           component: () => import ('pages/notifications/Notifications.vue'),
         },
+        {
+          path: 'chats',
+          name: 'chats',
+          meta: {requiresAuth: true},
+          component: () => import ('pages/chats/chats.vue'),
+        },
+
+        {
+          path: 'refer-test',
+          name: 'refer-test',
+          component: () => import('components/referLinks/referLinkGenerator.vue'),
+        },
+        {
+          path: 'refer',
+          name: 'refer',
+          component: () => import('pages/referLinks/Refer.vue'),
+        },
+        {
+          path: 'refer-form',
+          name: 'refer-form',
+          component: () => import('pages/referLinks/ReferForm.vue'),
+        },
 
         ...commonRoutes({store, ssrContext}),
       ],
