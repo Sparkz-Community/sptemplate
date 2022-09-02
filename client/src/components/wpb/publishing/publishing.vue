@@ -62,13 +62,14 @@
         };
       });
 
-      const {items: publications} = useFindPaginate({
+      const {items: publications, find: refreshPublications} = useFindPaginate({
         model: wpbPagePublicationsStore.Model,
         qid: ref('publications'),
         query: wpbPagePublicationsQuery,
       });
       return {
         publications,
+        refreshPublications,
       };
     },
     data() {
@@ -124,6 +125,7 @@
           .then(async () => {
             this.publishDio = !this.publishDio;
             this.$emit('saved');
+            this.refreshPublications();
 
             this.$q.notify({
               type: 'positive',

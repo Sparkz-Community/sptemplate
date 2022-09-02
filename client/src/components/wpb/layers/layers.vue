@@ -331,119 +331,122 @@
           }
         }
       },
-      async editTree() {
-        // we need to make a copy of our tree to avoid vuex mutation errors
-        // console.log('editTree', this.tree);
-        let treeCopy = this.$lcloneDeep(this.tree);
-        // console.log('\n\ntreeCopy:', treeCopy);
-        let findChanges = (arr, parentType, parentId) => {
-          if (parentType === 'page') {
-            return arr.reduce((acc, curr, index) => {
-              // console.log('curr parent', parentType, ' curr type', curr._type ? curr._type : ' section', 'acc: ', acc, ' curr order: ', curr.styles.order, ' arr index: ', index);
-              if (this.$lget(curr, '_type') && this.$lget(curr, '_type') !== 'page') {
-                let newManagementData = {
-                  'page_id': this.$lget(this.formCopy, '_id'),
-                  value: curr,
-                  'order_position': index,
-                };
-                acc.rootElements.push(newManagementData);
-              } else {
+      editTree() {
+        this.$nextTick(async () => {
+          // we need to make a copy of our tree to avoid vuex mutation errors
+          console.log('editTree', this.tree);
+          let treeCopy = this.$lcloneDeep(this.tree);
+          // console.log('\n\ntreeCopy:', treeCopy);
+          let findChanges = (arr, parentType, parentId) => {
+            if (parentType === 'page') {
+              return arr.reduce((acc, curr, index) => {
+                // console.log('curr parent', parentType, ' curr type', curr._type ? curr._type : ' section', 'acc: ', acc, ' curr order: ', curr.styles.order, ' arr index: ', index);
+                if (this.$lget(curr, '_type') && this.$lget(curr, '_type') !== 'page') {
+                  let newManagementData = {
+                    'page_id': this.$lget(this.formCopy, '_id'),
+                    value: curr,
+                    'order_position': index,
+                  };
+                  acc.rootElements.push(newManagementData);
+                } else {
+                  let changed = false;
+                  let data = {_id: curr._id, changes: {}};
+                  if (this.$lget(curr, 'styles.order') !== index) {
+                    data.changes['styles.order'] = index;
+                    changed = true;
+                  }
+                  if (this.$lget(curr, 'parent')) {
+                    data.changes.parent = null;
+                    changed = true;
+                  }
+                  if (changed) {
+                    // console.log('acc changed', Object.assign({}, acc));
+                    acc.sections.push(data);
+                  }
+                  let children = this.$lget(curr, 'tree_children', []);
+
+                  if (children.length) {
+                    // console.log(parentType, ' children: ', children);
+                    let changes = findChanges(children, 'section', curr._id);
+                    acc = {
+                      ...acc,
+                      sections: [...acc.sections, ...changes.sections],
+                      elements: [...acc.elements, ...changes.elements],
+                    };
+                  }
+                }
+                return acc;
+              }, {rootElements: [], sections: [], elements: []});
+            } else {
+              return arr.reduce((acc, curr, index) => {
+                // console.log('curr parent', parentType, ' curr type', curr._type ? curr._type : ' section', 'acc: ', acc, ' curr order: ', curr.styles.order, ' arr index: ', index);
+                let element = curr._type;
                 let changed = false;
-                let data = {_id: curr._id, changes: {}};
+                let data = {_id: curr._id, _type: curr._type, changes: {}};
                 if (this.$lget(curr, 'styles.order') !== index) {
                   data.changes['styles.order'] = index;
                   changed = true;
                 }
-                if (this.$lget(curr, 'parent')) {
-                  data.changes.parent = null;
-                  changed = true;
+                if (element) {
+                  // console.log('element parentId', parentId, curr.section);
+                  if (parentId && this.$lget(curr, 'section') !== parentId) {
+                    console.log('setting element section');
+                    data.changes.section = parentId;
+                    changed = true;
+                  }
+                }
+                if (!element) {
+                  // console.log('section parentId', parentId, curr.section);
+                  if (parentId && !this.$lget(curr, 'parent')) {
+                    data.changes.parent = parentId;
+                    changed = true;
+                  }
+                  if (parentId && this.$lget(curr, 'parent') && this.$lget(curr, 'parent') !== parentId) {
+                    data.changes.parent = parentId;
+                    changed = true;
+                  }
+                  let children = this.$lget(curr, 'tree_children', []);
+                  if (children.length) {
+                    let changes = findChanges(children, 'section', curr._id);
+                    acc = {
+                      ...acc,
+                      sections: [...acc.sections, ...changes.sections],
+                      elements: [...acc.elements, ...changes.elements],
+                    };
+                  }
                 }
                 if (changed) {
-                  // console.log('acc changed', Object.assign({}, acc));
-                  acc.sections.push(data);
+                  if (element) {
+                    acc.elements.push(data);
+                  } else {
+                    acc.sections.push(data);
+                  }
                 }
-                let children = this.$lget(curr, 'tree_children', []);
-
-                if (children.length) {
-                  // console.log(parentType, ' children: ', children);
-                  let changes = findChanges(children, 'section', curr._id);
-                  acc = {
-                    ...acc,
-                    sections: [...acc.sections, ...changes.sections],
-                    elements: [...acc.elements, ...changes.elements],
-                  };
-                }
-              }
-              return acc;
-            }, {rootElements: [], sections: [], elements: []});
-          } else {
-            return arr.reduce((acc, curr, index) => {
-              // console.log('curr parent', parentType, ' curr type', curr._type ? curr._type : ' section', 'acc: ', acc, ' curr order: ', curr.styles.order, ' arr index: ', index);
-              let element = curr._type;
-              let changed = false;
-              let data = {_id: curr._id, _type: curr._type, changes: {}};
-              if (this.$lget(curr, 'styles.order') !== index) {
-                data.changes['styles.order'] = index;
-                changed = true;
-              }
-              if (element) {
-                // console.log('element parentId', parentId, curr.section);
-                if (parentId && this.$lget(curr, 'section') !== parentId) {
-                  console.log('setting element section');
-                  data.changes.section = parentId;
-                  changed = true;
-                }
-              }
-              if (!element) {
-                // console.log('section parentId', parentId, curr.section);
-                if (parentId && !this.$lget(curr, 'parent')) {
-                  data.changes.parent = parentId;
-                  changed = true;
-                }
-                if (parentId && this.$lget(curr, 'parent') && this.$lget(curr, 'parent') !== parentId) {
-                  data.changes.parent = parentId;
-                  changed = true;
-                }
-                let children = this.$lget(curr, 'tree_children', []);
-                if (children.length) {
-                  let changes = findChanges(children, 'section', curr._id);
-                  acc = {
-                    ...acc,
-                    sections: [...acc.sections, ...changes.sections],
-                    elements: [...acc.elements, ...changes.elements],
-                  };
-                }
-              }
-              if (changed) {
-                if (element) {
-                  acc.elements.push(data);
-                } else {
-                  acc.sections.push(data);
-                }
-              }
-              return acc;
-            }, {management: [], sections: [], elements: []});
-          }
-        };
-        let patch_items = findChanges(this.$lget(treeCopy, [0, 'tree_children'], []), 'page', this.formCopy._id);
-        let {rootElements, sections, elements} = patch_items;
-        // console.log('after doing findChanges');
-        // console.log(patch_items);
-        if (rootElements.length || sections.length || elements.length) {
-          this.$isLoading(true);
-          this.saving = true;
-          await this.axiosFeathers.post('wpb-management', {
-            action: 'treeChanges',
-            value: patch_items,
-            page_id: this.formCopy._id,
-          })
-            .then(res => {
-              console.log('management success', res);
+                return acc;
+              }, {management: [], sections: [], elements: []});
+            }
+          };
+          let patch_items = findChanges(this.$lget(treeCopy, [0, 'tree_children'], []), 'page', this.formCopy._id);
+          console.log('patch_items', patch_items);
+          let {rootElements, sections, elements} = patch_items;
+          // console.log('after doing findChanges');
+          // console.log(patch_items);
+          if (rootElements.length || sections.length || elements.length) {
+            this.$isLoading(true);
+            this.saving = true;
+            await this.axiosFeathers.post('wpb-management', {
+              action: 'treeChanges',
+              value: patch_items,
+              page_id: this.formCopy._id,
             })
-            .catch(err => console.error('management error', err));
-          this.$isLoading(false);
-          this.saving = false;
-        }
+              .then(res => {
+                console.log('management success', res);
+              })
+              .catch(err => console.error('management error', err));
+            this.$isLoading(false);
+            this.saving = false;
+          }
+        });
       },
       setItem(item) {
         this.templatePlaceholder = item;
