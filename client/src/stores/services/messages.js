@@ -1,5 +1,5 @@
 import feathersClient from '../../api/feathers-client';
-import { defineStore, BaseModel } from 'feathers-pinia';
+import {defineStore, BaseModel} from 'feathers-pinia';
 
 
 export class Messages extends BaseModel {
@@ -17,7 +17,7 @@ export class Messages extends BaseModel {
       isExternal: true,
       status: 'new',
       attachments: [],
-      replies: []
+      replies: [],
     };
   }
 }
@@ -26,7 +26,7 @@ const servicePath = 'in-app-messages';
 const useStore = defineStore({
   Model: Messages,
   servicePath,
-  clients: { api: feathersClient },
+  clients: {api: feathersClient},
   idField: '_id',
   state() {
     return {};
@@ -35,7 +35,7 @@ const useStore = defineStore({
   actions: {},
 });
 
-// Setup the client-side Feathers hooks.
+// Set up the client-side Feathers hooks.
 feathersClient.service(servicePath).hooks({
   before: {
     all: [],
@@ -44,7 +44,7 @@ feathersClient.service(servicePath).hooks({
     create: [],
     update: [],
     patch: [],
-    remove: []
+    remove: [],
   },
   after: {
     all: [],
@@ -53,7 +53,7 @@ feathersClient.service(servicePath).hooks({
     create: [],
     update: [],
     patch: [],
-    remove: []
+    remove: [],
   },
   error: {
     all: [],
@@ -62,8 +62,8 @@ feathersClient.service(servicePath).hooks({
     create: [],
     update: [],
     patch: [],
-    remove: []
-  }
+    remove: [],
+  },
 });
 
 export default useStore;

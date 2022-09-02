@@ -10,11 +10,13 @@
                   :max-pages="6"
                   direction-links
                   boundary-links></q-pagination>
+    <br>
+    <p v-if="lisEmpty(activeAccount)">You are not authenticated.</p>
   </q-page>
 </template>
 
 <script>
-  import { defineComponent, computed, reactive, watch } from 'vue';
+  import { defineComponent, computed, reactive, watch, inject } from 'vue';
   import { useQuasar } from 'quasar';
   import { useFind, usePagination } from 'feathers-pinia';
 
@@ -26,6 +28,9 @@
       const $q = useQuasar();
 
       const usersStore = useUsers();
+
+      const activeAccount = inject('activeAccount');
+      const lisEmpty = inject('$lisEmpty');
 
       const pagination = reactive({ $limit: 1, $skip: 0 });
 
@@ -53,12 +58,12 @@
         params: usersParams,
       });
       watch(isPending, (newVal) => {
-        if (newVal) {
+        if (newVal && lisEmpty(activeAccount)) {
           $q.loading.show();
         } else {
           $q.loading.hide();
         }
-      }, {immediate: true});
+      }, { immediate: true });
 
       const {
         // next,
@@ -74,6 +79,8 @@
       } = usePagination(pagination, latestQuery);
 
       return {
+        lisEmpty,
+        activeAccount,
         pagination,
         meta,
         usersParams,
