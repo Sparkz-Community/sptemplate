@@ -47,10 +47,12 @@
 </template>
 
 <script>
-  import {mapState, mapWritableState} from 'pinia';
+  import {mapActions, mapState, mapWritableState} from 'pinia';
 
   import {useWpbStore} from 'stores/useWpbStore';
   import useAuthStore from 'stores/store.auth';
+  import useWpbElements from 'stores/services/wpb-elements';
+  import useWpbSections from 'stores/services/wpb-sections';
 
   export default {
     name: 'editingOptions',
@@ -102,6 +104,12 @@
       }
     },
     methods: {
+      ...mapActions(useWpbElements, {
+        removeElement: 'remove',
+      }),
+      ...mapActions(useWpbSections, {
+        removeSection: 'remove',
+      }),
       setParent() {
         // console.log('emiting the parent', this.parent);
         this.$emit('jumpToParent', this.jumpToParent);
@@ -159,12 +167,12 @@
         let element = this.$lget(this.deleteItem, '_type');
         this.$q.loading.show( {message: 'Removing', ignoreDefaults: true});
         if (element) {
-          await this.$store.dispatch('wpb-elements/remove', this.deleteItem._id)
+          await this.removeElement(this.deleteItem._id)
             .catch(err => {
               console.error('problem removing element\n', err);
             });
         } else {
-          await this.$store.dispatch('wpb-sections/remove', this.deleteItem._id)
+          await this.removeSection(this.deleteItem._id)
             .catch(err => {
               console.error('problem removing section\n', err);
             });
