@@ -43,7 +43,7 @@
 
   const $lget = inject('$lget');
   const $lset = inject('$lset');
-  const authUser= inject('authUser');
+  const authUser = inject('authUser');
   const activeAccount = inject('activeAccount');
 
   const $q = useQuasar();
@@ -179,13 +179,13 @@
       },
     };
 
-    if($lget(card,'order')){
-      $lset(cardPatchObject,['$set','order'],$lget(card,'order'));
+    if ($lget(card, 'order')) {
+      $lset(cardPatchObject, ['$set', 'order'], $lget(card, 'order'));
     }
 
-    return  new models.api.Cards({...card}).save({
+    return new models.api.Cards({...card}).save({
       query: {
-        ...cardPatchQuery
+        ...cardPatchQuery,
       },
       data: cardPatchObject,
     });
@@ -268,6 +268,7 @@
             const cardId = $lget(card, ['_id']);
             const result = await new models.api.Cards(card).remove(cardId);
             action = `${$lget(result, 'name')} will be removed permanently from all boards after 30 days`;
+            $q.loading.hide();
           }
         }
         close();
@@ -276,18 +277,18 @@
           message: action,
         });
       } catch (e) {
-        // $q.notify({
-        //   type: 'negative',
-        //   message: e.message,
-        //   timeout: 30000,
-        //   actions: [
-        //     {
-        //       icon: 'close', color: 'white', handler: () => {
-        //         /* ... */
-        //       },
-        //     },
-        //   ],
-        // });
+        $q.notify({
+          type: 'negative',
+          message: e.message,
+          timeout: 30000,
+          actions: [
+            {
+              icon: 'close', color: 'white', handler: () => {
+                /* ... */
+              },
+            },
+          ],
+        });
       }
     });
   }
@@ -335,9 +336,9 @@
       console.log(card);
       console.log('same list');
 
-      const otherCardsOnList = $lget(newList,['_fastjoin','cards']).filter(crd =>crd._id !==card._id);
+      const otherCardsOnList = $lget(newList, ['_fastjoin', 'cards']).filter(crd => crd._id !== card._id);
 
-      if(removedOrder > addedOrder) {
+      if (removedOrder > addedOrder) {
         console.log('Moved Up');
         const cardsWhosePosnIncreased = otherCardsOnList.filter(crd => (crd.order < removedOrder) && crd.order >= addedOrder);
         const theirIds = cardsWhosePosnIncreased.map(crd => crd._id);
@@ -349,16 +350,16 @@
           message: `moving card ${card.name} up on list ${newList.name}.`,
         });
         await Promise.all([
-          cardStore.patch(card._id,{order: addedOrder}),
+          cardStore.patch(card._id, {order: addedOrder}),
           cardStore.patch(
             null,
-            {$inc : {'order' : 1}},
+            {$inc: {'order': 1}},
             {
               query: {
-                _id: {$in: theirIds}
-              }
-            }
-          )
+                _id: {$in: theirIds},
+              },
+            },
+          ),
         ]);
         $q.loading.hide();
       } else {
@@ -373,22 +374,22 @@
           message: `moving card ${card.name} down list ${newList.name}.`,
         });
         await Promise.all([
-          cardStore.patch(card._id,{order: addedOrder}),
+          cardStore.patch(card._id, {order: addedOrder}),
           cardStore.patch(
             null,
-            {$inc : {'order' : -1}},
+            {$inc: {'order': -1}},
             {
               query: {
                 _id: {$in: theirIds},
                 'boards.id': $lget(board.value, ['_id']),
-              }
-            }
-          )
+              },
+            },
+          ),
         ]);
         $q.loading.hide();
       }
     } else {
-      console.log('Changed lists',{addedOrder});
+      console.log('Changed lists', {addedOrder});
       // TODO: Test some casl abilities based on rules on list  if failed, add dialog with fields to help provide info to satisfy ability
       // NB: rules will be checked backend too
       //else run this code
@@ -410,18 +411,18 @@
           message: `Successfully restored ${this.$lget(card, 'name')} card to ${newList.name} list.`,
         });
       } catch (e) {
-        // this.$q.notify({
-        //   type: 'negative',
-        //   message: e.message,
-        //   timeout: 30000,
-        //   actions: [
-        //     {
-        //       icon: 'close', color: 'white', handler: () => {
-        //         /* ... */
-        //       },
-        //     },
-        //   ],
-        // });
+        this.$q.notify({
+          type: 'negative',
+          message: e.message,
+          timeout: 30000,
+          actions: [
+            {
+              icon: 'close', color: 'white', handler: () => {
+                /* ... */
+              },
+            },
+          ],
+        });
       }
     }
   }

@@ -152,8 +152,8 @@
                 style="position: sticky; bottom: 0;"
                 v-bind="$attrs"
               >
-                <template v-for="(_, name) in $slots" v-slot:[name]="slotData">
-                  <slot :name="name" v-bind="slotData"/>
+                <template v-for="(_, name) in $slots" #[name]="slotData">
+                  <slot :name="name" :slotData="slotData"/>
                 </template>
               </add-card-form-container>
             </q-card>
@@ -424,6 +424,10 @@
   function textColor(item) {
     return $isHexDark($lget(item, 'color.hexa', 'grey')) ? 'white' : 'black';
   }
+
+  // function listColor(list) {
+  //   return $lget(column.data, 'color.hexa', 'grey')
+  // }
 
   function handlePopup(listId) {
     if (!popupShow.value) popups.value[listId].hide();

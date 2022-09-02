@@ -20,7 +20,7 @@
         </q-input>
       </template>
 
-      <template #left-control="item">
+      <template #left-control>
         <div class="dropdown">
           <q-btn
             color="primary"
@@ -41,7 +41,7 @@
               <q-card-actions align="between">
                 <q-btn flat label="close" @click="open_create_board=false"/>
                 <q-btn :disabled="creatingBoard" :loading="creatingBoard" no-caps color="primary" label="create"
-                       @click="createBoardFromTemplate(item)"/>
+                       @click="createBoardFromTemplate"/>
 
               </q-card-actions>
             </q-card>
@@ -94,8 +94,8 @@
   const {item: boardTemplate, addList, updateItem, getCardPayload} = useItemLists({service: 'board-templates'});
 
 
-  watch(boards, (newVal) => {
-    boardOrder.value = getMaxOrder(newVal) + 1;
+  watch(()=>boards.value, (newVal) => {
+    boardOrder.value = getMaxOrder(newVal);
   }, {immediate: true, deep: true});
 
   watch(()=>boardTemplate.value, (newVal) => {
@@ -103,11 +103,11 @@
   }, {immediate: true, deep: true});
 
 
-  async function createBoardFromTemplate(boardTemplate) {
+  async function createBoardFromTemplate() {
     try {
       // create b
       const data = {
-        ...boardTemplate,
+        ...boardTemplate.value,
         name: boardTitle.value,
         order: boardOrder.value,
         boardTemplate: $lget(boardTemplate, '_id'),
